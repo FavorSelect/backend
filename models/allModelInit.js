@@ -5,7 +5,7 @@ const initDB = (callback) => {
   sequelize.authenticate()
     .then(() => {
       console.log(' Database connected');
-      return sequelize.sync({ force: true }); // Creates tables if not exist
+      return sequelize.sync(); // Creates tables if not exist
     })
     .then(() => {
       console.log(' All models synced');

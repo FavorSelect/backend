@@ -21,7 +21,17 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
-  }
+  },
+  isVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  verificationCode: {
+    type: DataTypes.STRING,
+  },
+  verificationCodeExpiresat: {
+    type: DataTypes.DATE,
+  },
 }, {
   tableName: 'users',
   timestamps: true
