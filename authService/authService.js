@@ -6,10 +6,9 @@ function createTokenForUser(user) {
     }
     const payload = {
       _id: user._id,
-      fullName: user.fullName,
+      firstName: user.firstName,
+      lastName:user.lastName,
       email: user.email,
-      profileImageURL: user.profileImageURL,
-      role: user.role,
     };
     return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
   } catch (error) {
