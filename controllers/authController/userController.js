@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
 const JWT = require("jsonwebtoken");
 const { Op } = require('sequelize');
-const { User } = require('../models/userModel'); 
-const { createTokenForUser } = require('../authService/authService');
-const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../middleware/emailSendMiddleware');
+const { User } = require('../../models/authModel/userModel'); 
+const { createTokenForUser } = require('../../authService/authService');
+const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../../middleware/emailSendMiddleware');
 
 
 const handleSignUp = async (req, res) => {

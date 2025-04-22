@@ -90,38 +90,34 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     const response = await transporter.sendMail({
       from: '"FavorSelect Team" <support@favorselect.com>',
       to: email,
-      subject: "🔐 Verify Your Email - FavorSelect",
-      text: `Hi ${fullName},\n\nThank you for registering at FavorSelect!\n\nPlease verify your email by entering the following OTP:\n\n OTP: ${otp}\n\nIf you did not request this, please ignore this message.\n\nCheers,\nFavorSelect Team`,
+      subject: "🔐 Email Verification Code - FavorSelect",
+      text: `Hi ${fullName},\n\nYour FavorSelect verification code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, you can safely ignore this email.\n\n- FavorSelect Team`,
       html: `
-        <div style="max-width: 600px; background-color: #fff0f5; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(255, 105, 180, 0.2); font-family: Arial, sans-serif;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+        <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
+        <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-height: 60px;" />
           </div>
-          <h2 style="color: #d63384; font-size: 26px; text-align: center; margin-bottom: 16px;">
-            🔐 Email Verification
-          </h2>
-          <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
-            Hi <strong>${fullName}</strong>, thank you for signing up with <strong>FavorSelect</strong>! Please verify your email by entering the OTP below:
-          </p>
-          <div style="background-color: #ffe6f0; padding: 14px 0; text-align: center; border-radius: 6px; margin: 20px 0;">
-            <span style="font-size: 24px; font-weight: bold; color: #e83e8c;"> ${otp}</span>
+          <h2 style="text-align: center; padding: 20px; background-color:#d63384;  border-radius: 6px; color: #f6f1f3;">Verification Code</h2>
+          <div style="text-align: center; padding: 16px;  margin: 20px 0;">
+            <span style="font-size: 28px; font-weight: bold;">${otp}</span>
           </div>
-          <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
-            Enter this OTP on the verification page to complete your registration.
+          <p style="text-align: center; color: #555; font-size: 15px;">(This code will expire 10 minutes after it was sent.)</p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
+          <p style="font-size: 14px; color: #666; text-align: center; line-height: 1.6;">
+            FavorSelect will never ask for your password, credit card, or sensitive information via email. If you did not request this email, you can safely ignore it.
           </p>
-          <p style="color: #999; font-size: 14px; text-align: center;">
-            If you didn’t request this email, you can safely ignore it.
-          </p>
-          <p style="text-align: center; color: #d63384; font-weight: bold; margin-top: 30px;">
-             FavorSelect Team
+          <p style="text-align: center; font-size: 13px; color: #aaa; margin-top: 30px;">
+            © ${new Date().getFullYear()} FavorSelect. All rights reserved.
           </p>
         </div>
-      `,
+      </div>
+      `
     });
 
-    console.log("Verification email with OTP sent successfully:", response);
+    console.log("Verification email sent successfully:", response);
   } catch (error) {
-    console.error("Error sending verification email with OTP:", error);
+    console.error("Error sending verification email:", error);
   }
 };
 const sendWelcomeEmail = async (email, fullName) => {

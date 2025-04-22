@@ -1,42 +1,43 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/dbConnection');
+const { sequelize } = require('../../config/dbConnection');
 
 const Product = sequelize.define('Product', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
   productName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  productSlug: {
-    type: DataTypes.STRING,
-    unique: true,
-  },
   productDescription: {
     type: DataTypes.TEXT,
-  },
-  productShortDescription: {
-    type: DataTypes.STRING,
+    allowNull: false,
   },
   productBrand: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
   productCategory: {
     type: DataTypes.STRING,
-  },
-  productSubCategory: {
-    type: DataTypes.STRING,
+    allowNull: false,
   },
   stockKeepingUnit: {
-    type: DataTypes.STRING,
-    unique: true,
-  },
-  productBarcode: {
     type: DataTypes.STRING,
   },
   productModelNumber: {
     type: DataTypes.STRING,
   },
+  productBestSaleTag: {
+    type: DataTypes.STRING,
+    
+  },
 
   // Pricing
+  productDiscountPercentage: {
+    type: DataTypes.FLOAT,
+  },
   productPrice: {
     type: DataTypes.FLOAT,
     allowNull: false,
@@ -44,23 +45,14 @@ const Product = sequelize.define('Product', {
   productDiscountPrice: {
     type: DataTypes.FLOAT,
   },
-  priceCurrency: {
+  saleDayleft: {
     type: DataTypes.STRING,
-    defaultValue: 'INR',
-  },
-  isOnSale: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
   },
   saleStartDate: {
     type: DataTypes.DATE,
   },
   saleEndDate: {
     type: DataTypes.DATE,
-  },
-  applicableTaxRate: {
-    type: DataTypes.FLOAT,
-    defaultValue: 0.0,
   },
 
   // Inventory
@@ -75,19 +67,11 @@ const Product = sequelize.define('Product', {
   productWeight: {
     type: DataTypes.FLOAT,
   },
-  productDimensions: {
-    type: DataTypes.JSON, // { height, width, depth }
-  },
-  shippingClassName: {
-    type: DataTypes.STRING,
-  },
 
   // Media
-  mainImageUrl: {
+  coverImageUrl: {
     type: DataTypes.STRING,
-  },
-  galleryImageUrls: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false,
   },
   productVideoUrl: {
     type: DataTypes.STRING,
@@ -102,13 +86,13 @@ const Product = sequelize.define('Product', {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  customerReviews: {
+    type: DataTypes.STRING,
+  },
 
   // Tags & Metadata
   productTags: {
-    type: DataTypes.ARRAY(DataTypes.STRING),
-  },
-  productFeatures: {
-    type: DataTypes.JSON,
+    type: DataTypes.STRING,
   },
   productWarrantyInfo: {
     type: DataTypes.STRING,
@@ -116,17 +100,9 @@ const Product = sequelize.define('Product', {
   productReturnPolicy: {
     type: DataTypes.TEXT,
   },
-  isFeaturedProduct: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
   isNewArrivalProduct: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
-  },
-  productVisibilityStatus: {
-    type: DataTypes.ENUM('Public', 'Private', 'Archived'),
-    defaultValue: 'Public',
   },
 
   // Analytics
@@ -137,15 +113,7 @@ const Product = sequelize.define('Product', {
   totalSoldCount: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
-  },
-
-  associatedVendorId: {
-    type: DataTypes.INTEGER,
-  },
-
-  internalAdminNotes: {
-    type: DataTypes.TEXT,
-  },
+  }
 
 }, {
   tableName: 'products',

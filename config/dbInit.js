@@ -1,5 +1,6 @@
 const {sequelize} = require('../config/dbConnection');
-const User = require('../models/userModel'); 
+const User = require('../models/authModel/userModel'); 
+const { Product } = require('../models/productModel/productModel');
 
 const initDB = (callback) => {
   sequelize.authenticate()

@@ -3,9 +3,9 @@ const {
   getUserProfile,
   handleUpdateUserProfile,
   handleChangePassword,
-} = require("../controllers/userProfileController");
-const checkForAuthenticationCookie = require("../middleware/authMiddleware");
-const { authorizeRoles } = require("../middleware/roleMiddleware");
+} = require("../../controllers/profileController/userProfileController");
+const checkForAuthenticationCookie = require("../../middleware/authMiddleware");
+const { authorizeRoles } = require("../../middleware/roleMiddleware");
 
 const router = express.Router();
 

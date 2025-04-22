@@ -4,8 +4,8 @@ const cookieParser = require('cookie-parser');
 const initDB = require('./config/dbInit');
 
 //route
-const authRoute = require('./route/authRoute');
-const userProfileRoute = require('./route/userProfileRoute')
+const userAuthRoute = require('./routes/authRoute/userAuthRoute');
+const userProfileRoute = require('./routes/profileRoute.js/userProfileRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -13,16 +13,9 @@ const PORT = process.env.PORT || 8001;
 app.use(express.json());
 app.use(cookieParser());
 
-// const cors = require('cors');
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true
-// }));
 
-app.use('/api/auth', authRoute);
-app.use('/api/profile',userProfileRoute)
+app.use('/api/auth/user', userAuthRoute);
+app.use('/api/profile',userProfileRoute);
 
 initDB(() => {
   app.listen(PORT, () => {
