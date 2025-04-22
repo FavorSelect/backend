@@ -1,14 +1,15 @@
 const bcrypt = require('bcrypt');
+const JWT = require("jsonwebtoken");
 const { Op } = require('sequelize');
 const { User } = require('../models/userModel'); 
 const { createTokenForUser } = require('../authService/authService');
-const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordOTP, sendRecoveryEmail } = require('../middleware/emailSendMiddleware');
+const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../middleware/emailSendMiddleware');
 
 
 const handleSignUp = async (req, res) => {
   const { firstName, lastName, email, password, confirmPassword } = req.body;
 
-  if (password !== confirmPassword) {
+  if (password !== confirmPassword) { 
     return res.status(400).json({ message: 'Passwords do not match' });
   }
 
@@ -120,7 +121,7 @@ const handleLogout = async (req, res) => {
 };
 
 
-const handleForgotPasswordOTP = async (req, res) => {
+const handleForgotPasswordURL = async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -128,52 +129,47 @@ const handleForgotPasswordOTP = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const verificationCode = Math.floor(100000+Math.random()*900000).toString();
-    const verificationCodeExpiresat = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-    user.verificationCode =verificationCode;
-    user.verificationCodeExpiresat = verificationCodeExpiresat;
-    await user.save();
-    await sendForgetPasswordOTP(user.email, verificationCode);
+    const resetToken = JWT.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    await sendForgetPasswordURL(user.email, resetLink);
 
-    return res.status(200).json({ message: 'OTP sent to email' });
+    return res.status(200).json({ message: 'reset link sent to email' });
   } catch (error) {
     return res.status(500).json({ message: 'Error processing request', error: error.message });
   }
 };
 
-const handleVerifyOtpAndResetPassword = async (req, res) => {
-  const { email,verificationCode, newPassword, confirmPassword } = req.body;
 
-  
+const handleUserResetPassword = async (req, res) => {
+  try {
+    const { resetToken } = req.params;
+    const { newPassword , confirmPassword} = req.body;
+
+   
   if (newPassword !== confirmPassword) {
     return res.status(400).json({ message: 'Passwords do not match' });
   }
-
-  try {
-  
-    const user = await User.findOne({ where: { email } });
+    const decoded = JWT.verify(resetToken, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-
-    if (user.verificationCode !== verificationCode) {
-      return res.status(400).json({ message: 'Invalid OTP' });
-    }
-
-    const currentTime = new Date();
-    if (user.verificationCodeExpiresat < currentTime) {
-      return res.status(400).json({ message: 'OTP has expired' });
-    }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
-    user.verificationCode = null;  
-    user.verificationCodeExpiresat = null;
     await user.save();
-    await sendRecoveryEmail(user.email, user.firstName) 
-    return res.status(200).json({ message: 'Password successfully updated' });
+
+    await sendRecoveryEmail(user.email, user.name);
+
+    return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
-    return res.status(500).json({ message: 'Error resetting password', error: error.message });
+    return res.status(500).json({ message: "Error resetting password", error: error.message });
   }
 };
 
@@ -182,6 +178,6 @@ module.exports = {
   handleVerifyEmail,
   handleSignin,
   handleLogout,
-  handleForgotPasswordOTP,
-  handleVerifyOtpAndResetPassword,
+  handleForgotPasswordURL,
+  handleUserResetPassword,
 };

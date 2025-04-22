@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const authRoute = require('./route/authRoute');
 const initDB = require('./models/allModelInit');
+
+const authRoute = require('./route/authRoute');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
