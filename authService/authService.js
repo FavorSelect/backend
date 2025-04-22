@@ -9,6 +9,7 @@ function createTokenForUser(user) {
       firstName: user.firstName,
       lastName:user.lastName,
       email: user.email,
+      role:user.role,
     };
     return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
   } catch (error) {

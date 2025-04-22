@@ -1,7 +1,12 @@
 const { DataTypes } = require('sequelize');
-const {sequelize} = require('../config/dbConnection');
+const { sequelize } = require('../config/dbConnection');
 
 const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4, 
+    primaryKey: true
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
@@ -22,6 +27,18 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  address: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  role: {
+    type: DataTypes.ENUM('customer', 'admin'),
+    defaultValue: 'customer'
+  },
   isVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
@@ -29,7 +46,7 @@ const User = sequelize.define('User', {
   verificationCode: {
     type: DataTypes.STRING,
   },
-  verificationCodeExpiresat: {
+  verificationCodeExpiresAt: {
     type: DataTypes.DATE,
   },
 }, {
@@ -37,5 +54,4 @@ const User = sequelize.define('User', {
   timestamps: true
 });
 
-module.exports = {User};
-
+module.exports = { User };

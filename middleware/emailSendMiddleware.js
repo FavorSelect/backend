@@ -165,9 +165,94 @@ const sendWelcomeEmail = async (email, fullName) => {
   }
 };
 
+const  sendChangePasswordEmail = async (email, fullName) => {
+  try {
+    const loginURL = `${process.env.FRONTEND_URL}/login`; 
+    const response = await transporter.sendMail({
+      from: '"FavorSelect Team" <support@favorselect.com>',
+      to: email,
+      subject: "🔐 Password Changed Successfully",
+      text: `Hi ${fullName},\n\nYour password has been successfully changed! 🔐\n\n\n\nIf you did not request this change, please contact support immediately.\n\nLogin: ${loginURL}\n\nThanks for using FavorSelect!\n\n- The FavorSelect Team`,
+      html: `
+        <div style="max-width: 600px; background-color: #f0f8ff; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2); font-family: Arial, sans-serif;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+          </div>
+          <h2 style="color: #007bff; font-size: 26px; text-align: center; margin-bottom: 16px;">
+            🔐 Password Changed Successfully, ${fullName}!
+          </h2>
+          <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
+            Your password has been successfully changed. If you did not request this change, please contact our support team.
+          </p>
+    
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${loginURL}" style="background-color: #007bff; color: #fff; text-decoration: none; padding: 12px 24px; font-size: 18px; border-radius: 8px;">
+              Go to Login
+            </a>
+          </div>
+          <p style="text-align: center; font-size: 15px; color: #888;">
+           Feel free to log in with your new password above.
+          </p>
+          <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #007bff;">
+             FavorSelect Team
+          </p>
+        </div>
+      `,
+    });
+
+    console.log("Password change email sent successfully:", response);
+  } catch (error) {
+    console.error("Error sending password change email:", error);
+  }
+};
+
+const  sendUpdateProfileEmail= async (email, fullName) => {
+  try {
+    const loginURL = `${process.env.FRONTEND_URL}/profile`; 
+    const response = await transporter.sendMail({
+      from: '"FavorSelect Team" <support@favorselect.com>',
+      to: email,
+      subject: "🔄 Profile Updated Successfully",
+      text: `Hi ${fullName},\n\nYour profile has been successfully updated! 🔄\n\n\n\nIf you did not make these changes, please contact support immediately.\n\nProfile: ${loginURL}\n\nThanks for being with FavorSelect!\n\n- The FavorSelect Team`,
+      html: `
+        <div style="max-width: 600px; background-color: #e8f0fe; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(23, 162, 184, 0.2); font-family: Arial, sans-serif;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+          </div>
+          <h2 style="color: #17a2b8; font-size: 26px; text-align: center; margin-bottom: 16px;">
+            🔄 Profile Updated Successfully, ${fullName}!
+          </h2>
+          <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
+            Your profile details have been successfully updated. If you did not make these changes, please contact our support team.
+          </p>
+    
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${loginURL}" style="background-color: #17a2b8; color: #fff; text-decoration: none; padding: 12px 24px; font-size: 18px; border-radius: 8px;">
+              View Profile
+            </a>
+          </div>
+          <p style="text-align: center; font-size: 15px; color: #888;">
+           Feel free to check and update your details anytime.
+          </p>
+          <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #17a2b8;">
+             FavorSelect Team
+          </p>
+        </div>
+      `,
+    });
+
+    console.log("Profile update email sent successfully:", response);
+  } catch (error) {
+    console.error("Error sending profile update email:", error);
+  }
+};
+
+
 module.exports = {
   sendForgetPasswordURL,
   sendRecoveryEmail,
   sendVerificationEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendChangePasswordEmail,
+  sendUpdateProfileEmail
 };
