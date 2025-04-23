@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../../models/authModel/userModel'); 
-const { sendUpdateProfileEmail, sendChangePasswordEmail } = require('../../middleware/emailSendMiddleware');
+const { sendUpdateProfileEmail, sendChangePasswordEmail } = require('../../middleware/emailMiddleware/emailSendMiddleware');
 
 const handleUpdateUserProfile = async (req, res) => {
     try {

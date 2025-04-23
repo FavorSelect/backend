@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const initDB = require('./config/dbInit');
+const initDB = require('./databaseConnection/dbInit');
 
 //route
 const userAuthRoute = require('./routes/authRoute/userAuthRoute');

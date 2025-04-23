@@ -4,8 +4,8 @@ const {
   handleUpdateUserProfile,
   handleChangePassword,
 } = require("../../controllers/profileController/userProfileController");
-const checkForAuthenticationCookie = require("../../middleware/authMiddleware");
-const { authorizeRoles } = require("../../middleware/roleMiddleware");
+const checkForAuthenticationCookie = require("../../middleware/authMiddleware/authMiddleware");
+const { authorizeRoles } = require("../../middleware/authMiddleware/roleMiddleware");
 
 const router = express.Router();
 
