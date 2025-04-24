@@ -2,11 +2,11 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
 
 const User = sequelize.define('User', {
-  // id: {
-  //   type: DataTypes.UUID,
-  //   defaultValue: DataTypes.UUIDV4, 
-  //   primaryKey: true
-  // },
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true, 
+    primaryKey: true,   
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false
@@ -54,4 +54,4 @@ const User = sequelize.define('User', {
   timestamps: true
 });
 
-module.exports = { User };
+module.exports =  User ;

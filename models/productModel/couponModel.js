@@ -1,4 +1,3 @@
-// Coupon Model
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
 

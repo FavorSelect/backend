@@ -1,14 +1,19 @@
-const User = require('./userModel');
-const Product = require('./productModel');
-const Category = require('./categoryModel');
-const Cart = require('./cartModel');
-const CartItem = require('./cartItemModel');
-const Address = require('./addressModel');
-const Order = require('./orderModel');
-const OrderItem = require('./orderItemModel');
-const Payment = require('./paymentModel');
-const Review = require('./reviewModel');
-const Wishlist = require('./wishlistModel');
+const User = require('../authModel/userModel');
+const Product = require('../productModel/productModel');
+const Category = require('../productModel/categoryModel');
+const Cart = require('../productModel/cartModel');
+const CartItem = require('../productModel/cartItemModel');
+const Address = require('../productModel/orderAddressModel');
+const Order = require('../productModel/orderModel');
+const OrderItem = require('../productModel/orderItemModel');
+const Payment = require('../productModel/paymentModel');
+const Review = require('../productModel/reviewModel');
+const Wishlist = require('../productModel/wishListModel');
+
+
+console.log('Cart type check:', typeof Cart); // Should be 'function'
+console.log('Cart is model?', Cart?.prototype instanceof require('sequelize').Model); // Should be true
+console.log('Cart name:', Cart?.prototype?.constructor?.name); // Should be 'Cart'
 
 // Cart <-> CartItem
 CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
@@ -17,6 +22,11 @@ Cart.hasMany(CartItem, { foreignKey: 'cartId' });
 // CartItem <-> Product
 CartItem.belongsTo(Product, { foreignKey: 'productId' });
 Product.hasMany(CartItem, { foreignKey: 'productId' });
+
+console.log('User:', typeof User); // Should be function
+console.log('User is model?', User?.prototype instanceof require('sequelize').Model); // true
+console.log('User name:', User?.prototype?.constructor?.name);
+
 
 // Cart <-> User
 Cart.belongsTo(User, { foreignKey: 'userId' });

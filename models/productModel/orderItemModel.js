@@ -61,11 +61,5 @@ const OrderItem = sequelize.define('OrderItem', {
   timestamps: true, // Will create createdAt and updatedAt fields
 });
 
-// Associations
-OrderItem.belongsTo(Order, { foreignKey: 'orderId' }); // An OrderItem belongs to an Order
-Order.hasMany(OrderItem, { foreignKey: 'orderId' }); // An Order has many OrderItems
-
-OrderItem.belongsTo(Product, { foreignKey: 'productId' }); // An OrderItem belongs to a Product
-Product.hasMany(OrderItem, { foreignKey: 'productId' }); // A Product can have many OrderItems
 
 module.exports =  OrderItem ;

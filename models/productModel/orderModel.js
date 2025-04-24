@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
 const Cart  = require('./cartModel'); 
-const User  = require('../authModel/userModel'); 
-const  CartItem  = require('./carItemModel'); 
+const User  = require('../authModel/userModel');
+const  CartItem  = require('./cartItemModel'); 
 
 const Order = sequelize.define('Order', {
   id: {
@@ -74,14 +74,5 @@ const Order = sequelize.define('Order', {
   timestamps: true, // Will create createdAt and updatedAt fields
 });
 
-// Associations
-Order.belongsTo(User, { foreignKey: 'userId' }); // An Order belongs to a User
-User.hasMany(Order, { foreignKey: 'userId' }); // A User can have many Orders
-
-Order.belongsTo(Cart, { foreignKey: 'cartId' }); // An Order belongs to a Cart
-Cart.hasOne(Order, { foreignKey: 'cartId' }); // A Cart can have one Order
-
-Order.hasMany(CartItem, { foreignKey: 'orderId' }); // An Order can have many CartItems
-CartItem.belongsTo(Order, { foreignKey: 'orderId' }); // A CartItem belongs to an Order
 
 module.exports =  Order ;

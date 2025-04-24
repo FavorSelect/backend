@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const User  = require('./userModel');
+const User  = require('../authModel/userModel');
 const  Product  = require('./productModel');
 
 const Wishlist = sequelize.define('Wishlist', {
@@ -41,11 +41,6 @@ const Wishlist = sequelize.define('Wishlist', {
   timestamps: true,
 });
 
-// Associations
-Wishlist.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Wishlist, { foreignKey: 'userId' });
 
-Wishlist.belongsTo(Product, { foreignKey: 'productId' });
-Product.hasMany(Wishlist, { foreignKey: 'productId' });
 
 module.exports =  Wishlist ;

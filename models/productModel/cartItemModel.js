@@ -52,12 +52,7 @@ const CartItem = sequelize.define('CartItem', {
   timestamps: true, 
 });
 
-// Associations
-CartItem.belongsTo(Cart, { foreignKey: 'cartId' }); // A CartItem belongs to a Cart
-Cart.hasMany(CartItem, { foreignKey: 'cartId' }); // A Cart can have many CartItems
 
-CartItem.belongsTo(Product, { foreignKey: 'productId' }); // A CartItem belongs to a Product
-Product.hasMany(CartItem, { foreignKey: 'productId' }); // A Product can be in many CartItems
 
 // Calculate totalPrice based on quantity and price
 CartItem.beforeSave((cartItem) => {

@@ -46,8 +46,6 @@ const Payment = sequelize.define('Payment', {
   timestamps: true,
 });
 
-// Associations
-Payment.belongsTo(Order, { foreignKey: 'orderId' });
-Order.hasOne(Payment, { foreignKey: 'orderId' });
+
 
 module.exports =  Payment ;
