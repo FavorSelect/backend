@@ -1,0 +1,59 @@
+// Coupon Model
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../../databaseConnection/dbConnection');
+
+const Coupon = sequelize.define('Coupon', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+
+  code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+
+  discountPercentage: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+
+  discountAmount: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+
+  validFrom: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+
+  validTill: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+
+  usageCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+
+  maxUsageLimit: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+
+}, {
+  tableName: 'coupons',
+  timestamps: true,
+});
+
+module.exports = { Coupon };

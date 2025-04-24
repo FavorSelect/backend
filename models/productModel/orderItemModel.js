@@ -1,0 +1,71 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../../databaseConnection/dbConnection');
+const { Product } = require('./productModel'); 
+const { Order } = require('./orderModel'); 
+
+const OrderItem = sequelize.define('OrderItem', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+
+  orderId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Order, 
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
+
+  productId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Product,
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
+
+  quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1, // Default quantity is 1
+  },
+
+  price: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+
+  totalPrice: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+
+  productName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+
+  productImageUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+
+}, {
+  tableName: 'order_items',
+  timestamps: true, // Will create createdAt and updatedAt fields
+});
+
+// Associations
+OrderItem.belongsTo(Order, { foreignKey: 'orderId' }); // An OrderItem belongs to an Order
+Order.hasMany(OrderItem, { foreignKey: 'orderId' }); // An Order has many OrderItems
+
+OrderItem.belongsTo(Product, { foreignKey: 'productId' }); // An OrderItem belongs to a Product
+Product.hasMany(OrderItem, { foreignKey: 'productId' }); // A Product can have many OrderItems
+
+module.exports = { OrderItem };

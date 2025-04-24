@@ -1,56 +1,72 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
+const Category = require('./categoryModel');
 
 const Product = sequelize.define('Product', {
-  // id: {
-  //   type: DataTypes.UUID,
-  //   defaultValue: DataTypes.UUIDV4,
-  //   primaryKey: true,
-  // },
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+
   productName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   productDescription: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+
   productBrand: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  productCategory: {
-    type: DataTypes.STRING,
+
+  productCategoryId: {
+    type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: Category, // Reference to the Category model
+      key: 'id'
+    }
   },
+
   stockKeepingUnit: {
     type: DataTypes.STRING,
   },
+
   productModelNumber: {
     type: DataTypes.STRING,
   },
+
   productBestSaleTag: {
     type: DataTypes.STRING,
-    
   },
 
   // Pricing
   productDiscountPercentage: {
     type: DataTypes.FLOAT,
   },
+
   productPrice: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
+
   productDiscountPrice: {
     type: DataTypes.FLOAT,
   },
+
   saleDayleft: {
     type: DataTypes.STRING,
   },
+
   saleStartDate: {
     type: DataTypes.DATE,
   },
+
   saleEndDate: {
     type: DataTypes.DATE,
   },
@@ -60,10 +76,12 @@ const Product = sequelize.define('Product', {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+
   inventoryStatus: {
     type: DataTypes.ENUM('InStock', 'OutOfStock', 'BackOrder'),
     defaultValue: 'InStock',
   },
+
   productWeight: {
     type: DataTypes.FLOAT,
   },
@@ -73,6 +91,7 @@ const Product = sequelize.define('Product', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   productVideoUrl: {
     type: DataTypes.STRING,
   },
@@ -82,10 +101,12 @@ const Product = sequelize.define('Product', {
     type: DataTypes.FLOAT,
     defaultValue: 0,
   },
+
   totalCustomerReviews: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+
   customerReviews: {
     type: DataTypes.STRING,
   },
@@ -94,12 +115,15 @@ const Product = sequelize.define('Product', {
   productTags: {
     type: DataTypes.STRING,
   },
+
   productWarrantyInfo: {
     type: DataTypes.STRING,
   },
+
   productReturnPolicy: {
     type: DataTypes.TEXT,
   },
+
   isNewArrivalProduct: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
@@ -110,6 +134,7 @@ const Product = sequelize.define('Product', {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+
   totalSoldCount: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
@@ -119,5 +144,9 @@ const Product = sequelize.define('Product', {
   tableName: 'products',
   timestamps: true,
 });
+
+// Associations
+Product.belongsTo(Category, { foreignKey: 'productCategoryId' });
+Category.hasMany(Product, { foreignKey: 'productCategoryId' });
 
 module.exports = { Product };

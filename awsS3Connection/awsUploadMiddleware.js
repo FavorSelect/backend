@@ -1,17 +1,24 @@
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const s3 = require('../awsS3Connection/awsConfig');
+// awsUploadMiddleware.js
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY
+  }
+});
 
 const upload = multer({
   storage: multerS3({
-    s3,
+    s3: s3, // make sure this is the S3Client instance from AWS SDK v3
     bucket: process.env.AWS_BUCKET_NAME,
-    acl: 'public-read',
-    metadata: (req, file, cb) => {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: (req, file, cb) => {
-      cb(null, `uploads/${Date.now().toString()}-${file.originalname}`);
+    acl: "public-read",
+    key: function (req, file, cb) {
+      const filename = Date.now().toString() + "-" + file.originalname;
+      cb(null, filename);
     }
   })
 });
