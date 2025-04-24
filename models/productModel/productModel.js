@@ -149,4 +149,4 @@ const Product = sequelize.define('Product', {
 Product.belongsTo(Category, { foreignKey: 'productCategoryId' });
 Category.hasMany(Product, { foreignKey: 'productCategoryId' });
 
-module.exports = { Product };
+module.exports = Product ;

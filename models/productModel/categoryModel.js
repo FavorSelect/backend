@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../databaseConnection/dbConnection");
+const {sequelize }= require("../../databaseConnection/dbConnection");
 
 const Category = sequelize.define("Category", {
   id: {
@@ -25,4 +25,4 @@ const Category = sequelize.define("Category", {
   timestamps: true
 });
 
-module.exports = {Category};
+module.exports = Category;

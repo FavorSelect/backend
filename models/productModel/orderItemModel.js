@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const { Product } = require('./productModel'); 
-const { Order } = require('./orderModel'); 
+const Product  = require('./productModel'); 
+const  Order  = require('./orderModel'); 
 
 const OrderItem = sequelize.define('OrderItem', {
   id: {
@@ -68,4 +68,4 @@ Order.hasMany(OrderItem, { foreignKey: 'orderId' }); // An Order has many OrderI
 OrderItem.belongsTo(Product, { foreignKey: 'productId' }); // An OrderItem belongs to a Product
 Product.hasMany(OrderItem, { foreignKey: 'productId' }); // A Product can have many OrderItems
 
-module.exports = { OrderItem };
+module.exports =  OrderItem ;

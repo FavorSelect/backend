@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const { Cart } = require('./cartModel'); 
-const { User } = require('../authModel/userModel'); 
-const { CartItem } = require('./carItemModel'); 
+const Cart  = require('./cartModel'); 
+const User  = require('../authModel/userModel'); 
+const  CartItem  = require('./carItemModel'); 
 
 const Order = sequelize.define('Order', {
   id: {
@@ -84,4 +84,4 @@ Cart.hasOne(Order, { foreignKey: 'cartId' }); // A Cart can have one Order
 Order.hasMany(CartItem, { foreignKey: 'orderId' }); // An Order can have many CartItems
 CartItem.belongsTo(Order, { foreignKey: 'orderId' }); // A CartItem belongs to an Order
 
-module.exports = { Order };
+module.exports =  Order ;

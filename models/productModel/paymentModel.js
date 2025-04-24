@@ -1,7 +1,7 @@
 // Payment Model
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const { Order } = require('./orderModel');
+const  Order  = require('./orderModel');
 
 const Payment = sequelize.define('Payment', {
   id: {
@@ -50,4 +50,4 @@ const Payment = sequelize.define('Payment', {
 Payment.belongsTo(Order, { foreignKey: 'orderId' });
 Order.hasOne(Payment, { foreignKey: 'orderId' });
 
-module.exports = { Payment };
+module.exports =  Payment ;

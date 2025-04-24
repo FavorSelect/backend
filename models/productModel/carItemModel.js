@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const { Cart } = require('./cartModel'); 
-const { Product } = require('./productModel'); 
+const  Cart  = require('./cartModel'); 
+const  Product  = require('./productModel'); 
 
 const CartItem = sequelize.define('CartItem', {
   id: {
@@ -64,4 +64,4 @@ CartItem.beforeSave((cartItem) => {
   cartItem.totalPrice = cartItem.quantity * cartItem.price;
 });
 
-module.exports = { CartItem };
+module.exports = CartItem ;

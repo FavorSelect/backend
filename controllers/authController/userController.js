@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const JWT = require("jsonwebtoken");
 const { Op } = require('sequelize');
-const { User } = require('../../models/authModel/userModel'); 
+const User  = require('../../models/authModel/userModel'); 
 const { createTokenForUser } = require('../../authService/authService');
 const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../../middleware/emailMiddleware/emailSendMiddleware');
 

@@ -1,4 +1,4 @@
-const { Product } = require("../../models/productModel/productModel");
+const  Product  = require("../../models/productModel/productModel");
 const elasticClient = require('../../elasticSearchConfig/elasticSearchClient')
 const { Op } = require("sequelize");
 

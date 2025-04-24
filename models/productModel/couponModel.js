@@ -56,4 +56,4 @@ const Coupon = sequelize.define('Coupon', {
   timestamps: true,
 });
 
-module.exports = { Coupon };
+module.exports =  Coupon ;

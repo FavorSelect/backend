@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
-const { User } = require('../authModel/userModel');
+const  User  = require('../authModel/userModel');
 
 const Address = sequelize.define('Address', {
   id: {
@@ -73,4 +73,4 @@ const Address = sequelize.define('Address', {
 Address.belongsTo(User, { foreignKey: 'userId' }); // An Address belongs to a User
 User.hasMany(Address, { foreignKey: 'userId' }); // A User can have many Addresses
 
-module.exports = { Address };
+module.exports =  Address ;
