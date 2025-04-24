@@ -1,81 +1,81 @@
-const User = require('../authModel/userModel');
-const Product = require('../productModel/productModel');
-const Category = require('../productModel/categoryModel');
-const Cart = require('../productModel/cartModel');
-const CartItem = require('../productModel/cartItemModel');
-const Address = require('../productModel/orderAddressModel');
-const Order = require('../productModel/orderModel');
-const OrderItem = require('../productModel/orderItemModel');
-const Payment = require('../productModel/paymentModel');
-const Review = require('../productModel/reviewModel');
-const Wishlist = require('../productModel/wishListModel');
-
-
-console.log('Cart type check:', typeof Cart); // Should be 'function'
-console.log('Cart is model?', Cart?.prototype instanceof require('sequelize').Model); // Should be true
-console.log('Cart name:', Cart?.prototype?.constructor?.name); // Should be 'Cart'
+const User = require("../authModel/userModel");
+const Product = require("../productModel/productModel");
+const Category = require("../productModel/categoryModel");
+const Cart = require("../productModel/cartModel");
+const CartItem = require("../productModel/cartItemModel");
+const Address = require("../productModel/orderAddressModel");
+const Order = require("../productModel/orderModel");
+const OrderItem = require("../productModel/orderItemModel");
+const Payment = require("../productModel/paymentModel");
+const Review = require("../productModel/reviewModel");
+const Wishlist = require("../productModel/wishListModel");
+const Seller = require("../authModel/sellerModel");
+const SellerAgreement = require("../authModel/sellerAgreementModel");
 
 // Cart <-> CartItem
-CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
-Cart.hasMany(CartItem, { foreignKey: 'cartId' });
+CartItem.belongsTo(Cart, { foreignKey: "cartId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // CartItem <-> Product
-CartItem.belongsTo(Product, { foreignKey: 'productId' });
-Product.hasMany(CartItem, { foreignKey: 'productId' });
-
-console.log('User:', typeof User); // Should be function
-console.log('User is model?', User?.prototype instanceof require('sequelize').Model); // true
-console.log('User name:', User?.prototype?.constructor?.name);
-
+CartItem.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Product.hasMany(CartItem, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Cart <-> User
-Cart.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Cart, { foreignKey: 'userId' });
+Cart.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasMany(Cart, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Address <-> User
-Address.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Address, { foreignKey: 'userId' });
+Address.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasMany(Address, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // OrderItem <-> Order
-OrderItem.belongsTo(Order, { foreignKey: 'orderId' });
-Order.hasMany(OrderItem, { foreignKey: 'orderId' });
+OrderItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Order.hasMany(OrderItem, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // OrderItem <-> Product
-OrderItem.belongsTo(Product, { foreignKey: 'productId' });
-Product.hasMany(OrderItem, { foreignKey: 'productId' });
+OrderItem.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Product.hasMany(OrderItem, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Order <-> User
-Order.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Order, { foreignKey: 'userId' });
+Order.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasMany(Order, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Order <-> Cart
-Order.belongsTo(Cart, { foreignKey: 'cartId' });
-Cart.hasOne(Order, { foreignKey: 'cartId' });
+Order.belongsTo(Cart, { foreignKey: "cartId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Cart.hasOne(Order, { foreignKey: "cartId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Order <-> CartItem
-Order.hasMany(CartItem, { foreignKey: 'orderId' });
-CartItem.belongsTo(Order, { foreignKey: 'orderId' });
+Order.hasMany(CartItem, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+CartItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Payment <-> Order
-Payment.belongsTo(Order, { foreignKey: 'orderId' });
-Order.hasOne(Payment, { foreignKey: 'orderId' });
+Payment.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Order.hasOne(Payment, { foreignKey: "orderId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Product <-> Category
-Product.belongsTo(Category, { foreignKey: 'productCategoryId' });
-Category.hasMany(Product, { foreignKey: 'productCategoryId' });
+Product.belongsTo(Category, { foreignKey: "productCategoryId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Category.hasMany(Product, { foreignKey: "productCategoryId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Review <-> User
-Review.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Review, { foreignKey: 'userId' });
+Review.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasMany(Review, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Review <-> Product
-Review.belongsTo(Product, { foreignKey: 'productId' });
-Product.hasMany(Review, { foreignKey: 'productId' });
+Review.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Product.hasMany(Review, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Wishlist <-> User
-Wishlist.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Wishlist, { foreignKey: 'userId' });
+Wishlist.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasMany(Wishlist, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 
 // Wishlist <-> Product
-Wishlist.belongsTo(Product, { foreignKey: 'productId' });
-Product.hasMany(Wishlist, { foreignKey: 'productId' });
+Wishlist.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Product.hasMany(Wishlist, { foreignKey: "productId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+
+// Seller <-> User
+Seller.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasOne(Seller, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+
+// Seller <-> SellerAgreement
+Seller.hasMany(SellerAgreement, { foreignKey: "sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+SellerAgreement.belongsTo(Seller, { foreignKey: "sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });

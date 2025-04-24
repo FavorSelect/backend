@@ -1,7 +1,5 @@
 const {sequelize} = require('../databaseConnection/dbConnection');
 const Cart = require('../models/productModel/cartModel');
-console.log('Cart:', Cart?.prototype?.constructor?.name); // should log: "Cart"
-
 const User = require('../models/authModel/userModel'); 
 const  Product  = require('../models/productModel/productModel');
 const Category = require('../models/productModel/categoryModel')
@@ -13,6 +11,8 @@ const Wishlist = require('../models/productModel/wishListModel');
 const Review = require('../models/productModel/reviewModel');
 const Coupon = require('../models/productModel/couponModel');
 const Payment = require('../models/productModel/paymentModel');
+const Seller = require('../models/authModel/sellerModel');
+const SellerAgreement = require('../models/authModel/sellerAgreementModel');
 
 
 
@@ -21,9 +21,7 @@ const initDB = (callback) => {
   sequelize.authenticate()
     .then(() => {
       console.log(' Database connected');
-
       require('../models/associationModel/associationModel');
-
       return sequelize.sync(); // Creates tables if not exist
     })
     .then(() => {
