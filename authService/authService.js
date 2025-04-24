@@ -5,11 +5,16 @@ function createTokenForUser(user) {
       throw new Error("JWT_SECRET is missing in environment variables");
     }
     const payload = {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName:user.lastName,
+      _id: user.id,
+      firstName: user.firstName || null,
+      lastName:user.lastName || null,
       email: user.email,
-      role:user.role,
+      role:user.role || null,
+      sellerName:user.sellerName || null,
+      isApproved:user.isApproved || false,
+      isVerified:user.isVerified,
+      isAgreementApproval: user.isAgreementApproval || false,
+      contactNumber:user. contactNumber || null,
     };
     return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
   } catch (error) {

@@ -49,7 +49,7 @@ const handleVerifyEmail = async (req, res) => {
     const user = await User.findOne({
       where: {
         verificationCode: verificationCode,
-        verificationCodeExpiresat: {
+        verificationCodeExpiresAt: {
           [Op.gt]: new Date(),
         },
       },
@@ -64,7 +64,7 @@ const handleVerifyEmail = async (req, res) => {
 
     user.isVerified = true;
     user.verificationCode = null;
-    user.verificationCodeExpiresat = null;
+    user.verificationCodeExpiresAt = null;
 
     await user.save();
 

@@ -21,10 +21,6 @@ const SellerAgreement = sequelize.define('SellerAgreement', {
   term10Accepted: { type: DataTypes.BOOLEAN, defaultValue: false },
 
 
-  sellerSignature: {
-    type: DataTypes.STRING,
-    allowNull: true, // Signature file path (image or PDF)
-  },
 
   isSigned: {
     type: DataTypes.BOOLEAN,

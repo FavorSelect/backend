@@ -9,31 +9,31 @@ const Seller = sequelize.define('Seller', {
   },
   shopName: {
     type: DataTypes.STRING,
-    allowNull: false,  // Shop name is mandatory
+    allowNull: false,  
   },
   businessRegistrationNumber: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; can be used for official business registration
+    allowNull: false,  
   },
   taxIdentificationNumber: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; used for tax purposes
+    allowNull:false,  
   },
   businessType: {
     type: DataTypes.ENUM('Retail', 'Wholesale', 'Manufacturer', 'Distributor'),
-    allowNull: false,  // Can be used to classify the business type
+    allowNull: false,  
   },
   businessAddress: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional address for business
+    allowNull: false,  
   },
   contactNumber: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; seller’s contact number
+    allowNull: false,  
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; seller’s contact email
+    allowNull: false,  
     validate: {
       isEmail: true,
     }
@@ -46,7 +46,7 @@ const Seller = sequelize.define('Seller', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,  
   },
-  isPendingApproval: {
+  isAgreementSubmitted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,  
   },
@@ -56,58 +56,55 @@ const Seller = sequelize.define('Seller', {
   },
   shopDescription: {
     type: DataTypes.STRING,
-    allowNull: true, 
+    allowNull:false, 
   },
   shopLogo: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; shop logo URL or path
+    allowNull: true,  
   },
   // Location Details
   countryName: {
     type: DataTypes.STRING,
-    allowNull: false,  // Country is mandatory
+    allowNull: false, 
   },
   state: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; state/province for the business location
+    allowNull: false,  
   },
   city: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; city for the business location
+    allowNull: false,  
   },
   zipCode: {
     type: DataTypes.STRING,
-    allowNull: true,  // Optional; postal/zip code for the business location
+    allowNull: false,  
   },
     // Document Uploads
     identityProof: {
         type: DataTypes.STRING,
-        allowNull: true,  // URL or path for the identity proof document
+        allowNull:false, 
       },
       shopRegistrationDocument: {
         type: DataTypes.STRING,
-        allowNull: true,  // URL or path for the shop registration document
+        allowNull: false,  
+      },
+      verificationCode: {
+        type: DataTypes.STRING,
+      },
+      verificationCodeExpiresAt: {
+        type: DataTypes.DATE,
       },
       taxDocument: {
         type: DataTypes.STRING,
-        allowNull: true,  // URL or path for the tax document
+        allowNull:false,  
       },
   // Password for Seller login
   password: {
     type: DataTypes.STRING,
-    allowNull: false,  // Password is mandatory
+    allowNull: false,  
     validate: {
-      len: [6, 100],  // Password should be between 6 and 100 characters
+      len: [6, 100],  
     },
-  },
-  // Membership charge and type
-  membershipCharge: {
-    type: DataTypes.FLOAT,
-    allowNull: true,  // Optional; membership charge for the seller
-  },
-  membershipType: {
-    type: DataTypes.ENUM('monthly', 'yearly'),
-    allowNull: true,  // Optional; membership type (monthly or yearly)
   },
 }, {
   tableName: 'sellers',

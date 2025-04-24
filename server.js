@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const initDB = require("./databaseConnection/dbInit");
-// require('./models/associationModel/associationModel');
 
 const checkForAuthenticationCookie = require("./middleware/authMiddleware/authMiddleware");
 const {
