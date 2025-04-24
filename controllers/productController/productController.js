@@ -1,4 +1,4 @@
-const { Product } = require('../models/productModel');
+const { Product } = require('../../models/productModel/productModel');
 
 const handleAddProduct = async (req, res) => {
   try {
@@ -22,7 +22,6 @@ const handleAddProduct = async (req, res) => {
       inventoryStatus,
       productWeight,
 
-      coverImageUrl,
       galleryImageUrls,
       productVideoUrl,
 
@@ -35,6 +34,9 @@ const handleAddProduct = async (req, res) => {
 
      
     } = req.body;
+    console.log("Received body:", req.body);
+
+    const coverImageUrl = req.file ? req.file.path : "/uploads/default1.png";
 
     // Check required fields
     if (

@@ -2,11 +2,11 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../databaseConnection/dbConnection');
 
 const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4, 
-    primaryKey: true
-  },
+  // id: {
+  //   type: DataTypes.UUID,
+  //   defaultValue: DataTypes.UUIDV4, 
+  //   primaryKey: true
+  // },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false

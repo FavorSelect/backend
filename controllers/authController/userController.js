@@ -19,7 +19,7 @@ const handleSignUp = async (req, res) => {
       return res.status(400).json({ message: 'Email already registered' });
     }
     const verificationCode = Math.floor(100000+Math.random()*900000).toString();
-    const verificationCodeExpiresat = new Date(Date.now() + 10 * 60 * 1000); 
+    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       firstName,
@@ -28,7 +28,7 @@ const handleSignUp = async (req, res) => {
       password: hashedPassword,
       isVerified: false,
       verificationCode,
-      verificationCodeExpiresat,
+      verificationCodeExpiresAt:verificationCodeExpiresAt,
     });
     await sendVerificationEmail(newUser.email, newUser.firstName, verificationCode);
     return res.status(201).json({
