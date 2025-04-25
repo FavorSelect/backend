@@ -1,8 +1,8 @@
+const Seller = require('../../models/authModel/sellerModel') 
 const {
   sendSellerProfileUpdateEmail,
   sendSellerChangePasswordEmail,
 } = require("../../middleware/emailMiddleware/sellerAuthEmailMiddleware");
-const Seller = require("../../models/authModel/sellerModel");
 
 const updateSellerProfile = async (req, res) => {
   try {

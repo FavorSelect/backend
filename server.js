@@ -12,6 +12,8 @@ const {
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");
 const handleProductRoute = require("./routes/adminRoute/handleProductRoute/handleProductRoute");
+const sellerAuthRoute = require('./routes/authRoute/sellerAuthRoute')
+const sellerProfileRoute = require('./routes/profileRoute.js/sellerProfileRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -20,17 +22,15 @@ const PORT = process.env.PORT || 8001;
 app.use(express.urlencoded({ extended: false}));
 app.use(cookieParser());
 
-app.use("/api/auth", userAuthRoute);
+app.use("/api/auth", userAuthRoute,sellerAuthRoute);
 app.use(
   "/api/profile",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["customer", "admin"]),
-  userProfileRoute
+  userProfileRoute,sellerProfileRoute
 );
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["customer","admin"]),
   handleProductRoute
 );
 
