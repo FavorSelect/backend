@@ -120,6 +120,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     console.error("Error sending verification email:", error);
   }
 };
+
 const sendWelcomeEmail = async (email, fullName) => {
   try {
     const loginURL = `${process.env.FRONTEND_URL}/login`; 

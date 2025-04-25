@@ -57,7 +57,7 @@ const handleUpdateUserProfile = async (req, res) => {
       const { userId } = req.params;
       const { currentPassword, newPassword, confirmPassword } = req.body;
 
-  
+      
       if (!currentPassword || !newPassword || !confirmPassword) {
         return res.status(400).json({ message: "All password fields are required" });
       }
