@@ -14,6 +14,7 @@ const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");
 const handleProductRoute = require("./routes/adminRoute/handleProductRoute/handleProductRoute");
 const sellerAuthRoute = require('./routes/authRoute/sellerAuthRoute')
 const sellerProfileRoute = require('./routes/profileRoute.js/sellerProfileRoute')
+const cartRoute = require('./routes/cartRoute/cartRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -23,16 +24,9 @@ app.use(express.urlencoded({ extended: false}));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute,sellerAuthRoute);
-app.use(
-  "/api/profile",
-  checkForAuthenticationCookie("token"),
-  userProfileRoute,sellerProfileRoute
-);
-app.use(
-  "/api/admin",
-  checkForAuthenticationCookie("token"),
-  handleProductRoute
-);
+app.use("/api/profile",checkForAuthenticationCookie("token"),userProfileRoute,sellerProfileRoute);
+app.use("/api/admin",checkForAuthenticationCookie("token"), handleProductRoute);
+app.use("/api/cart",cartRoute);
 
 initDB(() => {
   app.listen(PORT, () => {
