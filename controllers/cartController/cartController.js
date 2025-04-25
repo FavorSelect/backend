@@ -6,10 +6,8 @@ const handleAddToCart = async (req, res) => {
   try {
     const userId = req.user.id;
     const {  productId, quantity } = req.body;
-
     const product = await Product.findByPk(productId);
     if (!product) return res.status(404).json({ message: 'Product not found' });
-
     // 1. Check if active cart exists for user
     let cart = await Cart.findOne({ where: { userId, status: 'active' } });
 

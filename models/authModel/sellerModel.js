@@ -50,6 +50,10 @@ const Seller = sequelize.define('Seller', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,  
   },
+  isAgreementApproved: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,  
+  },
   isApproved: {
     type: DataTypes.BOOLEAN,
     defaultValue: false, 
@@ -78,6 +82,24 @@ const Seller = sequelize.define('Seller', {
   zipCode: {
     type: DataTypes.STRING,
     allowNull: false,  
+  },
+
+  //membership 
+  membershipId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: "memberships",
+      key: "id"
+    }
+  },
+  membershipStart: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  membershipEnd: {
+    type: DataTypes.DATE,
+    allowNull: true,
   },
     // Document Uploads
     identityProof: {

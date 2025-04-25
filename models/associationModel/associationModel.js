@@ -79,3 +79,9 @@ User.hasOne(Seller, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASC
 // Seller <-> SellerAgreement
 Seller.hasMany(SellerAgreement, { foreignKey: "sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 SellerAgreement.belongsTo(Seller, { foreignKey: "sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+
+
+//Seller <-> membership
+Seller.belongsTo(Membership, { foreignKey: 'membershipId' });
+Membership.hasMany(Seller, { foreignKey: 'membershipId' });
+

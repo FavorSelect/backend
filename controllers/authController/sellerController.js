@@ -91,7 +91,8 @@ const sellerSignup = async (req, res) => {
       city,
       isApproved: false,
       isVerified: false,
-      isAgreementApproval: false,
+      isAgreementSubmitted: false,
+      isAgreementApproved:false,
       zipCode,
       identityProof: req.file.location,
       shopRegistrationDocument: req.file.location,
@@ -178,7 +179,17 @@ const sellerSignin = async (req, res) => {
     if (!seller.isApproved) {
       return res
         .status(400)
-        .json({ message: "Please wait for admin approval" });
+        .json({ message: "Look you are not approved yet, please wait while our team verify your credentials" });
+    }
+    if (!seller.isAgreementSubmitted) {
+      return res
+        .status(400)
+        .json({ message: "Looks you not submitted the agreement form, please submit first " });
+    }
+    if (!seller.isAgreementApproved) {
+      return res
+        .status(400)
+        .json({ message: "Looks your are not approved yet , please wait for approval" });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, seller.password);
@@ -270,6 +281,7 @@ const submitSellerAgreement = async (req, res) => {
     });
     seller.isAgreementSubmitted = true;
     await sendAgreementSubmissionEmailToSeller(seller.email, seller.sellerName);
+    await sendAgreementSubmissionEmailToAdmin(seller.email, seller.sellerName);
     return res.status(201).json({
       message: "Seller agreement submitted successfully",
       agreement,

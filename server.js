@@ -1,12 +1,11 @@
+require('./schedular/sellerMembershipSchedular')
 require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const initDB = require("./databaseConnection/dbInit");
 
 const checkForAuthenticationCookie = require("./middleware/authMiddleware/authMiddleware");
-const {
-  authorizeRoles,
-} = require("./middleware/authMiddleware/roleMiddleware");
+
 
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
