@@ -138,7 +138,11 @@ const Product = sequelize.define('Product', {
   totalSoldCount: {
     type: DataTypes.INTEGER,
     defaultValue: 0,
-  }
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+    defaultValue: 'pending',
+  },
 
 }, {
   tableName: 'products',

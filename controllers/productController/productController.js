@@ -62,6 +62,7 @@ const handleAddProduct = async (req, res) => {
 
       availableStockQuantity: availableStockQuantity || 0,
       productWeight: productWeight || null,
+      status: 'pending',
 
       coverImageUrl: req.file.location,
       galleryImageUrls: galleryImageUrls || null,
@@ -206,7 +207,7 @@ const handleDeleteProduct = async (req, res) => {
 };
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({ where: { status: 'approved' } });
     res.status(200).json({
       success: true,
       products,
