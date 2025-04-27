@@ -17,6 +17,8 @@ const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/sellerAp
 const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreementApprovalRoute");
 const handleMembershipRoute = require("./routes/adminRoute/membershipRoute/handleMembershipRoute");
 const sellerMembershipRoute = require("./routes/sellerRoute/handleMemebershipRoute/sellerMembershipRoute");
+const categoryRoute = require('./routes/categoryRoute/categoryRoute')
+const wislistRoute = require('./routes/wishlistRoute/wishlistRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -32,7 +34,8 @@ app.use(
   productApprovalRoute,
   sellerApprovalRoute,
   agreementApprovalRoute,
-  handleMembershipRoute
+  handleMembershipRoute,
+  categoryRoute
 );
 app.use(
   "/api/seller",

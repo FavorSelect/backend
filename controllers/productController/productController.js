@@ -205,9 +205,99 @@ const handleDeleteProduct = async (req, res) => {
     });
   }
 };
+// const getAllProducts = async (req, res) => {
+//   try {
+//     const products = await Product.findAll({ where: { status: 'approved' } });
+//     res.status(200).json({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     console.error("Get All Products Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while fetching all products",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// const getProductById = async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+//     const product = await Product.findByPk(productId);
+
+//     if (!product) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Product not found",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       product,
+//     });
+//   } catch (error) {
+//     console.error("Get Product by ID Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while fetching product by ID",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// const searchProducts = async (req, res) => {
+//   const { query } = req.query;
+
+//   if (!query) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Missing search query",
+//     });
+//   }
+
+//   try {
+//     const { hits } = await elasticClient.search({
+//       index: 'products',
+//       query: {
+//         multi_match: {
+//           query,
+//           fields: ['productName', 'productBrand', 'productCategory'],
+//           fuzziness: 'AUTO' // improves flexible matching
+//         }
+//       }
+//     });
+
+//     const results = hits.hits.map(hit => hit._source);
+
+//     res.status(200).json({
+//       success: true,
+//       products: results,
+//     });
+//   } catch (error) {
+//     console.error("Elasticsearch Search Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while searching products",
+//       error: error.message,
+//     });
+//   }
+// };
+
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll({ where: { status: 'approved' } });
+    const products = await Product.findAll({
+      where: { status: 'approved' },
+      include: [
+        {
+          model: Category,
+          attributes: ['categoryName'], 
+        },
+      ],
+    });
+
     res.status(200).json({
       success: true,
       products,
@@ -225,7 +315,14 @@ const getAllProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
-    const product = await Product.findByPk(productId);
+    const product = await Product.findByPk(productId, {
+      include: [
+        {
+          model: Category,
+          attributes: ['categoryName'],
+        },
+      ],
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -248,6 +345,7 @@ const getProductById = async (req, res) => {
   }
 };
 
+
 const searchProducts = async (req, res) => {
   const { query } = req.query;
 
@@ -264,10 +362,10 @@ const searchProducts = async (req, res) => {
       query: {
         multi_match: {
           query,
-          fields: ['productName', 'productBrand', 'productCategory'],
-          fuzziness: 'AUTO' // improves flexible matching
-        }
-      }
+          fields: ['productName', 'productBrand'], 
+          fuzziness: 'AUTO',
+        },
+      },
     });
 
     const results = hits.hits.map(hit => hit._source);
@@ -285,8 +383,6 @@ const searchProducts = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = {
   handleAddProduct,
