@@ -1,4 +1,4 @@
-const { Seller } = require("../../models/authModel/sellerModel"); 
+const { Seller } = require("../models/authModel/sellerModel"); 
 
 const checkSellerMembership = async (req, res, next) => {
   try {

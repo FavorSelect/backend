@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute, sellerAuthRoute);
-app.use("/api/user", userProfileRoute,wislistRoute,reviewRoute);
+app.use("/api/user", checkForAuthenticationCookie("token"), userProfileRoute,wislistRoute,reviewRoute,cartRoute);
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
@@ -46,7 +46,6 @@ app.use(
   handleProductRoute,
   sellerMembershipRoute
 );
-app.use("/api/cart", checkForAuthenticationCookie("token"), cartRoute);
 
 initDB(() => {
   app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
+const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
 
 const sendVerificationEmail = async (email, fullName, otp) => {
     try {
