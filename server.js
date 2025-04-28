@@ -19,6 +19,7 @@ const handleMembershipRoute = require("./routes/adminRoute/membershipRoute/handl
 const sellerMembershipRoute = require("./routes/sellerRoute/handleMemebershipRoute/sellerMembershipRoute");
 const categoryRoute = require('./routes/categoryRoute/categoryRoute')
 const wislistRoute = require('./routes/wishlistRoute/wishlistRoute')
+const reviewRoute = require('./routes/reviewRoute/reviewRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute, sellerAuthRoute);
+app.use("/api/user", wislistRoute,reviewRoute);
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
