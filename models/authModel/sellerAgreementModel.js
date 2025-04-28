@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../databaseConnection/dbConnection');
+const { sequelize } = require('../../mysqlConnection/dbConnection');
 const Seller = require('./sellerModel'); // Assuming Seller model exists
 
 const SellerAgreement = sequelize.define('SellerAgreement', {

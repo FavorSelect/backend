@@ -7,8 +7,8 @@ const {
   sendAgreementSubmissionEmailToSeller,
   sendWelcomeEmail,
  
-} = require("../../middleware/emailMiddleware/sellerAuthEmailMiddleware");
-const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../middleware/emailMiddleware/emailSendMiddleware");
+} = require("../../emailService/emailMiddleware/sellerAuthEmailMiddleware");
+const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/emailMiddleware/emailSendMiddleware");
 
 const sellerSignup = async (req, res) => {
   try {

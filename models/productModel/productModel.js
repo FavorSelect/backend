@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../databaseConnection/dbConnection');
-const Category = require('./categoryModel');
+const { sequelize } = require('../../mysqlConnection/dbConnection');
+const Category = require('../categoryModel/categoryModel');
 
 const Product = sequelize.define('Product', {
   id: {

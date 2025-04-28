@@ -1,6 +1,6 @@
 // Payment Model
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../databaseConnection/dbConnection');
+const { sequelize } = require('../../mysqlConnection/dbConnection');
 const  Order  = require('./orderModel');
 
 const Payment = sequelize.define('Payment', {

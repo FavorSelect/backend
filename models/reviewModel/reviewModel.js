@@ -1,9 +1,10 @@
+// Review Model
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../databaseConnection/dbConnection');
+const { sequelize } = require('../../mysqlConnection/dbConnection');
 const User  = require('../authModel/userModel');
-const  Product  = require('./productModel');
+const Product  = require('../productModel/productModel');
 
-const Wishlist = sequelize.define('Wishlist', {
+const Review = sequelize.define('Review', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -30,17 +31,31 @@ const Wishlist = sequelize.define('Wishlist', {
     onDelete: 'CASCADE',
   },
 
-  addedAt: {
+  rating: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1,
+      max: 5,
+    },
+  },
+
+  reviewText: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+
+  reviewDate: {
     type: DataTypes.DATE,
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
 
 }, {
-  tableName: 'wishlists',
+  tableName: 'reviews',
   timestamps: true,
 });
 
 
 
-module.exports =  Wishlist ;
+module.exports =  Review ;

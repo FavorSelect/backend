@@ -1,4 +1,4 @@
-const { transporter } = require("./emailConfigMiddleware");
+const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
 
 const sendForgetPasswordURL = async (email, URL) => {
   try {

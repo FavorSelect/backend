@@ -2,8 +2,8 @@ require("./schedular/sellerMembershipSchedular");
 require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const initDB = require("./databaseConnection/dbInit");
-const checkForAuthenticationCookie = require("./middleware/authMiddleware/authMiddleware");
+const initDB = require("./mysqlConnection/dbInit");
+const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware/authMiddleware");
 
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute, sellerAuthRoute);
-app.use("/api/user", wislistRoute,reviewRoute);
+app.use("/api/user", userProfileRoute,wislistRoute,reviewRoute);
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
@@ -42,14 +42,9 @@ app.use(
 app.use(
   "/api/seller",
   checkForAuthenticationCookie("token"),
+  sellerProfileRoute,
   handleProductRoute,
   sellerMembershipRoute
-);
-app.use(
-  "/api/profile",
-  checkForAuthenticationCookie("token"),
-  userProfileRoute,
-  sellerProfileRoute
 );
 app.use("/api/cart", checkForAuthenticationCookie("token"), cartRoute);
 
