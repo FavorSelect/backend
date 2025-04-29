@@ -46,7 +46,9 @@ const handleGetProductReviews = async (req, res) => {
       order: [['reviewDate', 'DESC']],
     });
 
-    res.status(200).json({ success: true, reviews });
+    const totalReviews = reviews.length;
+
+    res.status(200).json({ success: true, reviews,totalReviews });
   } catch (error) {
     console.error("Get Product Reviews Error:", error);
     res.status(500).json({ success: false, message: "Server error while fetching reviews", error: error.message });
@@ -54,4 +56,29 @@ const handleGetProductReviews = async (req, res) => {
 };
 
 
-module.exports = { handleAddReview, handleGetProductReviews };
+const getReviewCountForProduct = async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    const reviewCount = await Review.count({
+      where: { productId }
+    });
+
+    res.status(200).json({
+      success: true,
+      productId,
+      totalReviews: reviewCount
+    });
+  } catch (error) {
+    console.error("Error fetching review count:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while getting review count",
+      error: error.message
+    });
+  }
+};
+
+
+
+module.exports = { handleAddReview, handleGetProductReviews ,getReviewCountForProduct};

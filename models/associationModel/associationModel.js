@@ -224,3 +224,14 @@ Membership.hasMany(Seller, { foreignKey: "membershipId" });
 //seller<-> product
 Product.belongsTo(Seller, {foreignKey: "sellerId",as: "seller",});
 Seller.hasMany(Product, {foreignKey: "sellerId",as: "products",});
+
+
+ReviewLike.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+ReviewLike.belongsTo(Review, { foreignKey: 'reviewId', onDelete: 'CASCADE' });
+
+User.hasMany(ReviewLike, { foreignKey: 'userId' });
+Review.hasMany(ReviewLike, { foreignKey: 'reviewId' });
+
+
+ReviewLike.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(ReviewLike, { foreignKey: 'userId' });
