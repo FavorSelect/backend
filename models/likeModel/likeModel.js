@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../mysqlConnection/dbConnection');
-const User = require('./authModel/userModel'); // adjust path as needed
-const Review = require('./reviewModel');       // adjust path as needed
+const { sequelize } = require('../../mysqlConnection/dbConnection');
+const User = require('../authModel/userModel'); // adjust path as needed
+const Review = require('../reviewModel/reviewModel');       // adjust path as needed
 
 const ReviewLike = sequelize.define('ReviewLike', {
   userId: {

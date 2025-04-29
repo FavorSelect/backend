@@ -2,7 +2,7 @@ const Seller = require('../../models/authModel/sellerModel')
 const {
   sendSellerProfileUpdateEmail,
   sendSellerChangePasswordEmail,
-} = require("../../middleware/emailMiddleware/sellerAuthEmailMiddleware");
+} = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
 
 const updateSellerProfile = async (req, res) => {
   try {

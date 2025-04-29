@@ -3,7 +3,7 @@ const JWT = require("jsonwebtoken");
 const { Op } = require('sequelize');
 const User  = require('../../models/authModel/userModel'); 
 const { createTokenForUser } = require('../../authService/authService');
-const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../../emailService/emailMiddleware/emailSendMiddleware');
+const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../../emailService/userAuthEmail/userAuthEmail');
 
 
 const handleSignUp = async (req, res) => {

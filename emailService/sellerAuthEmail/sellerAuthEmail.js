@@ -179,7 +179,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
       const response = await transporter.sendMail({
         from: '"FavorSelect Team" <support@favorselect.com>',
         to: email,
-        subject: "❌ Seller Account Approval Rejected - FavorSelect",
+        subject: " Seller Account Approval Rejected - FavorSelect",
         text: `Hi ${sellerName},\n\nWe regret to inform you that your seller account request has been rejected after review.\n\nThis may be due to incomplete or invalid information provided during registration. Please feel free to reach out to our support team if you have any questions or would like to reapply.\n\n- FavorSelect Team`,
         html: `
           <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
@@ -305,7 +305,9 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     sendWelcomeEmailToSeller,
     sendVerificationEmail,
     sendSellerProfileUpdateEmail,
-    sendSellerChangePasswordEmail
+    sendSellerChangePasswordEmail,
+    sendApprovalRejectEmail,
+    sendApprovedEmail
   }
   
 

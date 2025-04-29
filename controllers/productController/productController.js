@@ -1,5 +1,5 @@
 const  Product  = require("../../models/productModel/productModel");
-const elasticClient = require('../../elasticSearchConfig/elasticSearchClient')
+const elasticClient = require('../../config/elasticSearchConfig/elasticSearchClient')
 const { Op } = require("sequelize");
 
 const handleAddProduct = async (req, res) => {

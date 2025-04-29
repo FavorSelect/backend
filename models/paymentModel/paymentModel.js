@@ -1,7 +1,7 @@
 // Payment Model
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
-const  Order  = require('./orderModel');
+const  Order  = require('../orderModel/orderModel');
 
 const Payment = sequelize.define('Payment', {
   id: {

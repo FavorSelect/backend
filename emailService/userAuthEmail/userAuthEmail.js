@@ -244,4 +244,13 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     }
   };
   
+  module.exports = {
+    sendUpdateProfileEmail,
+    sendChangePasswordEmail,
+    sendRecoveryEmail,
+    sendForgetPasswordURL ,
+    sendWelcomeEmail,
+    sendVerificationEmail
+
+  }
     

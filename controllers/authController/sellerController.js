@@ -1,14 +1,11 @@
 const bcrypt = require("bcrypt");
 const Seller = require("../../models/authModel/sellerModel");
 const SellerAgreement = require("../../models/authModel/sellerAgreementModel");
-const {
-  sendVerificationEmail,
-  sendSellerApprovalEmail,
-  sendAgreementSubmissionEmailToSeller,
-  sendWelcomeEmail,
- 
-} = require("../../emailService/emailMiddleware/sellerAuthEmailMiddleware");
-const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/emailMiddleware/emailSendMiddleware");
+const { sendVerificationEmail, sendWelcomeEmailToSeller, sendSellerApprovalEmail } = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
+const { sendAgreementSubmissionEmailToSeller } = require("../../emailService/sellerAgreementApprovalEmail/sellerAgreementApprovalEmail");
+const sendAgreementSubmissionEmailToAdmin = require("../../emailService/AdminEmail/sellerRelatedEmail");
+const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/userAuthEmail/userAuthEmail");
+
 
 const sellerSignup = async (req, res) => {
   try {
@@ -145,7 +142,7 @@ const verifySellerEmail = async (req, res) => {
 
     await user.save();
 
-    await sendWelcomeEmail(seller.email, seller.sellerName);
+    await sendWelcomeEmailToSeller(seller.email, seller.sellerName);
     await sendSellerApprovalEmail(seller.email, seller.sellerName);
     return res.status(200).json({
       success: true,

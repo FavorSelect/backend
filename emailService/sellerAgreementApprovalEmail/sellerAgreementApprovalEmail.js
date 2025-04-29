@@ -127,5 +127,11 @@ const sendAgreementSubmissionEmailToSeller = async (email, name) => {
     }
   };
   
+
+  module.exports = {
+    sendAgreementApprovalRejectEmail,
+    sendApprovedSellerAgreementEmail,
+    sendAgreementSubmissionEmailToSeller
+  }
   
   

@@ -3,14 +3,14 @@ require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const initDB = require("./mysqlConnection/dbInit");
-const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware/authMiddleware");
+const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
-const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");
+const userProfileRoute = require("./routes/profileRoute/userProfileRoute");
 const productRoute = require("./routes/sellerRoute/product/productRoute");
 const sellerAuthRoute = require("./routes/authRoute/sellerAuthRoute");
-const sellerProfileRoute = require("./routes/profileRoute.js/sellerProfileRoute");
+const sellerProfileRoute = require("./routes/profileRoute/sellerProfileRoute");
 const userCartRoute = require("./routes/cartRoute/userCartRoute");
 const productApprovalRoute = require("./routes/adminRoute/productApproval/product");
 const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/seller");

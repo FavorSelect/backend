@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
-const  Cart  = require('../productModel/cartModel'); 
-const  Product  = require('../productModel/productModel'); 
+const  Cart  = require('../../models/cartModel/cartModel'); 
+const  Product  = require('../../models/productModel/productModel'); 
 
 const CartItem = sequelize.define('CartItem', {
   id: {

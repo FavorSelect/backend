@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
-const Product  = require('./productModel'); 
+const Product  = require('../../models/productModel/productModel'); 
 const  Order  = require('./orderModel'); 
 
 const OrderItem = sequelize.define('OrderItem', {

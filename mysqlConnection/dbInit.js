@@ -4,15 +4,17 @@ const User = require('../models/authModel/userModel');
 const  Product  = require('../models/productModel/productModel');
 const Category = require('../models/categoryModel/categoryModel')
 const CartItem = require('../models/cartModel/cartItemModel');
-const Order = require('../models/productModel/orderModel');
-const OrderItem = require('../models/productModel/orderItemModel');
-const Address = require('../models/productModel/orderAddressModel');
+const Order = require('../models/orderModel/orderModel');
+const OrderItem = require('../models/orderModel/orderItemModel');
+const Address = require('../models/orderModel/orderAddressModel');
 const Wishlist = require('../models/wishListModel/wishListModel');
 const Review = require('../models/reviewModel/reviewModel');
 const Coupon = require('../models/couponModel/couponModel');
 const Payment = require('../models/paymentModel/paymentModel');
 const Seller = require('../models/authModel/sellerModel');
 const SellerAgreement = require('../models/authModel/sellerAgreementModel');
+const ReviewLike = require('../models/likeModel/likeModel');
+const Membership = require('../models/membershipModel/sellerMembershipModel')
 
 
 
