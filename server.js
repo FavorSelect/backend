@@ -11,7 +11,7 @@ const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");
 const handleProductRoute = require("./routes/adminRoute/handleProductRoute/handleProductRoute");
 const sellerAuthRoute = require("./routes/authRoute/sellerAuthRoute");
 const sellerProfileRoute = require("./routes/profileRoute.js/sellerProfileRoute");
-const cartRoute = require("./routes/cartRoute/cartRoute");
+const userCartRoute = require("./routes/cartRoute/userCartRoute");
 const productApprovalRoute = require("./routes/adminRoute/productApproval/productApprovalRoute");
 const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/sellerApprovalRoute");
 const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreementApprovalRoute");
@@ -20,6 +20,7 @@ const sellerMembershipRoute = require("./routes/sellerRoute/handleMemebershipRou
 const categoryRoute = require('./routes/categoryRoute/categoryRoute')
 const wislistRoute = require('./routes/wishlistRoute/wishlistRoute')
 const reviewRoute = require('./routes/reviewRoute/reviewRoute')
+const userAddressRoute = require('./routes/addressRoute/userAddressRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -29,7 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute, sellerAuthRoute);
-app.use("/api/user", checkForAuthenticationCookie("token"), userProfileRoute,wislistRoute,reviewRoute,cartRoute);
+app.use("/api/user", checkForAuthenticationCookie("token"), userProfileRoute,wislistRoute,reviewRoute,userCartRoute,userAddressRoute);
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
