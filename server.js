@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser");
 const initDB = require("./mysqlConnection/dbInit");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
-
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");

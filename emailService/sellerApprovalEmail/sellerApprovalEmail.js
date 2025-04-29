@@ -1,1 +1,0 @@
-const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");

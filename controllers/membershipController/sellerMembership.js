@@ -27,6 +27,13 @@ const handleAssignMembershipToSeller = async (req, res) => {
       seller.membershipEnd = endDate;
   
       await seller.save();
+      await sendMembershipAssignedEmail(
+        seller.email,
+        seller.sellerName,
+        membership.planName,
+        startDate,
+        endDate
+      );
   
       return res.status(200).json({ message: 'Membership assigned successfully' });
     } catch (error) {
@@ -65,6 +72,14 @@ const handleRenewSellerMembership = async (req, res) => {
       // Save the updated seller record
       await seller.save();
   
+      await sendMembershipRenewalEmail(
+        seller.email,
+        seller.sellerName,
+        membership.planName,
+        startDate,
+        endDate
+      );
+
       return res.status(200).json({
         success: true,
         message: "Membership renewed successfully",

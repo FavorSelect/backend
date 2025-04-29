@@ -40,6 +40,14 @@ const handleBuyNow = async (req, res) => {
       productImageUrl: product.image,
     });
 
+    await sendBuyNowOrderEmail(req.user.email, req.user.name, order, {
+        productName: product.name,
+        quantity,
+        price: product.price,
+        totalPrice,
+        productImageUrl: product.image
+      });
+
     res.status(201).json({ message: 'Order placed successfully', orderId: order.id });
   } catch (error) {
     res.status(500).json({ message: error.message });
