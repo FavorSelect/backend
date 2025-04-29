@@ -4,6 +4,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const initDB = require("./mysqlConnection/dbInit");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware/authMiddleware");
+const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
@@ -17,10 +18,10 @@ const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/sellerAp
 const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreementApprovalRoute");
 const handleMembershipRoute = require("./routes/adminRoute/membershipRoute/handleMembershipRoute");
 const sellerMembershipRoute = require("./routes/sellerRoute/handleMemebershipRoute/sellerMembershipRoute");
-const categoryRoute = require('./routes/categoryRoute/categoryRoute')
-const wislistRoute = require('./routes/wishlistRoute/wishlistRoute')
-const reviewRoute = require('./routes/reviewRoute/reviewRoute')
-const userAddressRoute = require('./routes/addressRoute/userAddressRoute')
+const categoryRoute = require("./routes/categoryRoute/categoryRoute");
+const wislistRoute = require("./routes/wishlistRoute/wishlistRoute");
+const reviewRoute = require("./routes/reviewRoute/reviewRoute");
+const userAddressRoute = require("./routes/addressRoute/userAddressRoute");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -30,10 +31,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/auth", userAuthRoute, sellerAuthRoute);
-app.use("/api/user", checkForAuthenticationCookie("token"), userProfileRoute,wislistRoute,reviewRoute,userCartRoute,userAddressRoute);
+app.use(
+  "/api/user",
+  checkForAuthenticationCookie("token"),
+  userProfileRoute,
+  wislistRoute,
+  reviewRoute,
+  userCartRoute,
+  userAddressRoute
+);
 app.use(
   "/api/admin",
   checkForAuthenticationCookie("token"),
+   authorizeRoles(["admin","admin+","superadmin"]),
   productApprovalRoute,
   sellerApprovalRoute,
   agreementApprovalRoute,
