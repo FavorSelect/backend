@@ -8,15 +8,15 @@ const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute.js/userProfileRoute");
-const handleProductRoute = require("./routes/adminRoute/handleProductRoute/handleProductRoute");
+const productRoute = require("./routes/sellerRoute/product/productRoute");
 const sellerAuthRoute = require("./routes/authRoute/sellerAuthRoute");
 const sellerProfileRoute = require("./routes/profileRoute.js/sellerProfileRoute");
 const userCartRoute = require("./routes/cartRoute/userCartRoute");
-const productApprovalRoute = require("./routes/adminRoute/productApproval/productApprovalRoute");
-const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/sellerApprovalRoute");
-const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreementApprovalRoute");
-const handleMembershipRoute = require("./routes/adminRoute/membershipRoute/handleMembershipRoute");
-const sellerMembershipRoute = require("./routes/sellerRoute/handleMemebershipRoute/sellerMembershipRoute");
+const productApprovalRoute = require("./routes/adminRoute/productApproval/product");
+const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/seller");
+const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreement");
+const membershipRoute = require("./routes/adminRoute/membershipRoute/membershipRoute");
+const sellerMembershipRoute = require("./routes/sellerRoute/memebership/membershipRoute");
 const categoryRoute = require("./routes/categoryRoute/categoryRoute");
 const wislistRoute = require("./routes/wishlistRoute/wishlistRoute");
 const reviewRoute = require("./routes/reviewRoute/reviewRoute");
@@ -50,14 +50,14 @@ app.use(
   productApprovalRoute,
   sellerApprovalRoute,
   agreementApprovalRoute,
-  handleMembershipRoute,
+  membershipRoute,
   categoryRoute
 );
 app.use(
   "/api/seller",
   checkForAuthenticationCookie("token"),
   sellerProfileRoute,
-  handleProductRoute,
+  productRoute,
   sellerMembershipRoute
 );
 
