@@ -1,9 +1,9 @@
-const Order = require('../models/orderModel');
-const OrderItem = require('../models/orderItemModel');
-const Product = require('../models/productModel');
-const Cart = require('../models/cartModel');
-const CartItem = require('../models/cartItemModel');
-const { sequelize } = require('../mysqlConnection/dbConnection');
+const Order = require('../../models/orderModel/orderModel');
+const OrderItem = require('../../models/orderModel/orderItemModel');
+const Product = require('../../models/productModel/productModel');
+const Cart = require('../../models/cartModel/cartModel');
+const CartItem = require('../../models/cartModel/cartItemModel');
+const { sequelize } = require('../../mysqlConnection/dbConnection');
 
 const handleBuyNow = async (req, res) => {
   const { productId, quantity, paymentMethod, shippingAddress } = req.body;

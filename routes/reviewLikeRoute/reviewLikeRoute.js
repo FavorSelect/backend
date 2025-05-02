@@ -1,5 +1,6 @@
 const express = require('express');
-const { toggleLikeOnReview, getUsersWhoLikedReview } = require('../../controllers/likeController/likeController');
+const { toggleLikeOnReview, getUsersWhoLikedReview } = require('../../controllers/reviewLikeController/reviewLikeController');
+
 const router = express.Router();
 
 router.post('/review/:reviewId/like-toggle',  toggleLikeOnReview);

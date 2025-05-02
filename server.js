@@ -22,7 +22,7 @@ const wislistRoute = require("./routes/wishlistRoute/wishlistRoute");
 const reviewRoute = require("./routes/reviewRoute/reviewRoute");
 const userAddressRoute = require("./routes/addressRoute/userAddressRoute");
 const orderRoute = require('./routes/orderRoute/orderRoute')
-const likeRoute = require('./routes/likeRoute/likeRoute')
+const reviewLikeRoute = require('./routes/reviewLikeRoute/reviewLikeRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -41,7 +41,7 @@ app.use(
   userCartRoute,
   userAddressRoute,
   orderRoute,
-  likeRoute
+  reviewLikeRoute
 );
 app.use(
   "/api/admin",

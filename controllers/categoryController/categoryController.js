@@ -1,4 +1,4 @@
-const Category = require('../../models/productModel/categoryModel'); // adjust path
+const Category = require('../../models/categoryModel/categoryModel'); // adjust path
 
 const handleCreateCategory = async (req, res) => {
   try {
@@ -91,9 +91,9 @@ const handleDeleteCategory = async (req, res) => {
 };
 
 module.exports = {
-  createCategory,
-  getAllCategories,
-  getCategoryById,
-  updateCategory,
-  deleteCategory,
+  handleCreateCategory ,
+  handleGetAllCategories,
+  handleGetCategoryById,
+  handleUpdateCategory,
+  handleDeleteCategory,
 };

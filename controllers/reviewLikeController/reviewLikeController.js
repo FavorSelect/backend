@@ -1,5 +1,5 @@
-const ReviewLike = require('../models/reviewLikeModel');
-const Review = require('../models/reviewModel');
+const ReviewLike = require('../../models/reviewLikeModel/reviewLikeModel');
+const Review = require('../../models/reviewModel/reviewModel');
 
 const toggleLikeOnReview = async (req, res) => {
   const userId = req.user.id;

@@ -3,14 +3,16 @@ const Product = require("../productModel/productModel");
 const Category = require("../categoryModel/categoryModel");
 const Cart = require("../cartModel/cartModel");
 const CartItem = require("../cartModel/cartItemModel");
-const Address = require("../productModel/orderAddressModel");
-const Order = require("../productModel/orderModel");
-const OrderItem = require("../productModel/orderItemModel");
+const Address = require("../orderModel/orderAddressModel");
+const Order = require("../orderModel/orderModel");
+const OrderItem = require("../orderModel/orderItemModel");
 const Payment = require("../paymentModel/paymentModel");
 const Review = require("../reviewModel/reviewModel");
 const Wishlist = require("../wishListModel/wishListModel");
 const Seller = require("../authModel/sellerModel");
 const SellerAgreement = require("../authModel/sellerAgreementModel");
+const Membership = require('../membershipModel/sellerMembershipModel')
+const ReviewLike = require('../reviewLikeModel/reviewLikeModel')
 
 // Cart <-> CartItem
 CartItem.belongsTo(Cart, {
