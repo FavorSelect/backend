@@ -36,7 +36,7 @@ const SellerAgreement = sequelize.define('SellerAgreement', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Seller',
+      model: 'Sellers',
       key: 'id',
     }
   }

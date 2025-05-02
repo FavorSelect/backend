@@ -27,13 +27,25 @@ const sellerSignup = async (req, res) => {
       password,
     } = req.body;
 
-    if (!req.file || !req.file.location) {
+    const files = req.files;
+
+    if (
+      !files.shopLogo ||
+      !files.identityProof ||
+      !files.shopRegistrationDocument ||
+      !files.taxDocument
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Files upload failed or missing.",
+        message: "All required files must be uploaded.",
       });
     }
-
+    
+    const shopLogoUrl = files.shopLogo[0].location;
+    const identityProofUrl = files.identityProof[0].location;
+    const shopRegistrationDocumentUrl = files.shopRegistrationDocument[0].location;
+    const taxDocumentUrl = files.taxDocument[0].location;
+    
     // Check if any required field is missing
     if (
       !sellerName ||
@@ -82,7 +94,6 @@ const sellerSignup = async (req, res) => {
       email,
       websiteURL,
       shopDescription,
-      shopLogo: req.file.location,
       countryName,
       state,
       city,
@@ -91,9 +102,10 @@ const sellerSignup = async (req, res) => {
       isAgreementSubmitted: false,
       isAgreementApproved:false,
       zipCode,
-      identityProof: req.file.location,
-      shopRegistrationDocument: req.file.location,
-      taxDocument: req.file.location,
+      shopLogo: shopLogoUrl,
+      identityProof: identityProofUrl,
+      shopRegistrationDocument: shopRegistrationDocumentUrl,
+      taxDocument: taxDocumentUrl,
       password: hashedPassword,
       verificationCode,
       verificationCodeExpiresAt: verificationCodeExpiresAt,
