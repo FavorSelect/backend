@@ -7,7 +7,7 @@ const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendReco
 
 
 const handleSignUp = async (req, res) => {
-  const { firstName, lastName, email, password, confirmPassword } = req.body;
+  const { firstName, lastName, email, password, confirmPassword, phone } = req.body;
 
   if (password !== confirmPassword) { 
     return res.status(400).json({ message: 'Passwords do not match' });
@@ -25,6 +25,7 @@ const handleSignUp = async (req, res) => {
       firstName,
       lastName,
       email,
+      phone,
       password: hashedPassword,
       isVerified: false,
       verificationCode,
