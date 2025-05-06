@@ -3,8 +3,8 @@ const transporter = require("../../config/nodemailerConfig/emailConfigMiddleware
 const sendAgreementSubmissionEmailToAdmin = async (sellerEmail, sellerName) => {
   try {
     const response = await transporter.sendMail({
-      from: '"FavorSelect Alerts" <support@favorselect.com>',
-      to: "admin@favorselect.com", // Replace with actual admin email or use env variable
+      from: '"FavorSelect Alerts" <favorselect113@gmail.com>',
+      to: "favorselect113@gmail.com", // Replace with actual admin email or use env variable
       subject: "New Seller Agreement Submitted",
       text: `Hello Admin,\n\nA new seller named ${sellerName} (${sellerEmail}) has submitted their agreement for approval.\n\nPlease log in to the admin dashboard to review and take appropriate action.\n\n- FavorSelect System`,
       html: `

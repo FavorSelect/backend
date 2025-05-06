@@ -5,7 +5,7 @@ const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddle
 const sendMembershipAssignedEmail = async (email, sellerName, planName, startDate, endDate) => {
   try {
     const response = await transporter.sendMail({
-      from: '"FavorSelect Team" <support@favorselect.com>',
+      from: '"FavorSelect Team" <favorselect113@gmail.com>',
       to: email,
       subject: "🎉 Membership Assigned - FavorSelect",
       text: `Hi ${sellerName},\n\nYou have been subscribed to a new membership plan.\n\nPlan: ${planName}\nStart Date: ${startDate}\nEnd Date: ${endDate}\n\nThank you for being a part of FavorSelect!\n\n- FavorSelect Team`,
@@ -39,7 +39,7 @@ const sendMembershipAssignedEmail = async (email, sellerName, planName, startDat
 const sendMembershipRenewalEmail = async (email, sellerName, planName, startDate, endDate) => {
   try {
     const response = await transporter.sendMail({
-      from: '"FavorSelect Team" <support@favorselect.com>',
+      from: '"FavorSelect Team" <favorselect113@gmail.com>',
       to: email,
       subject: "🔁 Membership Renewed - FavorSelect",
       text: `Hi ${sellerName},\n\nYour membership has been renewed.\n\nPlan: ${planName}\nStart Date: ${startDate}\nEnd Date: ${endDate}\n\nThanks for staying with us!\n\n- FavorSelect Team`,
@@ -73,7 +73,7 @@ const sendMembershipRenewalEmail = async (email, sellerName, planName, startDate
 const sendPreExpiryEmailToSeller = async (email, planName, duration) => {
   try {
     await transporter.sendMail({
-      from: '"FavorSelect Membership" <support@favorselect.com>',
+      from: '"FavorSelect Membership" <favorselect113@gmail.com>',
       to: email,
       subject: "⏰ Your Membership is Expiring Soon!",
       html: `
@@ -100,7 +100,7 @@ const sendPreExpiryEmailToSeller = async (email, planName, duration) => {
 const sendExpiryEmailToSeller = async (email, planName, duration) => {
   try {
     await transporter.sendMail({
-      from: '"FavorSelect Membership" <support@favorselect.com>',
+      from: '"FavorSelect Membership" <favorselect113@gmail.com>',
       to: email,
       subject: " Your Membership Has Expired",
       html: `

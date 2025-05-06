@@ -3,7 +3,7 @@ const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddle
 const sendAgreementSubmissionEmailToSeller = async (email, name) => {
     try {
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <i.sksingh113@gmail.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "Agreement Submitted Successfully - FavorSelect",
         text: `Hi ${name}, your agreement has been submitted successfully. Our team will review your details and get back to you shortly.`,
@@ -46,7 +46,7 @@ const sendAgreementSubmissionEmailToSeller = async (email, name) => {
   const sendApprovedSellerAgreementEmail = async (email, sellerName) => {
     try {
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: " Seller Approval Confirmation - FavorSelect",
         text: `Hi ${sellerName},\n\nCongratulations! Your seller account on FavorSelect has been approved.\n\nYou can now access your dashboard and start listing your products.\n\nIf you have any questions, feel free to reach out to our support team.\n\nWelcome aboard!\n\n- FavorSelect Team`,
@@ -88,7 +88,7 @@ const sendAgreementSubmissionEmailToSeller = async (email, name) => {
   const sendAgreementApprovalRejectEmail = async (email, sellerName) => {
     try {
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: " Seller Account Not Approved - FavorSelect",
         text: `Hi ${sellerName},\n\nWe regret to inform you that your seller account on FavorSelect has not been approved at this time.\n\nThis decision may be due to incomplete documentation or policy non-compliance.\n\nYou may contact our support team for more information.\n\n- FavorSelect Team`,

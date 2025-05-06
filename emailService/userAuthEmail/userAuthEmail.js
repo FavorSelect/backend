@@ -4,7 +4,7 @@ const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddle
 const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "🔐 Email Verification Code - FavorSelect",
         text: `Hi ${fullName},\n\nYour FavorSelect verification code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, you can safely ignore this email.\n\n- FavorSelect Team`,
@@ -41,7 +41,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const loginURL = `${process.env.FRONTEND_URL}/login`; 
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "✅ Email Verified",
         text: `Hi ${fullName},\n\nYour email has been successfully verified! ✅\n\n\n\nLogin: ${loginURL}\n\nThanks for joining FavorSelect!\n\n- The FavorSelect Team`,
@@ -81,7 +81,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
   const sendForgetPasswordURL = async (email, URL) => {
     try {
       const response = await transporter.sendMail({
-        from: '"FavorSelect Support" <support@favorselect.com>',
+        from: '"FavorSelect Support" <favorselect113@gmail.com>',
         to: email,
         subject: "FavorSelect Password Reset Request",
         text: `We received a request to reset your FavorSelect password. Click the link below to reset your password:\n\n${URL}\n\nIf you did not request this, please ignore this email.`,
@@ -125,7 +125,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const loginURL = `${process.env.FRONTEND_URL}/signin`;
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "Your FavorSelect Password Has Been Reset!",
         text: `Hi ${name}, your password has been successfully reset. You can now sign in using your new password. Login here: ${loginURL}`,
@@ -166,7 +166,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const loginURL = `${process.env.FRONTEND_URL}/login`; 
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "🔐 Password Changed Successfully",
         text: `Hi ${fullName},\n\nYour password has been successfully changed! 🔐\n\n\n\nIf you did not request this change, please contact support immediately.\n\nLogin: ${loginURL}\n\nThanks for using FavorSelect!\n\n- The FavorSelect Team`,
@@ -207,7 +207,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const loginURL = `${process.env.FRONTEND_URL}/profile`; 
       const response = await transporter.sendMail({
-        from: '"FavorSelect Team" <support@favorselect.com>',
+        from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
         subject: "🔄 Profile Updated Successfully",
         text: `Hi ${fullName},\n\nYour profile has been successfully updated! 🔄\n\n\n\nIf you did not make these changes, please contact support immediately.\n\nProfile: ${loginURL}\n\nThanks for being with FavorSelect!\n\n- The FavorSelect Team`,
