@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const initDB = require("./mysqlConnection/dbInit");
+const cors = require("cors");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 //route
@@ -14,7 +15,6 @@ const sellerProfileRoute = require("./routes/profileRoute/sellerProfileRoute");
 const userCartRoute = require("./routes/cartRoute/userCartRoute");
 const productApprovalRoute = require("./routes/adminRoute/productApproval/product");
 const sellerApprovalRoute = require("./routes/adminRoute/sellerApproval/seller");
-const agreementApprovalRoute = require("./routes/adminRoute/agreementApproval/agreement");
 const membershipRoute = require("./routes/adminRoute/membershipRoute/membershipRoute");
 const sellerMembershipRoute = require("./routes/sellerRoute/memebership/membershipRoute");
 const categoryRoute = require("./routes/categoryRoute/categoryRoute");
@@ -56,7 +56,6 @@ app.use(
    authorizeRoles(["admin","admin+","superadmin"]),
   productApprovalRoute,
   sellerApprovalRoute,
-  agreementApprovalRoute,
   membershipRoute,
   categoryRoute
 );

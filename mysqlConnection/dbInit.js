@@ -12,7 +12,6 @@ const Review = require('../models/reviewModel/reviewModel');
 const Coupon = require('../models/couponModel/couponModel');
 const Payment = require('../models/paymentModel/paymentModel');
 const Seller = require('../models/authModel/sellerModel');
-const SellerAgreement = require('../models/authModel/sellerAgreementModel');
 const ReviewLike = require('../models/reviewLikeModel/reviewLikeModel');
 const Membership = require('../models/membershipModel/sellerMembershipModel')
 

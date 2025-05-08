@@ -10,7 +10,6 @@ const Payment = require("../paymentModel/paymentModel");
 const Review = require("../reviewModel/reviewModel");
 const Wishlist = require("../wishListModel/wishListModel");
 const Seller = require("../authModel/sellerModel");
-const SellerAgreement = require("../authModel/sellerAgreementModel");
 const Membership = require('../membershipModel/sellerMembershipModel')
 const ReviewLike = require('../reviewLikeModel/reviewLikeModel')
 
@@ -206,18 +205,7 @@ User.hasOne(Seller, {
   onUpdate: "CASCADE",
 });
 
-// Seller <-> SellerAgreement
-Seller.hasMany(SellerAgreement, {
-  foreignKey: "sellerId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-SellerAgreement.belongsTo(Seller, {
-  foreignKey: "sellerId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-
+  
 //Seller <-> membership
 Seller.belongsTo(Membership, { foreignKey: "membershipId" });
 Membership.hasMany(Seller, { foreignKey: "membershipId" });
