@@ -105,6 +105,20 @@ Server will start on `http://localhost:8000` (or the port specified in `.env`).
 
 ## 🧪 Testing API
 
+For User auth :
+```bash
+http://localhost:8000/api/auth/signup
+
+http://localhost:8000/api/auth/verify-email
+
+http://localhost:8000/api/auth/signin
+
+http://localhost:8000/api/auth/reset-password
+
+http://localhost:8000/api/auth/forget-password
+
+```
+
 You can use tools like [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/) to test the API endpoints.
 
 ---
