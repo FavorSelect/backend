@@ -1,9 +1,6 @@
 const bcrypt = require("bcrypt");
 const Seller = require("../../models/authModel/sellerModel");
-const SellerAgreement = require("../../models/authModel/sellerAgreementModel");
 const { sendVerificationEmail, sendWelcomeEmailToSeller, sendSellerApprovalEmail } = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
-const { sendAgreementSubmissionEmailToSeller } = require("../../emailService/sellerAgreementApprovalEmail/sellerAgreementApprovalEmail");
-const sendAgreementSubmissionEmailToAdmin = require("../../emailService/AdminEmail/sellerRelatedEmail");
 const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/userAuthEmail/userAuthEmail");
 
 
@@ -99,8 +96,6 @@ const sellerSignup = async (req, res) => {
       city,
       isApproved: false,
       isVerified: false,
-      isAgreementSubmitted: false,
-      isAgreementApproved:false,
       zipCode,
       shopLogo: shopLogoUrl,
       identityProof: identityProofUrl,
@@ -190,17 +185,7 @@ const sellerSignin = async (req, res) => {
         .status(400)
         .json({ message: "Look you are not approved yet, please wait while our team verify your credentials" });
     }
-    if (!seller.isAgreementSubmitted) {
-      return res
-        .status(400)
-        .json({ message: "Looks you not submitted the agreement form, please submit first " });
-    }
-    if (!seller.isAgreementApproved) {
-      return res
-        .status(400)
-        .json({ message: "Looks your are not approved yet , please wait for approval" });
-    }
-
+   
     const isPasswordMatch = await bcrypt.compare(password, seller.password);
     if (!isPasswordMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -220,88 +205,12 @@ const sellerSignin = async (req, res) => {
   }
 };
 
-const submitSellerAgreement = async (req, res) => {
-  try {
-    const {
-      agreementTitle,
-      term1Accepted,
-      term2Accepted,
-      term3Accepted,
-      term4Accepted,
-      term5Accepted,
-      term6Accepted,
-      term7Accepted,
-      term8Accepted,
-      term9Accepted,
-      term10Accepted,
-      isSigned,
-    } = req.body;
-
-    const sellerId = req.sellerId;
-    // Validate required fields
-    if (!agreementTitle || !sellerId) {
-      return res
-        .status(400)
-        .json({ message: "Agreement title and sellerId are required" });
-    }
-
-    // Optional: check if all terms must be accepted before signing
-    const allTermsAccepted = [
-      term1Accepted,
-      term2Accepted,
-      term3Accepted,
-      term4Accepted,
-      term5Accepted,
-      term6Accepted,
-      term7Accepted,
-      term8Accepted,
-      term9Accepted,
-      term10Accepted,
-    ].every((term) => term === true);
-
-    if (isSigned && !allTermsAccepted) {
-      return res
-        .status(400)
-        .json({ message: "All terms must be accepted to sign the agreement." });
-    }
-
-    // Check if seller exists
-    const seller = await Seller.findByPk(sellerId);
-    if (!seller) {
-      return res.status(404).json({ message: "Seller not found" });
-    }
-
-    // Save agreement
-    const agreement = await SellerAgreement.create({
-      agreementTitle,
-      term1Accepted,
-      term2Accepted,
-      term3Accepted,
-      term4Accepted,
-      term5Accepted,
-      term6Accepted,
-      term7Accepted,
-      term8Accepted,
-      term9Accepted,
-      term10Accepted,
-      isSigned,
-      signedAt: isSigned ? new Date() : null,
-      sellerId,
-    });
-    seller.isAgreementSubmitted = true;
-    await sendAgreementSubmissionEmailToSeller(seller.email, seller.sellerName);
-    await sendAgreementSubmissionEmailToAdmin(seller.email, seller.sellerName);
-    return res.status(201).json({
-      message: "Seller agreement submitted successfully",
-      agreement,
-    });
-  } catch (error) {
-    console.error("Agreement submission error:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error while submitting agreement" });
-  }
+const handleSellerLogout = async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out successfully" });
 };
+
+
 
 const handleSellerForgotPasswordURL = async (req, res) => {
   const { email } = req.body;
@@ -360,7 +269,7 @@ module.exports = {
   sellerSignup,
   verifySellerEmail,
   sellerSignin,
-  submitSellerAgreement,
+  handleSellerLogout,
   handleSellerForgotPasswordURL,
   handleSellerResetPassword
   

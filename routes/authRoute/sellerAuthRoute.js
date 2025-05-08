@@ -5,10 +5,9 @@ const {
   verifySellerEmail,
   handleSellerForgotPasswordURL,
   handleSellerResetPassword,
+  handleSellerLogout,
 } = require("../../controllers/authController/sellerController");
-const {
-  handleLogout,
-} = require("../../controllers/authController/userController");
+
 const upload = require('../../awsS3Connection/awsUploadMiddleware')
 
 const router = express.Router();
@@ -23,10 +22,10 @@ router.post(
   ]),
   sellerSignup
 );
-router.post("/signin", sellerSignin);
-router.post("/logout", handleLogout);
-router.post("/verify-email", verifySellerEmail);
-router.post("/forget-password", handleSellerForgotPasswordURL);
-router.post("/reset-password/:resetToken", handleSellerResetPassword);
+router.post("/seller-signin", sellerSignin);
+router.post("/seller-logout", handleSellerLogout);
+router.post("/seller-verify-email", verifySellerEmail);
+router.post("/seller-forget-password", handleSellerForgotPasswordURL);
+router.post("/seller-reset-password/:resetToken", handleSellerResetPassword);
 
 module.exports = router;

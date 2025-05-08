@@ -46,14 +46,6 @@ const Seller = sequelize.define('Seller', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,  
   },
-  isAgreementSubmitted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,  
-  },
-  isAgreementApproved: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,  
-  },
   isApproved: {
     type: DataTypes.BOOLEAN,
     defaultValue: false, 
