@@ -42,7 +42,7 @@ const handleSignUp = async (req, res) => {
 
 const handleVerifyEmail = async (req, res) => {
   const { verificationCode } = req.body;
-
+console.log("Received verificationCode:", verificationCode); // <-- ADD THIS
   try {
     const user = await User.findOne({
       where: {
@@ -81,6 +81,8 @@ const handleVerifyEmail = async (req, res) => {
     });
   }
 };
+
+
 
 const handleSignin = async (req, res) => {
   const { email, password } = req.body;

@@ -7,25 +7,42 @@ const User = sequelize.define('User', {
     autoIncrement: true, 
     primaryKey: true,   
   },
+  googleId: {
+  type: DataTypes.STRING,
+  allowNull: true,
+  unique: true
+},
+ facebookId: {
+  type: DataTypes.STRING,
+  allowNull: true,
+  unique: true
+},
+twitterId: {
+  type: DataTypes.STRING,
+  allowNull: true,
+  unique: true
+},
+
+
   firstName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   lastName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   email: {
     type: DataTypes.STRING,
     unique: true,
-    allowNull: false,
+    allowNull: true,
     validate: {
       isEmail: true
     }
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   phone: {
     type: DataTypes.STRING,
