@@ -76,7 +76,21 @@ TWILIO_ACCOUNT_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_token
 TWILIO_PHONE_NUMBER=your_twilio_phone_number
 
-FRONTEND_URL=http://localhost:3000
+FRONTEND_URL=" http://localhost:3000"
+NODE_ENV = production
+
+
+GOOGLE_CLIENT_ID = your_google_client_id
+GOOGLE_CLIENT_SECRET = your_google_client_secret
+GOOGLE_REDIRECT_URI = your_google_redirect_uri
+
+FACEBOOK_APP_ID =your_facebook_app_id
+FACEBOOK_APP_SECRET = your_facebook_app_secret
+FACEBOOK_REDIRECT_URI = your_facebook_redirect_uri
+
+TWITTER_CLIENT_ID = your_twitter_client_id
+TWITTER_CLIENT_SECRET =your_twitter_client_secret
+TWITTER_REDIRECT_URI = your_twitter_redirect_uri
 ```
 
 ⚠️ **Do not commit the `.env` file to version control!** Add it to `.gitignore`.
