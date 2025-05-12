@@ -30,11 +30,24 @@ const twitterAuthRoute = require('./routes/twitterAuthRoute/twitterAuthRoute')
 const app = express();
 const PORT = process.env.PORT || 8001;
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL_P,
+  "http://localhost:3000",
+];
+
 app.use(cors({
-  origin:process.env.FRONTEND_URL,  
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],  
-  allowedHeaders: ['Content-Type', 'Authorization'],  
-  credentials:true                                                 
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 app.use(express.json());
