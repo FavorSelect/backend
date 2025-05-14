@@ -1,7 +1,6 @@
 require("./schedular/sellerMembershipSchedular");
 require("dotenv").config();
 const express = require("express");
-const cookieParser = require("cookie-parser");
 const initDB = require("./mysqlConnection/dbInit");
 const cors = require("cors");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
@@ -52,7 +51,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 app.use("/api/auth",googleAuthRoute,facebookAuthRoute, twitterAuthRoute, userAuthRoute, sellerAuthRoute);
 app.use(
