@@ -13,7 +13,8 @@ const Coupon = require('../models/couponModel/couponModel');
 const Payment = require('../models/paymentModel/paymentModel');
 const Seller = require('../models/authModel/sellerModel');
 const ReviewLike = require('../models/reviewLikeModel/reviewLikeModel');
-const Membership = require('../models/membershipModel/sellerMembershipModel')
+const Membership = require('../models/membershipModel/sellerMembershipModel');
+const homepageBanner = require('../models/advertisementModel/homepageBanner')
 
 
 

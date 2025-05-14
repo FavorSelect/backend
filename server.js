@@ -24,7 +24,8 @@ const orderRoute = require('./routes/orderRoute/orderRoute')
 const reviewLikeRoute = require('./routes/reviewLikeRoute/reviewLikeRoute')
 const googleAuthRoute = require('./routes/googleAuthRoute/googleAuthRoute');
 const facebookAuthRoute = require('./routes/facebookAuth/facebookAuthRoute');
-const twitterAuthRoute = require('./routes/twitterAuthRoute/twitterAuthRoute')
+const twitterAuthRoute = require('./routes/twitterAuthRoute/twitterAuthRoute');
+const homepageBanner  = require('./routes/advertisementRoute/homepageBanner')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -81,6 +82,8 @@ app.use(
   sellerMembershipRoute
 );
 
+
+app.use('/api/advertisement',homepageBanner)
 initDB(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
