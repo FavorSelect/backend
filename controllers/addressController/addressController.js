@@ -47,16 +47,12 @@ const handleGetUserAddresses = async (req, res) => {
     const { addressId } = req.params;
     const userId = req.user.id;
     const updateData = req.body;
-  
     try {
       const address = await Address.findOne({ where: { id: addressId, userId } });
-  
       if (!address) {
         return res.status(404).json({ success: false, message: "Address not found" });
       }
-  
       await address.update(updateData);
-  
       res.status(200).json({ success: true, address });
     } catch (error) {
       console.error("Update Address Error:", error);

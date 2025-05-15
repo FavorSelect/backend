@@ -11,7 +11,8 @@ const Review = require("../reviewModel/reviewModel");
 const Wishlist = require("../wishListModel/wishListModel");
 const Seller = require("../authModel/sellerModel");
 const Membership = require('../membershipModel/sellerMembershipModel')
-const ReviewLike = require('../reviewLikeModel/reviewLikeModel')
+const ReviewLike = require('../reviewLikeModel/reviewLikeModel');
+const Ticket = require('../ticketModel/userTicketModel');
 
 // Cart <-> CartItem
 CartItem.belongsTo(Cart, {
@@ -225,3 +226,6 @@ Review.hasMany(ReviewLike, { foreignKey: 'reviewId' });
 
 ReviewLike.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(ReviewLike, { foreignKey: 'userId' });
+
+Ticket.belongsTo(User, { foreignKey: 'userId' });
+
