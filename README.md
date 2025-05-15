@@ -23,37 +23,87 @@ This is the backend server for **FavorSelect**, an e-commerce platform. It is bu
 
 ```
 favorselect-backend/
-├── authMiddleware/           # Auth and role-based middleware
-├── authService/              # Auth logic and utilities
-├── awsS3Connection/          # AWS S3 integration
-├── config/                   # Configuration files
-├── controllers/              # Business logic
-├── emailService/             # Email sending logic
-├── membershipMiddleware/     # Middleware for membership plans
-├── models/                   # Sequelize models
-├── mysqlConnection/          # MySQL connection setup
-├── public/                   # Public assets (if any)
-├── redisService/             # Redis/Upstash configuration
-├── routes/                   # API route handlers
-│   ├── authRoute/            # Authentication (user, seller)
-│   ├── profileRoute/         # Profiles (user, seller)
-│   ├── sellerRoute/          # Seller-specific routes
-│   ├── adminRoute/           # Admin-level routes
-│   ├── cartRoute/            # Cart operations
-│   ├── addressRoute/         # User address handling
-│   ├── wishlistRoute/        # Wishlist management
-│   ├── reviewRoute/          # Reviews and ratings
-│   ├── reviewLikeRoute/      # Likes on reviews
-│   ├── orderRoute/           # Orders API
-│   ├── advertisementRoute/   # Homepage banner ads
-├── schedular/                # Cron jobs (e.g., seller membership expiry)
-├── twilioService/            # SMS functionality
-├── .env                      # Environment config
-├── .gitignore               
-├── package.json             
-├── README.md                
-├── server.js                 # Main server entrypoint
-└── vercel.json               # Deployment config
+├── authMiddleware/             # Middleware for authentication, JWT, and role-based access
+├── authService/                # Business logic related to authentication
+├── awsS3Connection/            # AWS S3 integration logic (upload, delete, config)
+├── config/                     # Third-party configuration files
+│   ├── awsConfig/              # AWS credentials/config
+│   ├── elasticSearchConfig/   # ElasticSearch config
+│   ├── nodemailerConfig/      # Email transport setup
+│   ├── redisConfig/           # Redis connection/config
+│   ├── twilioConfig/          # Twilio setup
+├── controllers/                # All route controller logic
+│   ├── addressController/
+│   ├── adminController/
+│   ├── advertiseController/
+│   ├── authController/
+│   ├── cartController/
+│   ├── categoryController/
+│   ├── facebookAuth/
+│   ├── googleAuthController/
+│   ├── membershipController/
+│   ├── orderController/
+│   ├── productController/
+│   ├── profileController/
+│   ├── reviewController/
+│   ├── reviewLikeController/
+│   ├── ticketController/
+│   ├── twitterAuth/
+│   └── wishlistController/
+├── emailService/               # Email templates and dispatch logic
+│   ├── AdminEmail/
+│   ├── orderPlacedEmail/
+│   ├── productApprovalEmail/
+│   ├── sellerAuthEmail/
+│   ├── sellerMembershipEmail/
+│   ├── supportTicketEmail/
+│   └── userAuthEmail/
+├── membershipMiddleware/       # Middleware for checking membership plans and statuses
+├── models/                     # Sequelize models representing DB schema
+│   ├── advertisementModel/
+│   ├── associationModel/
+│   ├── authModel/
+│   ├── cartModel/
+│   ├── categoryModel/
+│   ├── couponModel/
+│   ├── membershipModel/
+│   ├── orderModel/
+│   ├── paymentModel/
+│   ├── productModel/
+│   ├── reviewLikeModel/
+│   ├── reviewModel/
+│   ├── ticketModel/
+│   └── wishListModel/
+├── mysqlConnection/            # MySQL DB connection setup
+├── public/                     # Public assets (optional)
+├── redisService/               # Redis logic for caching/session/token storage
+├── routes/                     # API route endpoints
+│   ├── addressRoute/
+│   ├── adminRoute/
+│   ├── advertisementRoute/
+│   ├── authRoute/
+│   ├── cartRoute/
+│   ├── categoryRoute/
+│   ├── facebookAuth/
+│   ├── googleAuthRoute/
+│   ├── orderRoute/
+│   ├── productRoute/
+│   ├── profileRoute/
+│   ├── reviewLikeRoute/
+│   ├── reviewRoute/
+│   ├── sellerRoute/
+│   ├── ticketRoute/
+│   ├── twitterAuthRoute/
+│   └── wishlistRoute/
+├── schedular/                  # Cron jobs (e.g., seller membership expiry checks)
+├── twilioService/              # SMS functionality using Twilio
+├── .env                        # Environment variables
+├── .gitignore                  # Git ignore rules
+├── package.json                # Project dependencies and scripts
+├── package-lock.json           # Dependency lock file
+├── README.md                   # Project documentation
+├── server.js                   # Main server startup file
+└── vercel.json                 # Deployment configuration for Vercel
 ```
 
 ---
