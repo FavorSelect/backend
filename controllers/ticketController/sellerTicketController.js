@@ -1,7 +1,9 @@
-const UserTicket = require("../../models/ticketModel/userTicketModel");
-const User = require("../../models/authModel/userModel");
-const { sendUserTicketCreationEmail, sendUserTicketReplyEmail } = require("../../emailService/supportTicketEmail/userSupportEmail");
-
+const SellerTicket = require("../../models/ticketModel/sellerTicketModel");
+const Seller = require("../../models/sellerModel/sellerModel");
+const {
+  sendSellerTicketReplyEmail,
+  sendSellerTicketCreationEmail,
+} = require("../../emailService/supportTicketEmail/sellerSupportEmail");
 
 const generateTicketNumber = async () => {
   let exists = true;
@@ -9,7 +11,7 @@ const generateTicketNumber = async () => {
 
   while (exists) {
     ticketNumber = Math.floor(10000000 + Math.random() * 90000000).toString();
-    const existing = await UserTicket.findOne({ where: { ticketNumber } });
+    const existing = await SellerTicket.findOne({ where: { ticketNumber } });
     exists = !!existing;
   }
 
@@ -17,48 +19,50 @@ const generateTicketNumber = async () => {
 };
 
 // Create ticket
-const createUserTicket = async (req, res) => {
+const createSellerTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
-    const userId = req.user.id;
+    const sellerId = req.seller.id; // Make sure seller middleware sets this
     const files = req.files;
     const imageUrl = files?.imageUrl?.[0]?.location || null;
 
     const ticketNumber = await generateTicketNumber();
 
-    const ticket = await UserTicket.create({
-      userId,
+    const ticket = await SellerTicket.create({
+      sellerId,
       subject,
       description,
       imageUrl,
       ticketNumber,
     });
 
-    const user = await User.findByPk(userId);
+    const seller = await Seller.findByPk(sellerId);
 
-    if (user?.email) {
-      await sendUserTicketCreationEmail(
-        user.email,
-        `${user.firstName} ${user.lastName}`,
+    if (seller?.email) {
+      await sendSellerTicketCreationEmail(
+        seller.email,
+        `${seller.firstName} ${seller.lastName}`,
         ticketNumber,
         subject
       );
     }
 
-    res
-      .status(201)
-      .json({ message: "Ticket submitted successfully", ticketNumber, ticket });
+    res.status(201).json({
+      message: "Ticket submitted successfully",
+      ticketNumber,
+      ticket,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create ticket" });
   }
 };
 
-// USER: View my tickets
-const getMyTicketsUser = async (req, res) => {
+// SELLER: View my tickets
+const getMyTicketsSeller = async (req, res) => {
   try {
-    const tickets = await UserTicket.findAll({
-      where: { userId: req.user.id },
+    const tickets = await SellerTicket.findAll({
+      where: { sellerId: req.seller.id },
       attributes: [
         "id",
         "ticketNumber",
@@ -77,12 +81,12 @@ const getMyTicketsUser = async (req, res) => {
   }
 };
 
-// ADMIN: View all tickets
-const getAllTicketsUser = async (req, res) => {
+// ADMIN: View all seller tickets
+const getAllTicketsSeller = async (req, res) => {
   try {
     const { status } = req.query;
     const whereCondition = status ? { status } : {};
-    const tickets = await UserTicket.findAll({
+    const tickets = await SellerTicket.findAll({
       where: whereCondition,
       attributes: [
         "id",
@@ -95,7 +99,7 @@ const getAllTicketsUser = async (req, res) => {
         "createdAt",
       ],
       include: {
-        model: User,
+        model: Seller,
         attributes: ["id", "firstName", "lastName", "email"],
       },
       order: [["createdAt", "DESC"]],
@@ -107,15 +111,15 @@ const getAllTicketsUser = async (req, res) => {
   }
 };
 
-// ADMIN: Reply to ticket
-const replyToTicketUser = async (req, res) => {
+// ADMIN: Reply to seller ticket
+const replyToTicketSeller = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const { adminReply, status } = req.body;
 
-    const ticket = await UserTicket.findByPk(ticketId, {
+    const ticket = await SellerTicket.findByPk(ticketId, {
       include: {
-        model: User,
+        model: Seller,
         attributes: ["firstName", "lastName", "email"],
       },
     });
@@ -126,11 +130,11 @@ const replyToTicketUser = async (req, res) => {
     ticket.status = status || ticket.status;
     await ticket.save();
 
-    const user = ticket.User;
-    if (user?.email) {
-      await sendUserTicketReplyEmail(
-        user.email,
-        `${user.firstName} ${user.lastName}`,
+    const seller = ticket.Seller;
+    if (seller?.email) {
+      await sendSellerTicketReplyEmail(
+        seller.email,
+        `${seller.firstName} ${seller.lastName}`,
         ticket.ticketNumber,
         ticket.subject,
         ticket.adminReply,
@@ -145,8 +149,8 @@ const replyToTicketUser = async (req, res) => {
 };
 
 module.exports = {
-  replyToTicketUser,
-  getAllTicketsUser,
-  getMyTicketsUser,
-  createUserTicket,
+  createSellerTicket,
+  getMyTicketsSeller,
+  getAllTicketsSeller,
+  replyToTicketSeller,
 };

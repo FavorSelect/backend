@@ -10,9 +10,10 @@ const Payment = require("../paymentModel/paymentModel");
 const Review = require("../reviewModel/reviewModel");
 const Wishlist = require("../wishListModel/wishListModel");
 const Seller = require("../authModel/sellerModel");
-const Membership = require('../membershipModel/sellerMembershipModel')
-const ReviewLike = require('../reviewLikeModel/reviewLikeModel');
-const Ticket = require('../ticketModel/userTicketModel');
+const Membership = require("../membershipModel/sellerMembershipModel");
+const ReviewLike = require("../reviewLikeModel/reviewLikeModel");
+const UserTicket = require("../ticketModel/userTicketModel");
+const SellerTicket = require("../ticketModel/sellerTicket");
 
 // Cart <-> CartItem
 CartItem.belongsTo(Cart, {
@@ -206,26 +207,29 @@ User.hasOne(Seller, {
   onUpdate: "CASCADE",
 });
 
-  
 //Seller <-> membership
 Seller.belongsTo(Membership, { foreignKey: "membershipId" });
 Membership.hasMany(Seller, { foreignKey: "membershipId" });
 
-
 //seller<-> product
-Product.belongsTo(Seller, {foreignKey: "sellerId",as: "seller",});
-Seller.hasMany(Product, {foreignKey: "sellerId",as: "products",});
+Product.belongsTo(Seller, { foreignKey: "sellerId", as: "seller" });
+Seller.hasMany(Product, { foreignKey: "sellerId", as: "products" });
 
+ReviewLike.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+ReviewLike.belongsTo(Review, { foreignKey: "reviewId", onDelete: "CASCADE" });
 
-ReviewLike.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-ReviewLike.belongsTo(Review, { foreignKey: 'reviewId', onDelete: 'CASCADE' });
+User.hasMany(ReviewLike, { foreignKey: "userId" });
+Review.hasMany(ReviewLike, { foreignKey: "reviewId" });
 
-User.hasMany(ReviewLike, { foreignKey: 'userId' });
-Review.hasMany(ReviewLike, { foreignKey: 'reviewId' });
+ReviewLike.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(ReviewLike, { foreignKey: "userId" });
 
+UserTicket.belongsTo(User, {
+  foreignKey: "userId",
+  onDelete: "CASCADE",
+});
 
-ReviewLike.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(ReviewLike, { foreignKey: 'userId' });
-
-Ticket.belongsTo(User, { foreignKey: 'userId' });
-
+SellerTicket.belongsTo(Seller, {
+  foreignKey: "sellerId",
+  onDelete: "CASCADE",
+});

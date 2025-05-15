@@ -2,32 +2,33 @@ const express = require("express");
 const router = express.Router();
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
-const { replyToTicketUser, getAllTicketsUser, getMyTicketsUser, createUserTicket } = require("../../controllers/ticketController/userTicketController");
+const { replyToTicketSeller, getAllTicketsSeller, getMyTicketsSeller, createSellerTicket } = require("../../controllers/ticketController/sellerTicketController");
 
-// User raises ticket
+
+// Seller raises ticket
 router.post(
-  "/user/raise-ticket",
+  "/seller/raise-ticket",
   checkForAuthenticationCookie("token"),
-  createUserTicket
+  createSellerTicket
 );
 
-// User views their own tickets
-router.get("/user/my-tickets", checkForAuthenticationCookie("token"), getMyTicketsUser);
+// Seller views their own tickets
+router.get("/seller/my-tickets", checkForAuthenticationCookie("token"), getMyTicketsSeller);
 
 // Admin views all tickets
 router.get(
-  "/user/admin/all-tickets",
+  "/seller/admin/all-tickets",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
-  getAllTicketsUser
+  getAllTicketsSeller
 );
 
 // Admin replies to ticket
 router.put(
-  "/user/admin/reply/:ticketId",
+  "/seller/admin/reply/:ticketId",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
-  replyToTicketUser
+  replyToTicketSeller
 );
 
 module.exports = router;

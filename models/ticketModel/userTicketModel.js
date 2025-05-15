@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
 const User = require('../authModel/userModel');
 
-const Ticket = sequelize.define('Ticket', {
+const UserTicket = sequelize.define('UserTicket', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -52,8 +52,8 @@ const Ticket = sequelize.define('Ticket', {
   }
 
 }, {
-  tableName: 'tickets',
+  tableName: 'usertickets',
   timestamps: true
 });
 
-module.exports = Ticket;
+module.exports = UserTicket;
