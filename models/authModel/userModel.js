@@ -22,7 +22,14 @@ twitterId: {
   allowNull: true,
   unique: true
 },
-
+status: {
+  type: DataTypes.ENUM('active', 'suspended', 'deleted'),
+  defaultValue: 'active',
+},
+  authProvider: {
+    type: DataTypes.ENUM('local', 'google', 'facebook', 'twitter'),
+    defaultValue: 'local'
+  },
 
   firstName: {
     type: DataTypes.STRING,

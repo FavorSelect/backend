@@ -1,4 +1,4 @@
-const Product = require('../../models/productModel/productModel')
+const Product = require('../../../models/productModel/productModel')
 // PATCH /api/admin/products/:productId/approve
 const handleApproveProduct = async (req, res) => {
     const { productId } = req.params;

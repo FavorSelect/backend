@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
-const User = require('./userModel'); 
 
 const Seller = sequelize.define('Seller', {
   sellerName: {
@@ -85,6 +84,10 @@ const Seller = sequelize.define('Seller', {
       key: "id"
     }
   },
+  status: {
+  type: DataTypes.ENUM('active', 'suspended', 'deleted'),
+  defaultValue: 'active',
+},
   membershipStart: {
     type: DataTypes.DATE,
     allowNull: true,
@@ -98,7 +101,7 @@ const Seller = sequelize.define('Seller', {
         type: DataTypes.STRING,
         allowNull:false, 
       },
-      shopRegistrationDocument: {
+      businessLicenseDocument: {
         type: DataTypes.STRING,
         allowNull: false,  
       },

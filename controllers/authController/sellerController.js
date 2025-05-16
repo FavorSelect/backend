@@ -28,8 +28,7 @@ const sellerSignup = async (req, res) => {
 
     if (
       !files.shopLogo ||
-      !files.identityProof ||
-      !files.shopRegistrationDocument ||
+      !files.businessLicenseDocument ||
       !files.taxDocument
     ) {
       return res.status(400).json({
@@ -39,8 +38,7 @@ const sellerSignup = async (req, res) => {
     }
     
     const shopLogoUrl = files.shopLogo[0].location;
-    const identityProofUrl = files.identityProof[0].location;
-    const shopRegistrationDocumentUrl = files.shopRegistrationDocument[0].location;
+    const businessLicenseDocumentUrl = files.businessLicenseDocument[0].location;
     const taxDocumentUrl = files.taxDocument[0].location;
     
     // Check if any required field is missing
@@ -98,8 +96,7 @@ const sellerSignup = async (req, res) => {
       isVerified: false,
       zipCode,
       shopLogo: shopLogoUrl,
-      identityProof: identityProofUrl,
-      shopRegistrationDocument: shopRegistrationDocumentUrl,
+      businessLicenseDocument: businessLicenseDocumentUrl,
       taxDocument: taxDocumentUrl,
       password: hashedPassword,
       verificationCode,

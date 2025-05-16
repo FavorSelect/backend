@@ -233,3 +233,13 @@ SellerTicket.belongsTo(Seller, {
   foreignKey: "sellerId",
   onDelete: "CASCADE",
 });
+
+
+
+User.hasMany(Order, { as: 'orders', foreignKey: 'userId' });
+User.hasMany(Review, { as: 'reviews', foreignKey: 'userId' });
+User.hasMany(Address, { as: 'addresses', foreignKey: 'userId' });
+
+Order.belongsTo(User, { foreignKey: 'userId' });
+Review.belongsTo(User, { foreignKey: 'userId' });
+Address.belongsTo(User, { foreignKey: 'userId' });

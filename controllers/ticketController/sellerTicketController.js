@@ -1,5 +1,5 @@
-const SellerTicket = require("../../models/ticketModel/sellerTicketModel");
-const Seller = require("../../models/sellerModel/sellerModel");
+const SellerTicket = require("../../models/ticketModel/sellerTicket");
+const Seller = require("../../models/authModel/sellerModel");
 const {
   sendSellerTicketReplyEmail,
   sendSellerTicketCreationEmail,

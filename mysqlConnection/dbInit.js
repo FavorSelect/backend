@@ -24,7 +24,7 @@ const initDB = (callback) => {
     .then(() => {
       console.log(' Database connected');
       require('../models/associationModel/associationModel');
-      return sequelize.sync(); // Creates tables if not exist
+      return sequelize.sync({alter:true}); // Creates tables if not exist
     })
     .then(() => {
       console.log(' All models synced');

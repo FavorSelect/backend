@@ -1,5 +1,6 @@
 const express = require("express");
-const { handleRejectProduct, handleApproveProduct, handleGetAllPendingProducts } = require("../../../controllers/adminController/approveProduct");
+const { handleGetAllPendingProducts, handleApproveProduct, handleRejectProduct } = require("../../../controllers/adminController/approval/approveProduct");
+
 const router = express.Router();
 
 

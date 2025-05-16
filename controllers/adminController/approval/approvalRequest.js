@@ -1,4 +1,4 @@
-const Seller  = require('../../models/authModel/sellerModel')
+const Seller  = require('../../../models/authModel/sellerModel')
 const getPendingSellerApproval = async (req, res) => {
     try {
       const pendingSellers = await Seller.findAll({

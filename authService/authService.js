@@ -13,7 +13,6 @@ function createTokenForUser(user) {
       sellerName:user.sellerName || null,
       isApproved:user.isApproved || false,
       isVerified:user.isVerified,
-      isAgreementApproval: user.isAgreementApproval || false,
       contactNumber:user. contactNumber || null,
     };
     return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
