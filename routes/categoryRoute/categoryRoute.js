@@ -1,10 +1,10 @@
-const express = require('express');
-const { handleCreateCategory, handleGetAllCategories, handleGetCategoryById, handleUpdateCategory, handleDeleteCategory } = require('../../controllers/categoryController/categoryController');
+const express = require("express");
 const router = express.Router();
-router.post('/categories',  handleCreateCategory );
-router.get('/categories', handleGetAllCategories);
-router.get('/categories/:categoryId', handleGetCategoryById);
-router.patch('/categories/:categoryId', handleUpdateCategory);
-router.delete('/categories/:categoryId',   handleDeleteCategory);
+const {
+  handleGetAllCategories,
+  getSingleCategoryWithSubcategories,
+} = require("../../controllers/categoryController/categoryController");
 
+router.get("/categories/:id/sub-categories", getSingleCategoryWithSubcategories);
+router.get("/categories", handleGetAllCategories);
 module.exports = router;

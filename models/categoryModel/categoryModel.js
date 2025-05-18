@@ -12,17 +12,36 @@ const Category = sequelize.define("Category", {
     allowNull: false,
     unique: true
   },
+  parentCategoryId: {
+  type: DataTypes.INTEGER,
+  allowNull: true, // null for main categories
+  references: {
+    model: "categories", // refers to the same table
+    key: "id",
+  },
+}
+,
   categoryDescription: {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  categoryImageUrl: {
+  categoryImage: {
     type: DataTypes.STRING,
     allowNull: true
-  }
+  },
 }, {
   tableName: "categories",
-  timestamps: true
+  timestamps: true,
+  hooks: {
+  beforeValidate: (category) => {
+    for (let key in category.dataValues) {
+      if (typeof category[key] === "string") {
+        category[key] = category[key].trim();
+      }
+    }
+  }
+}
+
 });
 
 module.exports = Category;

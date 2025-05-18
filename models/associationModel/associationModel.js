@@ -100,3 +100,15 @@ UserTicket.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 // Seller ↔ SellerTicket
 Seller.hasMany(SellerTicket, { foreignKey: "sellerId", onDelete: "CASCADE" });
 SellerTicket.belongsTo(Seller, { foreignKey: "sellerId", onDelete: "CASCADE" });
+
+//for self refrencing 
+Category.hasMany(Category, {
+  foreignKey: 'parentCategoryId',
+  as: 'subcategories',
+});
+
+Category.belongsTo(Category, {
+  foreignKey: 'parentCategoryId',
+  as: 'parentCategory',
+});
+
