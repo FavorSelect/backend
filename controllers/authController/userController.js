@@ -2,8 +2,8 @@ const bcrypt = require('bcrypt');
 const JWT = require("jsonwebtoken");
 const { Op } = require('sequelize');
 const User  = require('../../models/authModel/userModel'); 
-const { createTokenForUser } = require('../../authService/authService');
 const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendRecoveryEmail } = require('../../emailService/userAuthEmail/userAuthEmail');
+const { createToken } = require('../../authService/authService');
 
 
 const handleSignUp = async (req, res) => {
@@ -127,7 +127,7 @@ const handleSignin = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = createTokenForUser(user);
+    const token = createToken(user);
 
     return res.status(200).json({
       success: true,

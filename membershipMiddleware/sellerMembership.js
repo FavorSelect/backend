@@ -4,11 +4,9 @@ const checkSellerMembership = async (req, res, next) => {
   try {
     const sellerId = req.user.id; 
     const seller = await Seller.findByPk(sellerId);
-
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
     }
-
     if (!seller.membershipId) {
       return res.status(403).json({ success: false, message: "No membership plan found" });
     }

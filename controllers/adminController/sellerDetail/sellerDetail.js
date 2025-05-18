@@ -44,7 +44,7 @@ const handleUpdateSellerStatus = async (req, res) => {
     const { sellerId } = req.params;
     const { status } = req.body;
 
-    if (!["active", "suspended", "deleted"].includes(status)) {
+    if (!["active", "suspended", "deactive"].includes(status)) {
       return res.status(400).json({ error: "Invalid status value" });
     }
 

@@ -142,7 +142,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
           <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
             <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
               <div style="text-align: center; margin-bottom: 30px;">
-                <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
+                <img src="${logo}" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
               </div>
               <h2 style="text-align: center; padding: 20px; background-color: #198754; border-radius: 6px; color: #ffffff;">Account Approved</h2>
               <p style="text-align: center; font-size: 16px; color: #333; margin-top: 20px;">
@@ -185,7 +185,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
           <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
             <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
               <div style="text-align: center; margin-bottom: 30px;">
-                <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
+                <img src="${logo}" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
               </div>
               <h2 style="text-align: center; padding: 20px; background-color: #dc3545; border-radius: 6px; color: #ffffff;">Account Rejected</h2>
               <p style="text-align: center; font-size: 16px; color: #333; margin-top: 20px;">
@@ -228,7 +228,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
         html: `
           <div style="max-width: 600px; background-color: #e8f0fe; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(23, 162, 184, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #17a2b8; font-size: 26px; text-align: center; margin-bottom: 16px;">
                Profile Updated Successfully, ${fullName}!
@@ -268,7 +268,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
         html: `
           <div style="max-width: 600px; background-color: #f0f8ff; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #007bff; font-size: 26px; text-align: center; margin-bottom: 16px;">
                Password Changed Successfully, ${fullName}!

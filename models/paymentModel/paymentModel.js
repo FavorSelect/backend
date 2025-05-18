@@ -46,6 +46,4 @@ const Payment = sequelize.define('Payment', {
   timestamps: true,
 });
 
-
-
 module.exports =  Payment ;

@@ -1,19 +1,17 @@
 const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
-
-
-
+const logo = process.env.LOGO;
 const sendMembershipAssignedEmail = async (email, sellerName, planName, startDate, endDate) => {
   try {
     const response = await transporter.sendMail({
       from: '"FavorSelect Team" <favorselect113@gmail.com>',
       to: email,
-      subject: "🎉 Membership Assigned - FavorSelect",
+      subject: " Membership Assigned - FavorSelect",
       text: `Hi ${sellerName},\n\nYou have been subscribed to a new membership plan.\n\nPlan: ${planName}\nStart Date: ${startDate}\nEnd Date: ${endDate}\n\nThank you for being a part of FavorSelect!\n\n- FavorSelect Team`,
       html: `
         <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
           <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
+              <img src="${logo}" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
             </div>
             <h2 style="text-align: center; padding: 20px; background-color: #198754; border-radius: 6px; color: #ffffff;">Membership Assigned</h2>
             <p style="text-align: center; font-size: 16px; color: #333;">Hi <strong>${sellerName}</strong>,</p>
@@ -41,13 +39,13 @@ const sendMembershipRenewalEmail = async (email, sellerName, planName, startDate
     const response = await transporter.sendMail({
       from: '"FavorSelect Team" <favorselect113@gmail.com>',
       to: email,
-      subject: "🔁 Membership Renewed - FavorSelect",
+      subject: " Membership Renewed - FavorSelect",
       text: `Hi ${sellerName},\n\nYour membership has been renewed.\n\nPlan: ${planName}\nStart Date: ${startDate}\nEnd Date: ${endDate}\n\nThanks for staying with us!\n\n- FavorSelect Team`,
       html: `
         <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
           <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
+              <img src="${logo}" alt="FavorSelect" style="max-height: 60px;" onerror="this.style.display='none';" />
             </div>
             <h2 style="text-align: center; padding: 20px; background-color: #0d6efd; border-radius: 6px; color: #ffffff;">Membership Renewed</h2>
             <p style="text-align: center; font-size: 16px; color: #333;">Hi <strong>${sellerName}</strong>,</p>
@@ -75,7 +73,7 @@ const sendPreExpiryEmailToSeller = async (email, planName, duration) => {
     await transporter.sendMail({
       from: '"FavorSelect Membership" <favorselect113@gmail.com>',
       to: email,
-      subject: "⏰ Your Membership is Expiring Soon!",
+      subject: " Your Membership is Expiring Soon!",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
           <div style="max-width: 600px; margin: auto; background-color: white; padding: 20px; border-radius: 8px;">
@@ -122,4 +120,4 @@ const sendExpiryEmailToSeller = async (email, planName, duration) => {
     console.error("Error sending expiry email:", err.message);
   }
 };
-module.exports = sendMembershipRenewalEmail;
+module.exports = {sendMembershipAssignedEmail, sendExpiryEmailToSeller,sendPreExpiryEmailToSeller,sendMembershipRenewalEmail}

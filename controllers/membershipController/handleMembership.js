@@ -97,20 +97,7 @@ const handleDeleteSellerMembership = async (req, res) => {
   }
 };
 
-const handleGetAllMemberships = async (req, res) => {
-  try {
-    const memberships = await Membership.findAll({
-      where: { isActive: true }, 
-    });
-
-    return res.status(200).json({ success: true, memberships });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error retrieving memberships', error: error.message });
-  }
-};
-
 module.exports = {
-    handleGetAllMemberships,
     handleDeleteMembership,
     handleUpdateMembership,
     handleCreateMembership,

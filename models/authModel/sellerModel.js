@@ -53,7 +53,16 @@ const Seller = sequelize.define('Seller', {
     type: DataTypes.STRING,
     allowNull:false, 
   },
- 
+ userId: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  unique: true, // if one user has one seller profile
+  references: {
+    model: 'users', // table name for User model
+    key: 'id',
+  }
+},
+
   // Location Details
   countryName: {
     type: DataTypes.STRING,
@@ -82,7 +91,7 @@ const Seller = sequelize.define('Seller', {
     }
   },
   status: {
-  type: DataTypes.ENUM('active', 'suspended', 'deleted'),
+  type: DataTypes.ENUM('active', 'suspended', 'deactive'),
   defaultValue: 'active',
 },
   membershipStart: {

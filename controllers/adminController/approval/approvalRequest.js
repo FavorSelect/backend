@@ -1,14 +1,13 @@
+const { sendApprovedEmail, sendApprovalRejectEmail } = require('../../../emailService/sellerAuthEmail/sellerAuthEmail');
 const Seller  = require('../../../models/authModel/sellerModel')
 const getPendingSellerApproval = async (req, res) => {
     try {
       const pendingSellers = await Seller.findAll({
         where: { isApproved: false }
       });
-  
       if (pendingSellers.length === 0) {
         return res.status(404).json({ success: false, message: "No pending approvals" });
       }
-  
       res.status(200).json({ success: true,pendingSellers });
     } catch (error) {
       res.status(500).json({

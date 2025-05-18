@@ -1,9 +1,17 @@
 const bcrypt = require("bcrypt");
 const Seller = require("../../models/authModel/sellerModel");
-const { Op } = require('sequelize');
-const { sendVerificationEmail, sendWelcomeEmailToSeller, sendSellerApprovalEmail } = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
-const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/userAuthEmail/userAuthEmail");
-
+const User = require("../../models/authModel/userModel");
+const { Op } = require("sequelize");
+const {
+  sendVerificationEmail,
+  sendWelcomeEmailToSeller,
+  sendSellerApprovalEmail,
+} = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
+const {
+  sendForgetPasswordURL,
+  sendRecoveryEmail,
+} = require("../../emailService/userAuthEmail/userAuthEmail");
+const { createToken } = require("../../authService/authService");
 
 const sellerSignup = async (req, res) => {
   try {
@@ -34,11 +42,12 @@ const sellerSignup = async (req, res) => {
         message: "All required files must be uploaded.",
       });
     }
-    
+
     const shopLogoUrl = files.shopLogo[0].location;
-    const businessLicenseDocumentUrl = files.businessLicenseDocument[0].location;
+    const businessLicenseDocumentUrl =
+      files.businessLicenseDocument[0].location;
     const taxDocumentUrl = files.taxDocument[0].location;
-    
+
     // Check if any required field is missing
     if (
       !sellerName ||
@@ -71,6 +80,14 @@ const sellerSignup = async (req, res) => {
 
     //  Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+    //create a user first to link with seller
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      role: 'seller',
+      firstName: sellerName,
+    });
+
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
@@ -91,6 +108,7 @@ const sellerSignup = async (req, res) => {
       city,
       isApproved: false,
       isVerified: false,
+      userId: newUser.id,
       zipCode,
       shopLogo: shopLogoUrl,
       businessLicenseDocument: businessLicenseDocumentUrl,
@@ -107,7 +125,8 @@ const sellerSignup = async (req, res) => {
     );
     return res.status(201).json({
       message: "Seller registered successfully. Pending approval.",
-  newSeller
+      newSeller,
+      userId: newUser.id,
     });
   } catch (error) {
     console.error("Seller Signup Error:", error);
@@ -117,20 +136,26 @@ const sellerSignup = async (req, res) => {
   }
 };
 
-
 const resendSellerVerificationOtp = async (req, res) => {
   try {
     const { email } = req.body;
     const seller = await Seller.findOne({ where: { email } });
     if (!seller) return res.status(404).json({ message: "Seller not found" });
-    if (seller.isVerified) return res.status(400).json({ message: "Seller already verified" });
-    const verificationCode= Math.floor(100000 + Math.random() * 900000).toString();
-    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); 
-    seller.verificationCode =  verificationCode;
+    if (seller.isVerified)
+      return res.status(400).json({ message: "Seller already verified" });
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    seller.verificationCode = verificationCode;
     seller.verificationCodeExpiresAt = verificationCodeExpiresAt;
     await seller.save();
 
-    await sendVerificationEmail(seller.email, seller.sellerName,  verificationCode);
+    await sendVerificationEmail(
+      seller.email,
+      seller.sellerName,
+      verificationCode
+    );
 
     return res.status(200).json({ message: "OTP resent to email." });
   } catch (err) {
@@ -182,11 +207,9 @@ const verifySellerEmail = async (req, res) => {
 };
 
 const sellerSignin = async (req, res) => {
-  const { email, password } = req.body;
-
   try {
+    const { email, password } = req.body;
     const seller = await Seller.findOne({ where: { email } });
-
     if (!seller) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -197,18 +220,17 @@ const sellerSignin = async (req, res) => {
         .json({ message: "Please verify your email before logging in" });
     }
     if (!seller.isApproved) {
-      return res
-        .status(400)
-        .json({ message: "Look you are not approved yet, please wait while our team verify your credentials" });
+      return res.status(400).json({
+        message:
+          "Look you are not approved yet, please wait while our team verify your credentials",
+      });
     }
-   
+
     const isPasswordMatch = await bcrypt.compare(password, seller.password);
     if (!isPasswordMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-
-    const token = createTokenForUser(seller);
-
+    const token = createToken(seller);
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -226,15 +248,13 @@ const handleSellerLogout = async (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-
-
 const handleSellerForgotPasswordURL = async (req, res) => {
   const { email } = req.body;
 
   try {
     const seller = await Seller.findOne({ where: { email } });
     if (!seller) {
-      return res.status(404).json({ message: 'Seller not found' });
+      return res.status(404).json({ message: "Seller not found" });
     }
     const resetToken = JWT.sign(
       { userId: seller._id },
@@ -246,22 +266,22 @@ const handleSellerForgotPasswordURL = async (req, res) => {
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     await sendForgetPasswordURL(seller.email, resetLink);
 
-    return res.status(200).json({ message: 'reset link sent to email' });
+    return res.status(200).json({ message: "reset link sent to email" });
   } catch (error) {
-    return res.status(500).json({ message: 'Error processing request', error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error processing request", error: error.message });
   }
 };
-
 
 const handleSellerResetPassword = async (req, res) => {
   try {
     const { resetToken } = req.params;
-    const { newPassword , confirmPassword} = req.body;
+    const { newPassword, confirmPassword } = req.body;
 
-   
-  if (newPassword !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
-  }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
     const decoded = JWT.verify(resetToken, process.env.JWT_SECRET);
     const seller = await Seller.findByPk(decoded.sellerId);
     if (!seller) {
@@ -276,10 +296,11 @@ const handleSellerResetPassword = async (req, res) => {
 
     return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error resetting password", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Error resetting password", error: error.message });
   }
 };
-
 
 module.exports = {
   sellerSignup,
@@ -288,6 +309,5 @@ module.exports = {
   handleSellerLogout,
   handleSellerForgotPasswordURL,
   handleSellerResetPassword,
-  resendSellerVerificationOtp
-  
+  resendSellerVerificationOtp,
 };

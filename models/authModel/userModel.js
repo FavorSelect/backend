@@ -60,7 +60,7 @@ status: {
     allowNull: true,
   },
   role: {
-    type: DataTypes.ENUM('user','admin', 'admin+', 'superadmin'),
+    type: DataTypes.ENUM('user','admin', 'admin+', 'superadmin','seller'),
     defaultValue: 'user'
   },
   isVerified: {
