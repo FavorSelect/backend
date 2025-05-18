@@ -15,231 +15,88 @@ const ReviewLike = require("../reviewLikeModel/reviewLikeModel");
 const UserTicket = require("../ticketModel/userTicketModel");
 const SellerTicket = require("../ticketModel/sellerTicket");
 
-// Cart <-> CartItem
-CartItem.belongsTo(Cart, {
-  foreignKey: "cartId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Cart.hasMany(CartItem, {
-  foreignKey: "cartId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Cart ↔ CartItem
+Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });
+CartItem.belongsTo(Cart, { foreignKey: "cartId", onDelete: "CASCADE" });
 
-// CartItem <-> Product
-CartItem.belongsTo(Product, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Product.hasMany(CartItem, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// CartItem ↔ Product
+Product.hasMany(CartItem, { foreignKey: "productId", onDelete: "CASCADE" });
+CartItem.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
 
-// Cart <-> User
-Cart.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasMany(Cart, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Cart ↔ User
+User.hasMany(Cart, { foreignKey: "userId", onDelete: "CASCADE" });
+Cart.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-// Address <-> User
-Address.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasMany(Address, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Address ↔ User
+User.hasMany(Address, { foreignKey: "userId", onDelete: "CASCADE", as: "addresses" });
+Address.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-// OrderItem <-> Order
-OrderItem.belongsTo(Order, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Order.hasMany(OrderItem, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Order ↔ OrderItem
+Order.hasMany(OrderItem, { foreignKey: "orderId", onDelete: "CASCADE" });
+OrderItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 
-// OrderItem <-> Product
-OrderItem.belongsTo(Product, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Product.hasMany(OrderItem, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Product ↔ OrderItem
+Product.hasMany(OrderItem, { foreignKey: "productId", onDelete: "CASCADE" });
+OrderItem.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
 
-// Order <-> User
-Order.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasMany(Order, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Order ↔ User
+User.hasMany(Order, { foreignKey: "userId", onDelete: "CASCADE", as: "orders" });
+Order.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-// Order <-> Cart
-Order.belongsTo(Cart, {
-  foreignKey: "cartId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Cart.hasOne(Order, {
-  foreignKey: "cartId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Order ↔ Cart
+Cart.hasOne(Order, { foreignKey: "cartId", onDelete: "CASCADE" });
+Order.belongsTo(Cart, { foreignKey: "cartId", onDelete: "CASCADE" });
 
-// Order <-> CartItem
-Order.hasMany(CartItem, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-CartItem.belongsTo(Order, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Order ↔ CartItem (optional and might be redundant with OrderItems)
+Order.hasMany(CartItem, { foreignKey: "orderId", onDelete: "CASCADE" });
+CartItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 
-// Payment <-> Order
-Payment.belongsTo(Order, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Order.hasOne(Payment, {
-  foreignKey: "orderId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Payment ↔ Order
+Order.hasOne(Payment, { foreignKey: "orderId", onDelete: "CASCADE" });
+Payment.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 
-// Product <-> Category
-Product.belongsTo(Category, {
-  foreignKey: "productCategoryId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Category.hasMany(Product, {
-  foreignKey: "productCategoryId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Product ↔ Category
+Category.hasMany(Product, { foreignKey: "productCategoryId", onDelete: "CASCADE" });
+Product.belongsTo(Category, { foreignKey: "productCategoryId", onDelete: "CASCADE" });
 
-// Review <-> User
-Review.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasMany(Review, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Review ↔ User
+User.hasMany(Review, { foreignKey: "userId", onDelete: "CASCADE", as: "reviews" });
+Review.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-// Review <-> Product
-Review.belongsTo(Product, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Product.hasMany(Review, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Review ↔ Product
+Product.hasMany(Review, { foreignKey: "productId", onDelete: "CASCADE" });
+Review.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
 
-// Wishlist <-> User
-Wishlist.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasMany(Wishlist, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Wishlist ↔ User
+User.hasMany(Wishlist, { foreignKey: "userId", onDelete: "CASCADE" });
+Wishlist.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-// Wishlist <-> Product
-Wishlist.belongsTo(Product, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-Product.hasMany(Wishlist, {
-  foreignKey: "productId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Wishlist ↔ Product
+Product.hasMany(Wishlist, { foreignKey: "productId", onDelete: "CASCADE" });
+Wishlist.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
 
-// Seller <-> User
-Seller.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
-User.hasOne(Seller, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-  onUpdate: "CASCADE",
-});
+// Seller ↔ User
+User.hasOne(Seller, { foreignKey: "userId", onDelete: "CASCADE" });
+Seller.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-//Seller <-> membership
-Seller.belongsTo(Membership, { foreignKey: "membershipId" });
+// Seller ↔ Membership
 Membership.hasMany(Seller, { foreignKey: "membershipId" });
+Seller.belongsTo(Membership, { foreignKey: "membershipId" });
 
-//seller<-> product
-Product.belongsTo(Seller, { foreignKey: "sellerId", as: "seller" });
+// Seller ↔ Product
 Seller.hasMany(Product, { foreignKey: "sellerId", as: "products" });
+Product.belongsTo(Seller, { foreignKey: "sellerId", as: "seller" });
 
+// ReviewLike ↔ User & Review
+User.hasMany(ReviewLike, { foreignKey: "userId", onDelete: "CASCADE" });
+Review.hasMany(ReviewLike, { foreignKey: "reviewId", onDelete: "CASCADE" });
 ReviewLike.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 ReviewLike.belongsTo(Review, { foreignKey: "reviewId", onDelete: "CASCADE" });
 
-User.hasMany(ReviewLike, { foreignKey: "userId" });
-Review.hasMany(ReviewLike, { foreignKey: "reviewId" });
+// User ↔ UserTicket
+User.hasMany(UserTicket, { foreignKey: "userId", onDelete: "CASCADE" });
+UserTicket.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
-ReviewLike.belongsTo(User, { foreignKey: "userId" });
-User.hasMany(ReviewLike, { foreignKey: "userId" });
-
-UserTicket.belongsTo(User, {
-  foreignKey: "userId",
-  onDelete: "CASCADE",
-});
-
-SellerTicket.belongsTo(Seller, {
-  foreignKey: "sellerId",
-  onDelete: "CASCADE",
-});
-
-
-
-User.hasMany(Order, { as: 'orders', foreignKey: 'userId' });
-User.hasMany(Review, { as: 'reviews', foreignKey: 'userId' });
-User.hasMany(Address, { as: 'addresses', foreignKey: 'userId' });
-
-Order.belongsTo(User, { foreignKey: 'userId' });
-Review.belongsTo(User, { foreignKey: 'userId' });
-Address.belongsTo(User, { foreignKey: 'userId' });
+// Seller ↔ SellerTicket
+Seller.hasMany(SellerTicket, { foreignKey: "sellerId", onDelete: "CASCADE" });
+SellerTicket.belongsTo(Seller, { foreignKey: "sellerId", onDelete: "CASCADE" });

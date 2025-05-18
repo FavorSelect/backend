@@ -53,10 +53,7 @@ const Seller = sequelize.define('Seller', {
     type: DataTypes.STRING,
     allowNull:false, 
   },
-  shopLogo: {
-    type: DataTypes.STRING,
-    allowNull: true,  
-  },
+ 
   // Location Details
   countryName: {
     type: DataTypes.STRING,
@@ -99,8 +96,12 @@ const Seller = sequelize.define('Seller', {
     // Document Uploads
     identityProof: {
         type: DataTypes.STRING,
-        allowNull:false, 
+        allowNull:true, 
       },
+       shopLogo: {
+    type: DataTypes.STRING,
+    allowNull: true,  
+  },
       businessLicenseDocument: {
         type: DataTypes.STRING,
         allowNull: false,  
@@ -126,6 +127,16 @@ const Seller = sequelize.define('Seller', {
 }, {
   tableName: 'sellers',
   timestamps: true,
+  hooks: {
+    beforeValidate: (seller) => {
+      // Trim all string fields
+      for (let key in seller.dataValues) {
+        if (typeof seller[key] === 'string') {
+          seller[key] = seller[key].trim();
+        }
+      }
+    }
+  }
 });
 
 

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Seller = require("../../models/authModel/sellerModel");
+const { Op } = require('sequelize');
 const { sendVerificationEmail, sendWelcomeEmailToSeller, sendSellerApprovalEmail } = require("../../emailService/sellerAuthEmail/sellerAuthEmail");
 const { sendForgetPasswordURL, sendRecoveryEmail } = require("../../emailService/userAuthEmail/userAuthEmail");
 
@@ -15,7 +16,6 @@ const sellerSignup = async (req, res) => {
       businessAddress,
       contactNumber,
       email,
-      websiteURL,
       shopDescription,
       countryName,
       state,
@@ -23,9 +23,7 @@ const sellerSignup = async (req, res) => {
       zipCode,
       password,
     } = req.body;
-
     const files = req.files;
-
     if (
       !files.shopLogo ||
       !files.businessLicenseDocument ||
@@ -87,7 +85,6 @@ const sellerSignup = async (req, res) => {
       businessAddress,
       contactNumber,
       email,
-      websiteURL,
       shopDescription,
       countryName,
       state,
@@ -110,13 +107,35 @@ const sellerSignup = async (req, res) => {
     );
     return res.status(201).json({
       message: "Seller registered successfully. Pending approval.",
-      sellerId: newSeller.id,
+  newSeller
     });
   } catch (error) {
     console.error("Seller Signup Error:", error);
     return res
       .status(500)
       .json({ message: "Server error during seller signup" });
+  }
+};
+
+
+const resendSellerVerificationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const seller = await Seller.findOne({ where: { email } });
+    if (!seller) return res.status(404).json({ message: "Seller not found" });
+    if (seller.isVerified) return res.status(400).json({ message: "Seller already verified" });
+    const verificationCode= Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000); 
+    seller.verificationCode =  verificationCode;
+    seller.verificationCodeExpiresAt = verificationCodeExpiresAt;
+    await seller.save();
+
+    await sendVerificationEmail(seller.email, seller.sellerName,  verificationCode);
+
+    return res.status(200).json({ message: "OTP resent to email." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -144,14 +163,14 @@ const verifySellerEmail = async (req, res) => {
     seller.verificationCode = null;
     seller.verificationCodeExpiresAt = null;
 
-    await user.save();
+    await seller.save();
 
     await sendWelcomeEmailToSeller(seller.email, seller.sellerName);
     await sendSellerApprovalEmail(seller.email, seller.sellerName);
     return res.status(200).json({
       success: true,
       message: "Email verified successfully",
-      user,
+      seller,
     });
   } catch (error) {
     console.error("Error verifying email:", error);
@@ -268,6 +287,7 @@ module.exports = {
   sellerSignin,
   handleSellerLogout,
   handleSellerForgotPasswordURL,
-  handleSellerResetPassword
+  handleSellerResetPassword,
+  resendSellerVerificationOtp
   
 };

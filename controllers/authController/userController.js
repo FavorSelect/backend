@@ -8,8 +8,6 @@ const { sendWelcomeEmail, sendVerificationEmail, sendForgetPasswordURL, sendReco
 
 const handleSignUp = async (req, res) => {
   const { firstName, lastName, email, password, phone } = req.body;
-
-
   try {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
@@ -36,6 +34,32 @@ const handleSignUp = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ message: 'Signup failed', error: error.message });
+  }
+};
+
+
+
+const resendUserVerificationOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000);  // 10 min expiry
+    user.verificationCode = verificationCode;
+    user.verificationCodeExpiresAt = verificationCodeExpiresAt;
+    await user.save();
+    await sendVerificationEmail(user.email, user.firstName, verificationCode);
+    return res.status(200).json({ message: "OTP resent to email." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -180,4 +204,5 @@ module.exports = {
   handleLogout,
   handleForgotPasswordURL,
   handleUserResetPassword,
+   resendUserVerificationOtp
 };

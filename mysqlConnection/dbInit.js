@@ -14,7 +14,8 @@ const Payment = require('../models/paymentModel/paymentModel');
 const Seller = require('../models/authModel/sellerModel');
 const ReviewLike = require('../models/reviewLikeModel/reviewLikeModel');
 const Membership = require('../models/membershipModel/sellerMembershipModel');
-const homepageBanner = require('../models/advertisementModel/homepageBanner')
+const homepageBanner = require('../models/advertisementModel/homepageBanner');
+const Logo = require('../models/advertisementModel/logoModel')
 
 
 
@@ -24,7 +25,7 @@ const initDB = (callback) => {
     .then(() => {
       console.log(' Database connected');
       require('../models/associationModel/associationModel');
-      return sequelize.sync({alter:true}); // Creates tables if not exist
+      return sequelize.sync(); // Creates tables if not exist {alter:true}
     })
     .then(() => {
       console.log(' All models synced');

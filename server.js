@@ -5,6 +5,8 @@ const initDB = require("./mysqlConnection/dbInit");
 const cors = require("cors");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
+
+
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute/userProfileRoute");
@@ -31,7 +33,8 @@ const sellerTicketRoute = require("./routes/ticketRoute/sellerTicketRoute");
 const userDetailRoute = require("./routes/adminRoute/userDetail/userDetailRoute");
 const sellerDetailRoute = require("./routes/adminRoute/sellerDetail/sellerDetailRoute");
 const orderManageRoute = require("./routes/adminRoute/orderManageRoute/orderManageRoute");
-const productDetailRoute = require("./routes/adminRoute/productDetail/productDetailRoute")
+const productDetailRoute = require("./routes/adminRoute/productDetail/productDetailRoute");
+const logoRoute = require('./routes/advertisementRoute/logoRoute');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -56,7 +59,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
   "/api/auth",
@@ -98,8 +101,7 @@ app.use(
   sellerMembershipRoute,
   sellerTicketRoute
 );
-
-app.use("/api/advertisement", homepageBanner);
+app.use("/api/advertisement", homepageBanner, logoRoute);
 app.use("/api/support", userTicketRoute, sellerTicketRoute);
 initDB(() => {
   app.listen(PORT, () => {
