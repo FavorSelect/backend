@@ -65,9 +65,8 @@ const resendUserVerificationOtp = async (req, res) => {
 
 
 const handleVerifyEmail = async (req, res) => {
-  const { verificationCode } = req.body;
-console.log("Received verificationCode:", verificationCode); // <-- ADD THIS
   try {
+     const { verificationCode } = req.body;
     const user = await User.findOne({
       where: {
         verificationCode: verificationCode,
