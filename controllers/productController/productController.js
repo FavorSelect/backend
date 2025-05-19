@@ -1,5 +1,5 @@
 const  Product  = require("../../models/productModel/productModel");
-const elasticClient = require('../../config/elasticSearchConfig/elasticSearchClient')
+const elasticClient= require('../../config/elasticSearchConfig/elasticSearchClient')
 const { Op } = require("sequelize");
 
 const handleAddProduct = async (req, res) => {
@@ -8,7 +8,7 @@ const handleAddProduct = async (req, res) => {
       productName,
       productDescription,
       productBrand,
-      productCategory,
+      productCategoryId,
       stockKeepingUnit,
       productModelNumber,
       productBestSaleTag,
@@ -37,7 +37,7 @@ const handleAddProduct = async (req, res) => {
       !productName ||
       !productDescription ||
       !productBrand ||
-      !productCategory ||
+      !productCategoryId ||
       !productPrice
     ) {
       return res.status(400).json({
@@ -50,7 +50,7 @@ const handleAddProduct = async (req, res) => {
       productName,
       productDescription,
       productBrand,
-      productCategory,
+      productCategoryId,
       stockKeepingUnit: stockKeepingUnit || null,
       productModelNumber: productModelNumber || null,
       productBestSaleTag: productBestSaleTag || null,

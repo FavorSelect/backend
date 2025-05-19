@@ -18,7 +18,7 @@ function createToken(user) {
       contactNumber: user.contactNumber || null,
     };
 
-    return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
+    return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
   } catch (error) {
     console.error("Error creating token:", error.message);
     return null;
@@ -31,7 +31,7 @@ function validateToken(token) {
     return payload;
   } catch (error) {
     console.error("Error validating token:", error.message);
-    return null; // Don't send a response here
+    return null; 
   }
 }
 
