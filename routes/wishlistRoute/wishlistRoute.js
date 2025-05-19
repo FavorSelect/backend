@@ -3,8 +3,8 @@ const { addToWishlist, getWishlist, removeFromWishlist } = require('../../contro
 
 const router = express.Router();
 
-router.post('/add',addToWishlist);
-router.get('/',  getWishlist);
-router.delete('/remove/:wishlistId',removeFromWishlist);
+router.post('/wishlist/add',addToWishlist);
+router.get('/wishlist',  getWishlist);
+router.delete('/wishlist/remove/:wishlistId',removeFromWishlist);
 
 module.exports = router;

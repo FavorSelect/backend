@@ -41,6 +41,4 @@ const Wishlist = sequelize.define('Wishlist', {
   timestamps: true,
 });
 
-
-
 module.exports =  Wishlist ;

@@ -2,11 +2,19 @@ const Wishlist = require('../../models/wishListModel/wishListModel');
 const Product = require('../../models/productModel/productModel');
 
 const addToWishlist = async (req, res) => {
-  const userId = req.user.id; 
+  const userId = req.user.id;
   const { productId } = req.body;
 
   try {
-    // Check if already exists
+    if (!productId) {
+      return res.status(400).json({ success: false, message: "Product ID is required" });
+    }
+
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product does not exist" });
+    }
+
     const existing = await Wishlist.findOne({ where: { userId, productId } });
     if (existing) {
       return res.status(400).json({ success: false, message: "Product already in wishlist" });
@@ -20,14 +28,12 @@ const addToWishlist = async (req, res) => {
   }
 };
 
-
 const getWishlist = async (req, res) => {
   const userId = req.user.id;
-
   try {
     const wishlistItems = await Wishlist.findAll({
       where: { userId },
-      include: [{ model: Product, as: 'product' }],
+      include: [{ model: Product, as: 'Product' }], // OR just `Product` if alias not defined
     });
 
     res.status(200).json({ success: true, wishlist: wishlistItems });
@@ -36,7 +42,6 @@ const getWishlist = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error while fetching wishlist", error: error.message });
   }
 };
-
 
 const removeFromWishlist = async (req, res) => {
   const userId = req.user.id;
