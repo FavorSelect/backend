@@ -26,6 +26,12 @@ status: {
   type: DataTypes.ENUM('active', 'suspended', 'deleted'),
   defaultValue: 'active',
 },
+canReview: {
+  type: DataTypes.BOOLEAN,
+  allowNull: false,
+  defaultValue: false,
+},
+
   authProvider: {
     type: DataTypes.ENUM('local', 'google', 'facebook', 'twitter'),
     defaultValue: 'local'

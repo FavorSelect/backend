@@ -37,6 +37,7 @@ const productDetailRoute = require("./routes/adminRoute/productDetail/productDet
 const logoRoute = require('./routes/advertisementRoute/logoRoute');
 const handleCategoryRoute = require('./routes/adminRoute/handleCategory/handleCategoryRoute');
 const productRoute = require('./routes/productRoute/productRoute');
+const handleReviewPermission = require('./routes/adminRoute/handleReviewPermission/reviewPermission')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -98,7 +99,8 @@ app.use(
   userDetailRoute,
   sellerDetailRoute,
   orderManageRoute,
-  productDetailRoute 
+  productDetailRoute ,
+  handleReviewPermission
 );
 app.use(
   "/api/seller/dashboard",

@@ -59,9 +59,9 @@ Payment.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 Category.hasMany(Product, { foreignKey: "productCategoryId", onDelete: "CASCADE" });
 Product.belongsTo(Category, { foreignKey: "productCategoryId", onDelete: "CASCADE" });
 
-// Review ↔ User
 User.hasMany(Review, { foreignKey: "userId", onDelete: "CASCADE", as: "reviews" });
-Review.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Review.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", as: "user" }); 
+
 
 // Review ↔ Product
 Product.hasMany(Review, { foreignKey: "productId", onDelete: "CASCADE" });

@@ -247,7 +247,6 @@ const handlePlaceOrderFromCart = async (req, res) => {
 
 const handleGetUserOrders = async (req, res) => {
   const userId = req.user.id;
-
   try {
     const orders = await Order.findAll({
       where: { userId },
