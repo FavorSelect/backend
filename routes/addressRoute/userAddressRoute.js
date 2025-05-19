@@ -1,11 +1,12 @@
 const express = require('express');
 const { handleAddAddress, handleGetUserAddresses, handleUpdateAddress, handleDeleteAddress, handleSetDefaultAddress } = require('../../controllers/addressController/addressController');
 const router = express.Router();
+
 // All routes protected
-router.post('/',handleAddAddress);
-router.get('/',  handleGetUserAddresses);
-router.put('/:addressId',  handleUpdateAddress);
-router.delete('/:addressId', handleDeleteAddress);
-router.patch('/:addressId/default', handleSetDefaultAddress);
+router.post('/address/add',handleAddAddress);
+router.get('/address',  handleGetUserAddresses);
+router.put('/address/:addressId',  handleUpdateAddress);
+router.delete('/address/:addressId', handleDeleteAddress);
+router.patch('/address/:addressId/default', handleSetDefaultAddress);
 
 module.exports = router;

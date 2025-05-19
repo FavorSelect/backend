@@ -1,103 +1,247 @@
-const Order = require('../../models/orderModel/orderModel');
-const OrderItem = require('../../models/orderModel/orderItemModel');
-const Product = require('../../models/productModel/productModel');
-const Cart = require('../../models/cartModel/cartModel');
-const CartItem = require('../../models/cartModel/cartItemModel');
-const { sequelize } = require('../../mysqlConnection/dbConnection');
+const Order = require("../../models/orderModel/orderModel");
+const OrderItem = require("../../models/orderModel/orderItemModel");
+const Product = require("../../models/productModel/productModel");
+const Cart = require("../../models/cartModel/cartModel");
+const CartItem = require("../../models/cartModel/cartItemModel");
+const Address = require("../../models/orderModel/orderAddressModel");
+const { sequelize } = require("../../mysqlConnection/dbConnection");
+const {
+  sendOrderEmail,
+} = require("../../emailService/orderPlacedEmail/orderPlacedEmail");
+
+// Utility: generate order ID like 1234-ABCD-5678
+function generateFormattedOrderId() {
+  const digits = "0123456789";
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  const getRandom = (chars, length) =>
+    Array.from({ length }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length))
+    ).join("");
+
+  const part1 = getRandom(digits, 4);
+  const part2 = getRandom(letters, 4);
+  const part3 = getRandom(digits, 4);
+
+  return `${part1}-${part2}-${part3}`;
+}
 
 const handleBuyNow = async (req, res) => {
-  const { productId, quantity, paymentMethod, shippingAddress } = req.body;
+  const { productId, quantity, addressId, paymentMethod } = req.body;
   const userId = req.user.id;
 
+  const t = await sequelize.transaction();
+
   try {
-    const product = await Product.findByPk(productId);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    const totalPrice = product.price * quantity;
-
-    // Simulate payment gateway
-    if (paymentMethod !== 'CashOnDelivery') {
-      const paymentSuccess = true; // You would integrate actual payment gateway here
-      if (!paymentSuccess) return res.status(400).json({ message: 'Payment Failed' });
+    const address = await Address.findOne({ where: { id: addressId, userId } });
+    if (!address) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found for this user" });
     }
 
-    const order = await Order.create({
-      userId,
-      cartId: null,
-      totalAmount: totalPrice,
-      shippingAddress,
-      paymentMethod,
-      paymentStatus: paymentMethod === 'CashOnDelivery' ? 'Pending' : 'Completed',
-    });
+    const product = await Product.findByPk(productId, { transaction: t });
 
-    await OrderItem.create({
-      orderId: order.id,
-      productId: product.id,
-      quantity,
-      price: product.price,
-      totalPrice,
-      productName: product.name,
-      productImageUrl: product.image,
-    });
+    if (!product) {
+      await t.rollback();
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-    await sendBuyNowOrderEmail(req.user.email, req.user.name, order, {
-        productName: product.name,
+    // Check if enough stock is available
+    if (product.availableStockQuantity < quantity) {
+      await t.rollback();
+      return res.status(400).json({ message: "Not enough stock available" });
+    }
+
+    const totalPrice = product.productPrice * quantity;
+    const customOrderId = generateFormattedOrderId();
+
+    // Create the order
+    const order = await Order.create(
+      {
+        orderId: customOrderId,
+        userId,
+        cartId: null,
+        totalAmount: totalPrice,
+        addressId,
+        paymentStatus:
+          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+        paymentMethod,
+      },
+      { transaction: t }
+    );
+
+    // Create order item
+    await OrderItem.create(
+      {
+        orderId: order.id,
+        productId: product.id,
         quantity,
-        price: product.price,
+        price: product.productPrice,
         totalPrice,
-        productImageUrl: product.image
-      });
+        productName: product.productName,
+        productImageUrl: product.coverImageUrl,
+      },
+      { transaction: t }
+    );
 
-    res.status(201).json({ message: 'Order placed successfully', orderId: order.id });
+    // Update product stock
+    product.availableStockQuantity -= quantity;
+    product.totalSoldCount += quantity;
+    await product.save({ transaction: t });
+
+    await t.commit();
+
+    // Optional email notification
+    console.log("order.orderId:", order.orderId);
+    await sendOrderEmail(req.user.email, req.user.firstName, order.orderId, {
+      productName: product.productName,
+      quantity,
+      price: product.productPrice,
+      totalPrice,
+      productImageUrl: product.coverImageUrl,
+    });
+
+    res
+      .status(201)
+      .json({ message: "Order placed successfully", orderId: customOrderId });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    await t.rollback();
+    res.status(500).json({ message: error.message || "Internal Server Error" });
   }
 };
 
 const handlePlaceOrderFromCart = async (req, res) => {
   const userId = req.user.id;
-  const { paymentMethod, shippingAddress } = req.body;
+  const { paymentMethod, addressId } = req.body;
+
+  const allowedMethods = [
+    "CashOnDelivery",
+    "CreditCard",
+    "DebitCard",
+    "PayPal",
+  ];
+  if (!allowedMethods.includes(paymentMethod)) {
+    return res.status(400).json({ message: "Invalid payment method" });
+  }
+
+  const t = await sequelize.transaction();
 
   try {
-    const cart = await Cart.findOne({ where: { userId } });
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
-
-    const cartItems = await CartItem.findAll({ where: { cartId: cart.id } });
-    if (cartItems.length === 0) return res.status(400).json({ message: 'Cart is empty' });
-
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
-
-    if (paymentMethod !== 'CashOnDelivery') {
-      const paymentSuccess = true;
-      if (!paymentSuccess) return res.status(400).json({ message: 'Payment Failed' });
+    const address = await Address.findOne({ where: { id: addressId, userId } });
+    if (!address) {
+      await t.rollback();
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found for this user" });
     }
 
-    const order = await Order.create({
-      userId,
-      cartId: cart.id,
-      totalAmount,
-      shippingAddress,
-      paymentMethod,
-      paymentStatus: paymentMethod === 'CashOnDelivery' ? 'Pending' : 'Completed',
+    const cart = await Cart.findOne({ where: { userId }, transaction: t });
+    if (!cart) {
+      await t.rollback();
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    //  Include associated Product data
+    const cartItems = await CartItem.findAll({
+      where: { cartId: cart.id },
+      include: [{ model: Product }], // Important
+      transaction: t,
     });
 
+    if (cartItems.length === 0) {
+      await t.rollback();
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    const totalAmount = cartItems.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0
+    );
+
+    if (paymentMethod !== "CashOnDelivery") {
+      const paymentSuccess = true;
+      if (!paymentSuccess) {
+        await t.rollback();
+        return res.status(400).json({ message: "Payment Failed" });
+      }
+    }
+
+    const customOrderId = generateFormattedOrderId();
+
+    const order = await Order.create(
+      {
+        userId,
+        cartId: cart.id,
+        totalAmount,
+        addressId,
+        orderId: customOrderId,
+        paymentMethod,
+        paymentStatus:
+          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+        orderDate: new Date(),
+      },
+      { transaction: t }
+    );
+
+    const emailOrderItems = [];
+
     for (const item of cartItems) {
-      await OrderItem.create({
-        orderId: order.id,
-        productId: item.productId,
+      const product = item.Product;
+      if (!product) {
+        await t.rollback();
+        return res
+          .status(400)
+          .json({ message: `Product not found for cart item ${item.id}` });
+      }
+
+      await OrderItem.create(
+        {
+          orderId: order.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          totalPrice: item.totalPrice,
+          productName: product.productName,
+          productImageUrl: product.coverImageUrl,
+        },
+        { transaction: t }
+      );
+
+      // Update product stock and sold count
+      product.totalSoldCount += item.quantity;
+      product.availableStockQuantity -= item.quantity;
+      await product.save({ transaction: t });
+
+      emailOrderItems.push({
+        productName: product.productName,
         quantity: item.quantity,
-        price: item.price,
+        price: product.productPrice || item.price,
         totalPrice: item.totalPrice,
-        productName: item.productName,
-        productImageUrl: item.productImageUrl,
       });
     }
 
-    await CartItem.destroy({ where: { cartId: cart.id } });
+    // Send confirmation email
+    await sendOrderEmail(
+      req.user.email,
+      req.user.firstName,
+      order.orderId,
+      emailOrderItems
+    );
 
-    res.status(201).json({ message: 'Order placed successfully from cart', orderId: order.id });
+    // Empty the cart
+    await CartItem.destroy({ where: { cartId: cart.id }, transaction: t });
+
+    await t.commit();
+
+    return res.status(201).json({
+      message: "Order placed successfully from cart",
+      orderId: customOrderId,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    await t.rollback();
+    console.error("Transaction failed:", error);
+    res.status(500).json({ message: error.message || "Something went wrong" });
   }
 };
 
@@ -107,7 +251,7 @@ const handleGetUserOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
       where: { userId },
-      order: [['createdAt', 'DESC']],
+      order: [["createdAt", "DESC"]],
     });
 
     res.status(200).json(orders);
@@ -122,7 +266,7 @@ const handleGetSingleOrderDetails = async (req, res) => {
 
   try {
     const order = await Order.findOne({ where: { id: orderId, userId } });
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
     const orderItems = await OrderItem.findAll({ where: { orderId } });
 
@@ -133,8 +277,8 @@ const handleGetSingleOrderDetails = async (req, res) => {
 };
 
 module.exports = {
-    handleGetSingleOrderDetails,
-    handleGetUserOrders,
-    handlePlaceOrderFromCart,
-    handleBuyNow
-}
+  handleGetSingleOrderDetails,
+  handleGetUserOrders,
+  handlePlaceOrderFromCart,
+  handleBuyNow,
+};

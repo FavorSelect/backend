@@ -2,9 +2,9 @@ const express = require('express');
 const { handleBuyNow, handlePlaceOrderFromCart, handleGetUserOrders, handleGetSingleOrderDetails } = require('../../controllers/orderController/orderController');
 const router = express.Router();
 
-router.post('/buy-now',  handleBuyNow);
-router.post('/place-order-from-cart', handlePlaceOrderFromCart);
-router.get('/my-orders',  handleGetUserOrders);
-router.get('/my-orders/:orderId',  handleGetSingleOrderDetails);
+router.post('/order/buy-now',  handleBuyNow);
+router.post('/order/place-order-from-cart', handlePlaceOrderFromCart);
+router.get('/order',  handleGetUserOrders);
+router.get('/order/:orderId',  handleGetSingleOrderDetails);
 
 module.exports = router;

@@ -10,6 +10,11 @@ const Order = sequelize.define('Order', {
     autoIncrement: true,
     primaryKey: true,
   },
+orderId: {
+  type: DataTypes.STRING,
+  allowNull: false,
+  unique: true,
+},
 
   userId: {
     type: DataTypes.INTEGER,
@@ -23,7 +28,7 @@ const Order = sequelize.define('Order', {
 
   cartId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: Cart, // Cart model reference
       key: 'id',
@@ -41,10 +46,16 @@ const Order = sequelize.define('Order', {
     allowNull: false,
   },
 
-  shippingAddress: {
-    type: DataTypes.TEXT,
-    allowNull: false,
+addressId: {
+  type: DataTypes.INTEGER,
+  allowNull: false,
+  references: {
+    model: 'addresses',
+    key: 'id',
   },
+  onDelete: 'SET NULL', // or 'CASCADE' if you want orders to delete when address is deleted
+},
+
 
   paymentStatus: {
     type: DataTypes.ENUM('Pending', 'Completed', 'Failed'),
@@ -53,7 +64,7 @@ const Order = sequelize.define('Order', {
 
   paymentMethod: {
     type: DataTypes.ENUM('CreditCard', 'DebitCard', 'PayPal', 'CashOnDelivery'),
-    defaultValue: 'CreditCard',
+    defaultValue: 'CashOnDelivery',
   },
 
   orderDate: {

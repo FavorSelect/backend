@@ -6,31 +6,25 @@ const handleAddToCart = async (req, res) => {
   try {
     const userId = req.user.id;
     let { productId, quantity } = req.body;
-
     // Basic validation
     if (!productId || !quantity) {
       return res.status(400).json({ message: 'Product ID and quantity are required.' });
     }
-
     quantity = parseInt(quantity);
     if (isNaN(quantity) || quantity <= 0) {
       return res.status(400).json({ message: 'Quantity must be a positive number.' });
     }
-
     const product = await Product.findByPk(productId);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-
         const maxAvailable = product.availableStockQuantity;
     // Check for active cart
     let cart = await Cart.findOne({ where: { userId, status: 'active' } });
-
     // If not found, create a new cart
     if (!cart) {
       cart = await Cart.create({ userId, status: 'active' });
     }
-
     // Check if the product already exists in the cart
     let cartItem = await CartItem.findOne({ where: { cartId: cart.id, productId } });
 
