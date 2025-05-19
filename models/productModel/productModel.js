@@ -8,6 +8,14 @@ const Product = sequelize.define('Product', {
     autoIncrement: true,
     primaryKey: true
   },
+    sellerId: {
+      type: DataTypes.INTEGER, 
+      allowNull: false,
+      references: {
+        model: 'Sellers',
+        key: 'id'
+      }
+    },
 
   productName: {
     type: DataTypes.STRING,

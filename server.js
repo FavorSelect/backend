@@ -10,7 +10,7 @@ const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute/userProfileRoute");
-const productRoute = require("./routes/sellerRoute/product/productRoute");
+const handleProductRoute = require("./routes/sellerRoute/product/handleProductRoute");
 const sellerAuthRoute = require("./routes/authRoute/sellerAuthRoute");
 const sellerProfileRoute = require("./routes/profileRoute/sellerProfileRoute");
 const userCartRoute = require("./routes/cartRoute/userCartRoute");
@@ -35,12 +35,13 @@ const sellerDetailRoute = require("./routes/adminRoute/sellerDetail/sellerDetail
 const orderManageRoute = require("./routes/adminRoute/orderManageRoute/orderManageRoute");
 const productDetailRoute = require("./routes/adminRoute/productDetail/productDetailRoute");
 const logoRoute = require('./routes/advertisementRoute/logoRoute');
-const handleCategoryRoute = require('./routes/adminRoute/handleCategory/handleCategoryRoute')
+const handleCategoryRoute = require('./routes/adminRoute/handleCategory/handleCategoryRoute');
+const productRoute = require('./routes/productRoute/productRoute');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
 
-const allowedOrigins = [process.env.FRONTEND_URL_P, "http://localhost:3000"];
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
 
 app.use(
   cors({
@@ -84,7 +85,8 @@ app.use(
 app.use(
   "/api/general",
   categoryRoute,
-);
+  productRoute,
+);  
 app.use(
   "/api/admin/dashboard",
   checkForAuthenticationCookie("token"),
@@ -92,7 +94,7 @@ app.use(
   productApprovalRoute,
   sellerApprovalRoute,
   membershipRoute,
-   handleCategoryRoute,
+  handleCategoryRoute,
   userDetailRoute,
   sellerDetailRoute,
   orderManageRoute,
@@ -102,7 +104,7 @@ app.use(
   "/api/seller/dashboard",
   checkForAuthenticationCookie("token"),
   sellerProfileRoute,
-  productRoute,
+  handleProductRoute,
   sellerMembershipRoute,
   sellerTicketRoute
 );

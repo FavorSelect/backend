@@ -2,6 +2,11 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
 
 const Seller = sequelize.define('Seller', {
+   id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   sellerName: {
     type: DataTypes.STRING,
     allowNull: false,

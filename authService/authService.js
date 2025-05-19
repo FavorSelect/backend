@@ -7,7 +7,7 @@ function createToken(user) {
     }
 
     const payload = {
-      id: user.id,
+      id:user.id,
       firstName: user.firstName || null,
       lastName: user.lastName || null,
       email: user.email,
