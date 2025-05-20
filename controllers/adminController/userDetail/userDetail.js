@@ -7,10 +7,9 @@ const Address = require('../../../models/orderModel/orderAddressModel');
 const handleGetAllUsers = async (req, res) => {
   try {
     const { provider, status,isVerified  } = req.query;
-    // Build where clause based on filters
     const whereClause = {};
     if (provider) {
-      whereClause.authProvider = provider.toLowerCase(); // google , facebook, twitter, local etc.
+      whereClause.authProvider = provider.toLowerCase();
     }
       if (isVerified !== undefined) {
       whereClause.isVerified = isVerified === 'true';

@@ -2,19 +2,27 @@ const express = require("express");
 const router = express.Router();
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
-const { replyToTicketUser, getAllTicketsUser, getMyTicketsUser, createUserTicket } = require("../../controllers/ticketController/userTicketController");
+const {
+  replyToTicketUser,
+  getAllTicketsUser,
+  getMyTicketsUser,
+  createUserTicket,
+} = require("../../controllers/ticketController/userTicketController");
+const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
-// User raises ticket
 router.post(
   "/user/raise-ticket",
   checkForAuthenticationCookie("token"),
+  upload.single('imageUrl'),
   createUserTicket
 );
 
-// User views their own tickets
-router.get("/user/my-tickets", checkForAuthenticationCookie("token"), getMyTicketsUser);
+router.get(
+  "/user/my-tickets",
+  checkForAuthenticationCookie("token"),
+  getMyTicketsUser
+);
 
-// Admin views all tickets
 router.get(
   "/user/admin/all-tickets",
   checkForAuthenticationCookie("token"),
@@ -22,7 +30,6 @@ router.get(
   getAllTicketsUser
 );
 
-// Admin replies to ticket
 router.put(
   "/user/admin/reply/:ticketId",
   checkForAuthenticationCookie("token"),

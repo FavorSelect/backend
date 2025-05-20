@@ -35,14 +35,14 @@ const UserTicket = sequelize.define('UserTicket', {
     allowNull: false
   },
 
-  imageUrl: {
-    type: DataTypes.STRING, // Store image path or URL
+  image: {
+    type: DataTypes.STRING, 
     allowNull: true
   },
 
   status: {
-    type: DataTypes.ENUM('open', 'in progress', 'resolved'),
-    defaultValue: 'open'
+    type: DataTypes.ENUM('Open', 'InProgress', 'Resolved','Closed'),
+    defaultValue: 'Open'
   },
 
   adminReply: {

@@ -16,21 +16,19 @@ const generateTicketNumber = async () => {
   return ticketNumber;
 };
 
-// Create ticket
 const createUserTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
     const userId = req.user.id;
-    const files = req.files;
-    const imageUrl = files?.imageUrl?.[0]?.location || null;
-
+   const image = req.file;
+    const imageUrl = image?.location || null;
     const ticketNumber = await generateTicketNumber();
 
     const ticket = await UserTicket.create({
       userId,
       subject,
       description,
-      imageUrl,
+      image:imageUrl,
       ticketNumber,
     });
 
@@ -54,11 +52,11 @@ const createUserTicket = async (req, res) => {
   }
 };
 
-// USER: View my tickets
 const getMyTicketsUser = async (req, res) => {
+   const userId = req.user.id;
   try {
     const tickets = await UserTicket.findAll({
-      where: { userId: req.user.id },
+      where: { userId },
       attributes: [
         "id",
         "ticketNumber",
@@ -66,7 +64,7 @@ const getMyTicketsUser = async (req, res) => {
         "description",
         "status",
         "adminReply",
-        "imageUrl",
+        "image",
         "createdAt",
       ],
       order: [["createdAt", "DESC"]],
@@ -77,7 +75,6 @@ const getMyTicketsUser = async (req, res) => {
   }
 };
 
-// ADMIN: View all tickets
 const getAllTicketsUser = async (req, res) => {
   try {
     const { status } = req.query;
@@ -107,7 +104,6 @@ const getAllTicketsUser = async (req, res) => {
   }
 };
 
-// ADMIN: Reply to ticket
 const replyToTicketUser = async (req, res) => {
   try {
     const { ticketId } = req.params;

@@ -58,7 +58,6 @@ const createSellerTicket = async (req, res) => {
   }
 };
 
-// SELLER: View my tickets
 const getMyTicketsSeller = async (req, res) => {
   try {
     const tickets = await SellerTicket.findAll({
@@ -81,7 +80,6 @@ const getMyTicketsSeller = async (req, res) => {
   }
 };
 
-// ADMIN: View all seller tickets
 const getAllTicketsSeller = async (req, res) => {
   try {
     const { status } = req.query;
@@ -111,7 +109,6 @@ const getAllTicketsSeller = async (req, res) => {
   }
 };
 
-// ADMIN: Reply to seller ticket
 const replyToTicketSeller = async (req, res) => {
   try {
     const { ticketId } = req.params;
