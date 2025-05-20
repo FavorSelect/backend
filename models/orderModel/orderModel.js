@@ -10,7 +10,7 @@ const Order = sequelize.define('Order', {
     autoIncrement: true,
     primaryKey: true,
   },
-orderId: {
+uniqueOrderId: {
   type: DataTypes.STRING,
   allowNull: false,
   unique: true,

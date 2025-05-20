@@ -9,19 +9,14 @@ const {
   sendOrderEmail,
 } = require("../../emailService/orderPlacedEmail/orderPlacedEmail");
 
-// Utility: generate order ID like 1234-ABCD-5678
+//orderId like -->  333-5555555-6666666
 function generateFormattedOrderId() {
-  const digits = "0123456789";
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const getRandomDigits = (length) =>
+    Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
 
-  const getRandom = (chars, length) =>
-    Array.from({ length }, () =>
-      chars.charAt(Math.floor(Math.random() * chars.length))
-    ).join("");
-
-  const part1 = getRandom(digits, 4);
-  const part2 = getRandom(letters, 4);
-  const part3 = getRandom(digits, 4);
+  const part1 = getRandomDigits(3);
+  const part2 = getRandomDigits(7);
+  const part3 = getRandomDigits(7);
 
   return `${part1}-${part2}-${part3}`;
 }
@@ -250,30 +245,69 @@ const handleGetUserOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
       where: { userId },
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: ["id", "productName", "productPrice", "coverImageUrl"]
+            }
+          ]
+        },
+        {
+          model: Address,
+          as: "shippingAddress"
+        }
+      ],
       order: [["createdAt", "DESC"]],
+      attributes: ["id", "uniqueOrderId","orderStatus", "totalAmount", "createdAt", "updatedAt"]
     });
 
-    res.status(200).json(orders);
+    res.status(200).json({ success: true, orders });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: "Error fetching orders", error: error.message });
   }
 };
 
-const handleGetSingleOrderDetails = async (req, res) => {
+const  handleGetSingleOrderDetails = async (req, res) => {
   const { orderId } = req.params;
   const userId = req.user.id;
-
   try {
-    const order = await Order.findOne({ where: { id: orderId, userId } });
-    if (!order) return res.status(404).json({ message: "Order not found" });
+    const order = await Order.findOne({
+      where: { id: orderId, userId },
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: ["id", "productName", "productDescription", "productPrice", "coverImageUrl"]
+            }
+          ]
+        },
+        {
+          model: Address,
+          as: "shippingAddress"
+        }
+      ],
+       attributes: ["id", "uniqueOrderId", "orderStatus", "totalAmount", "paymentMethod","paymentStatus", "createdAt", "updatedAt"]
+    });
 
-    const orderItems = await OrderItem.findAll({ where: { orderId } });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-    res.status(200).json({ order, orderItems });
+    res.status(200).json({ success: true, order });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: "Error fetching order details", error: error.message });
   }
 };
+
 
 module.exports = {
   handleGetSingleOrderDetails,

@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
 const {
   handleDeleteUserReviewByAdmin,
@@ -9,6 +8,7 @@ const {
   getReviewCountForProduct,
   handleGetProductReviews,
   handleAddReview,
+  handleGetUserReviewsWithProducts,
 } = require("../../controllers/reviewController/reviewController");
 const hasPurchasedProduct = require("../../ReviewMiddleware/hasPurchasedProduct");
 const canReviewProduct = require("../../ReviewMiddleware/canReviewProduct");
@@ -16,11 +16,13 @@ const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
 router.post(
   "/review/add",
-  upload.single('reviewPhoto'),
+  upload.single("reviewPhoto"),
   hasPurchasedProduct,
   canReviewProduct,
   handleAddReview
 );
+
+router.get("/my-reviews", handleGetUserReviewsWithProducts);
 // Get all reviews for a product
 router.get("/review/:productId", handleGetProductReviews);
 // Get review count for a product
@@ -42,7 +44,6 @@ router.delete(
 // Admin delete review by reviewId
 router.delete(
   "/review/:reviewId",
-  checkForAuthenticationCookie("token"),
   authorizeRoles(["superadmin"]),
   handleDeleteUserReviewByAdmin
 );

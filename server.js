@@ -37,6 +37,7 @@ const logoRoute = require("./routes/advertisementRoute/logoRoute");
 const handleCategoryRoute = require("./routes/adminRoute/handleCategory/handleCategoryRoute");
 const productRoute = require("./routes/productRoute/productRoute");
 const handleReviewPermission = require("./routes/adminRoute/handleReviewPermission/reviewPermission");
+const sellerFeedbackRoute = require('./routes/feedbackRoute/sellerFeedbackRoute')
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -80,7 +81,8 @@ app.use(
   userCartRoute,
   userAddressRoute,
   orderRoute,
-  reviewLikeRoute
+  reviewLikeRoute,
+  sellerFeedbackRoute
 );
 app.use("/api/general", categoryRoute, productRoute);
 app.use("/api/common-seller-admin", orderManageRoute);

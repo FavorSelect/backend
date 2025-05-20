@@ -151,6 +151,38 @@ const handleGetProductReviews = async (req, res) => {
   }
 };
 
+
+const handleGetUserReviewsWithProducts = async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const userReviews = await Review.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Product,
+          as: 'product',
+          attributes: ['id', 'productName', 'coverImageUrl', 'productPrice'], 
+        },
+      ],
+      order: [['reviewDate', 'DESC']],
+    });
+
+    res.status(200).json({
+      success: true,
+      totalReviews: userReviews.length,
+      reviews: userReviews,
+    });
+  } catch (error) {
+    console.error('Error fetching user reviews:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching user reviews',
+      error: error.message,
+    });
+  }
+};
+
+
 const getReviewCountForProduct = async (req, res) => {
   const { productId } = req.params;
   try {
@@ -289,4 +321,5 @@ module.exports = {
   handleUpdateReview,
   handleDeleteReviewByUser,
   handleDeleteUserReviewByAdmin,
+  handleGetUserReviewsWithProducts
 };

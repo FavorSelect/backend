@@ -33,7 +33,7 @@ const getWishlist = async (req, res) => {
   try {
     const wishlistItems = await Wishlist.findAll({
       where: { userId },
-      include: [{ model: Product, as: 'Product' }], // OR just `Product` if alias not defined
+      include: [{ model: Product, as: 'Product' }], 
     });
 
     res.status(200).json({ success: true, wishlist: wishlistItems });

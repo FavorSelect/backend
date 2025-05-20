@@ -1,7 +1,6 @@
-const Address = require('../../models/orderModel/orderAddressModel');
-const { sequelize } = require('../../mysqlConnection/dbConnection'); // for transactions
+const Address = require("../../models/orderModel/orderAddressModel");
+const { sequelize } = require("../../mysqlConnection/dbConnection"); // for transactions
 
-// Add new address
 const handleAddAddress = async (req, res) => {
   const {
     recipientName,
@@ -21,8 +20,10 @@ const handleAddAddress = async (req, res) => {
 
   try {
     if (isDefault) {
-      // Reset all other addresses for this user to non-default atomically
-      await Address.update({ isDefault: false }, { where: { userId }, transaction: t });
+      await Address.update(
+        { isDefault: false },
+        { where: { userId }, transaction: t }
+      );
     }
 
     const newAddress = await Address.create(
@@ -46,43 +47,87 @@ const handleAddAddress = async (req, res) => {
     res.status(201).json({ success: true, address: newAddress });
   } catch (error) {
     await t.rollback();
-    console.error('Add Address Error:', error);
-    res.status(500).json({ success: false, message: 'Server error while adding address', error: error.message });
+    console.error("Add Address Error:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error while adding address",
+        error: error.message,
+      });
   }
 };
 
-// Get all addresses of user
 const handleGetUserAddresses = async (req, res) => {
   const userId = req.user.id;
 
   try {
     const addresses = await Address.findAll({
       where: { userId },
-      order: [['isDefault', 'DESC']],
+      order: [["isDefault", "DESC"]],
     });
 
     res.status(200).json({ success: true, addresses });
   } catch (error) {
-    console.error('Get Addresses Error:', error);
-    res.status(500).json({ success: false, message: 'Server error while fetching addresses', error: error.message });
+    console.error("Get Addresses Error:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error while fetching addresses",
+        error: error.message,
+      });
   }
 };
 
-// Update existing address
 const handleUpdateAddress = async (req, res) => {
   const { addressId } = req.params;
   const userId = req.user.id;
-  const updateData = req.body;
+  const {
+    recipientName,
+    street,
+    city,
+    state,
+    postalCode,
+    country,
+    phoneNumber,
+    type,
+    isDefault,
+  } = req.body;
+
+  const t = await sequelize.transaction();
 
   try {
     const address = await Address.findOne({ where: { id: addressId, userId } });
     if (!address) {
+      await t.rollback();
       return res.status(404).json({ success: false, message: 'Address not found' });
     }
 
-    await address.update(updateData);
+    if (isDefault === true) {
+      await Address.update({ isDefault: false }, { where: { userId }, transaction: t });
+    }
+
+    await address.update(
+      {
+        recipientName,
+        street,
+        city,
+        state,
+        postalCode,
+        country,
+        phoneNumber,
+        type,
+        isDefault,
+      },
+      { transaction: t }
+    );
+
+    await t.commit();
+
     res.status(200).json({ success: true, address });
   } catch (error) {
+    await t.rollback();
     console.error('Update Address Error:', error);
     res.status(500).json({ success: false, message: 'Server error while updating address', error: error.message });
   }
@@ -96,18 +141,27 @@ const handleDeleteAddress = async (req, res) => {
   try {
     const address = await Address.findOne({ where: { id: addressId, userId } });
     if (!address) {
-      return res.status(404).json({ success: false, message: 'Address not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
     }
 
     await address.destroy();
-    res.status(200).json({ success: true, message: 'Address deleted successfully' });
+    res
+      .status(200)
+      .json({ success: true, message: "Address deleted successfully" });
   } catch (error) {
-    console.error('Delete Address Error:', error);
-    res.status(500).json({ success: false, message: 'Server error while deleting address', error: error.message });
+    console.error("Delete Address Error:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error while deleting address",
+        error: error.message,
+      });
   }
 };
 
-// Set a default address
 const handleSetDefaultAddress = async (req, res) => {
   const { addressId } = req.params;
   const userId = req.user.id;
@@ -116,21 +170,37 @@ const handleSetDefaultAddress = async (req, res) => {
 
   try {
     // Reset all addresses to non-default for this user
-    await Address.update({ isDefault: false }, { where: { userId }, transaction: t });
+    await Address.update(
+      { isDefault: false },
+      { where: { userId }, transaction: t }
+    );
     // Find the address to set as default
-    const address = await Address.findOne({ where: { id: addressId, userId }, transaction: t });
+    const address = await Address.findOne({
+      where: { id: addressId, userId },
+      transaction: t,
+    });
     if (!address) {
       await t.rollback();
-      return res.status(404).json({ success: false, message: 'Address not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
     }
     await address.update({ isDefault: true }, { transaction: t });
     await t.commit();
 
-    res.status(200).json({ success: true, message: 'Address marked as default', address });
+    res
+      .status(200)
+      .json({ success: true, message: "Address marked as default", address });
   } catch (error) {
     await t.rollback();
-    console.error('Set Default Address Error:', error);
-    res.status(500).json({ success: false, message: 'Server error while setting default address', error: error.message });
+    console.error("Set Default Address Error:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error while setting default address",
+        error: error.message,
+      });
   }
 };
 

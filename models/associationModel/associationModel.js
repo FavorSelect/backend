@@ -14,6 +14,7 @@ const Membership = require("../membershipModel/sellerMembershipModel");
 const ReviewLike = require("../reviewLikeModel/reviewLikeModel");
 const UserTicket = require("../ticketModel/userTicketModel");
 const SellerTicket = require("../ticketModel/sellerTicket");
+const SellerFeedback = require('../feedbackModel/sellerFeedback')
 
 // Cart ↔ CartItem
 Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });
@@ -32,12 +33,12 @@ User.hasMany(Address, { foreignKey: "userId", onDelete: "CASCADE", as: "addresse
 Address.belongsTo(User, { foreignKey: "userId", as: 'user', onDelete: "CASCADE" });
 
 // Order ↔ OrderItem
-Order.hasMany(OrderItem, { foreignKey: "orderId", onDelete: "CASCADE" });
+Order.hasMany(OrderItem, { foreignKey: "orderId",as: "orderItems", onDelete: "CASCADE" });
 OrderItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 
 // Product ↔ OrderItem
 Product.hasMany(OrderItem, { foreignKey: "productId", onDelete: "CASCADE" });
-OrderItem.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
+OrderItem.belongsTo(Product, { foreignKey: "productId",as: "product",  onDelete: "CASCADE" });
 
 // Order ↔ User
 User.hasMany(Order, { foreignKey: "userId", onDelete: "CASCADE", as: "orders" });
@@ -50,6 +51,8 @@ Order.belongsTo(Cart, { foreignKey: "cartId", onDelete: "CASCADE" });
 // Order ↔ CartItem (optional and might be redundant with OrderItems)
 Order.hasMany(CartItem, { foreignKey: "orderId", onDelete: "CASCADE" });
 CartItem.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
+
+Order.belongsTo(Address, { as: 'shippingAddress', foreignKey: 'addressId' });
 
 // Payment ↔ Order
 Order.hasOne(Payment, { foreignKey: "orderId", onDelete: "CASCADE" });
@@ -64,8 +67,8 @@ Review.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", as: "user" }
 
 
 // Review ↔ Product
-Product.hasMany(Review, { foreignKey: "productId", onDelete: "CASCADE" });
-Review.belongsTo(Product, { foreignKey: "productId", onDelete: "CASCADE" });
+Product.hasMany(Review, { foreignKey: "productId",as: 'reviews', onDelete: "CASCADE" });
+Review.belongsTo(Product, { foreignKey: "productId",as: 'product', onDelete: "CASCADE" });
 
 // Wishlist ↔ User
 User.hasMany(Wishlist, { foreignKey: "userId", onDelete: "CASCADE" });
@@ -112,3 +115,36 @@ Category.belongsTo(Category, {
   as: 'parentCategory',
 });
 
+// Feedback belongs to the seller 
+SellerFeedback.belongsTo(User, {
+  foreignKey: 'sellerId',
+  as: 'seller',
+});
+
+// Feedback belongs to the user who gave it
+SellerFeedback.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'buyer',
+});
+
+// Feedback is linked to a specific order
+SellerFeedback.belongsTo(Order, {
+  foreignKey: 'orderId',
+  as: 'order',
+});
+
+// Optional reverse associations
+User.hasMany(SellerFeedback, {
+  foreignKey: 'sellerId',
+  as: 'receivedFeedbacks',
+});
+
+User.hasMany(SellerFeedback, {
+  foreignKey: 'userId',
+  as: 'givenFeedbacks',
+});
+
+Order.hasOne(SellerFeedback, {
+  foreignKey: 'orderId',
+  as: 'feedback',
+});
