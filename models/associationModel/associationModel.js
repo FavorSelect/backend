@@ -29,7 +29,7 @@ Cart.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
 
 // Address ↔ User
 User.hasMany(Address, { foreignKey: "userId", onDelete: "CASCADE", as: "addresses" });
-Address.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Address.belongsTo(User, { foreignKey: "userId", as: 'user', onDelete: "CASCADE" });
 
 // Order ↔ OrderItem
 Order.hasMany(OrderItem, { foreignKey: "orderId", onDelete: "CASCADE" });

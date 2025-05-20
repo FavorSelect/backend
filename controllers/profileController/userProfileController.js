@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../../models/authModel/userModel'); 
+const  User  = require('../../models/authModel/userModel'); 
+const Address  = require('../../models/orderModel/orderAddressModel')
 const { sendUpdateProfileEmail, sendChangePasswordEmail } = require('../../emailService/userAuthEmail/userAuthEmail');
 
 const handleUpdateUserProfile = async (req, res) => {
@@ -9,9 +10,10 @@ const handleUpdateUserProfile = async (req, res) => {
         firstName,
         lastName,
         phone,
-        address,
+        email,
       } = req.body;
-  
+     const profilePhoto= req.file;
+const profilePhotoUrl = profilePhoto?.location || null;
       const user = await User.findByPk(userId);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -20,7 +22,8 @@ const handleUpdateUserProfile = async (req, res) => {
       user.firstName = firstName || user.firstName;
       user.lastName = lastName || user.lastName;
       user.phone = phone || user.phone;
-      user.address = address || user.address;
+      user.email = email || user.email;
+      user.profilePhoto = profilePhotoUrl || user.profilePhoto;
   
       await user.save();
       await sendUpdateProfileEmail(user.email, user.firstName)
@@ -34,36 +37,44 @@ const handleUpdateUserProfile = async (req, res) => {
     }
   };
   
-  const getUserProfile = async (req, res) => {
-    try {
-      const userId = req.user.id; 
-      const user = await User.findByPk(userId, {
-        attributes: { exclude: ['password', 'verificationCode', 'verificationCodeExpiresat'] }
-      });
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      return res.status(200).json({
-        success: true,
-        user,
-      });
-    } catch (error) {
-      return res.status(500).json({ message: 'Error fetching user profile', error: error.message });
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password', 'verificationCode', 'verificationCodeExpiresat'],
+      },
+      include: [
+        {
+          model: Address,
+          as: 'addresses',
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  };
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error fetching user profile',
+      error: error.message,
+    });
+  }
+};
+
   const handleChangePassword = async (req, res) => {
     try {
-      const { userId } = req.params;
-      const { currentPassword, newPassword, confirmPassword } = req.body;
-
-      
-      if (!currentPassword || !newPassword || !confirmPassword) {
+      const userId = req.user.id;
+      const {currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
         return res.status(400).json({ message: "All password fields are required" });
-      }
-  
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "New passwords do not match" });
       }
   
       const user = await User.findByPk(userId);

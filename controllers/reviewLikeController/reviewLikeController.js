@@ -1,5 +1,6 @@
 const ReviewLike = require('../../models/reviewLikeModel/reviewLikeModel');
 const Review = require('../../models/reviewModel/reviewModel');
+const User  = require('../../models/authModel/userModel')
 
 const toggleLikeOnReview = async (req, res) => {
   const userId = req.user.id;
@@ -39,7 +40,7 @@ const getUsersWhoLikedReview = async (req, res) => {
       where: { reviewId },
       include: {
         model: User,
-        attributes: ['id', 'name', 'email', 'profileImage'], // Customize as needed
+        attributes: ['id', 'firstName', 'email', ], 
       },
     });
 

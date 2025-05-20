@@ -14,7 +14,6 @@ const UserTicket = sequelize.define('UserTicket', {
     allowNull: false
   },
 
-
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,

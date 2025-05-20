@@ -155,7 +155,7 @@ TWITTER_CLIENT_ID=your_twitter_client_id
 TWITTER_CLIENT_SECRET=your_twitter_client_secret
 TWITTER_REDIRECT_URI=your_twitter_redirect_uri
 
-ELASTICSEARCH_NODE=https://localhost:9200
+ELASTICSEARCH_NODE=https://localhost:9200  
 ELASTICSEARCH_USERNAME=your_elastic_cloud_username
 ELASTICSEARCH_PASSWORD=your_cloud_password
 
