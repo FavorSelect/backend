@@ -58,7 +58,7 @@ addressId: {
 
 
   paymentStatus: {
-    type: DataTypes.ENUM('Pending', 'Completed', 'Failed'),
+    type: DataTypes.ENUM('Pending','Completed', 'Failed'),
     defaultValue: 'Pending',
   },
 

@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
-const Order = require("../../../models/orderModel/orderModel");
-const User = require("../../../models/authModel/userModel");
+const Order = require("../../models/orderModel/orderModel");
+const User = require("../../models/authModel/userModel");
 
 // 1. Get all orders with optional filters
 const handleGetAllOrders = async (req, res) => {
@@ -22,6 +22,78 @@ const handleGetAllOrders = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+// //  1. Get all orders (optional filters – full control)
+// const getAllOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.findAll();
+//     res.status(200).json({ message: "All orders retrieved", count: orders.length, orders });
+//   } catch (error) {
+//     console.error("Error getting all orders:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// // 2. Get orders by orderStatus
+// const getOrdersByStatus = async (req, res) => {
+//   try {
+//     const { status } = req.params;
+//     const orders = await Order.findAll({ where: { orderStatus: status } });
+//     res.status(200).json({ message: "Orders retrieved by status", count: orders.length, orders });
+//   } catch (error) {
+//     console.error("Error getting orders by status:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// //  3. Get orders by paymentStatus
+// const getOrdersByPaymentStatus = async (req, res) => {
+//   try {
+//     const { status } = req.params;
+//     const orders = await Order.findAll({ where: { paymentStatus: status } });
+//     res.status(200).json({ message: "Orders retrieved by payment status", count: orders.length, orders });
+//   } catch (error) {
+//     console.error("Error getting orders by payment status:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// //  4. Get orders by paymentMethod
+// const getOrdersByPaymentMethod = async (req, res) => {
+//   try {
+//     const { method } = req.params;
+//     const orders = await Order.findAll({ where: { paymentMethod: method } });
+//     res.status(200).json({ message: "Orders retrieved by payment method", count: orders.length, orders });
+//   } catch (error) {
+//     console.error("Error getting orders by payment method:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+// // 5. Get orders by date range
+// const getOrdersByDateRange = async (req, res) => {
+//   try {
+//     const { startDate, endDate } = req.query;
+//     if (!startDate || !endDate) {
+//       return res.status(400).json({ error: "startDate and endDate are required." });
+//     }
+
+//     const orders = await Order.findAll({
+//       where: {
+//         orderDate: {
+//           [Op.between]: [new Date(startDate), new Date(endDate)],
+//         },
+//       },
+//     });
+
+//     res.status(200).json({ message: "Orders retrieved by date range", count: orders.length, orders });
+//   } catch (error) {
+//     console.error("Error getting orders by date range:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 
 // 2. Get order by ID
 const handleGetOrderById = async (req, res) => {

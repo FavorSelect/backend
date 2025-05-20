@@ -12,9 +12,11 @@ const {
 } = require("../../controllers/reviewController/reviewController");
 const hasPurchasedProduct = require("../../ReviewMiddleware/hasPurchasedProduct");
 const canReviewProduct = require("../../ReviewMiddleware/canReviewProduct");
+const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
 router.post(
   "/review/add",
+  upload.single('reviewPhoto'),
   hasPurchasedProduct,
   canReviewProduct,
   handleAddReview

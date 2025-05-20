@@ -6,7 +6,6 @@ const cors = require("cors");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 
-
 //route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute/userProfileRoute");
@@ -32,12 +31,12 @@ const userTicketRoute = require("./routes/ticketRoute/userTicketRoute");
 const sellerTicketRoute = require("./routes/ticketRoute/sellerTicketRoute");
 const userDetailRoute = require("./routes/adminRoute/userDetail/userDetailRoute");
 const sellerDetailRoute = require("./routes/adminRoute/sellerDetail/sellerDetailRoute");
-const orderManageRoute = require("./routes/adminRoute/orderManageRoute/orderManageRoute");
+const orderManageRoute = require("./routes/orderRoute/orderManagementRoute");
 const productDetailRoute = require("./routes/adminRoute/productDetail/productDetailRoute");
-const logoRoute = require('./routes/advertisementRoute/logoRoute');
-const handleCategoryRoute = require('./routes/adminRoute/handleCategory/handleCategoryRoute');
-const productRoute = require('./routes/productRoute/productRoute');
-const handleReviewPermission = require('./routes/adminRoute/handleReviewPermission/reviewPermission')
+const logoRoute = require("./routes/advertisementRoute/logoRoute");
+const handleCategoryRoute = require("./routes/adminRoute/handleCategory/handleCategoryRoute");
+const productRoute = require("./routes/productRoute/productRoute");
+const handleReviewPermission = require("./routes/adminRoute/handleReviewPermission/reviewPermission");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -62,7 +61,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
   "/api/auth",
@@ -81,13 +80,10 @@ app.use(
   userCartRoute,
   userAddressRoute,
   orderRoute,
-  reviewLikeRoute,
+  reviewLikeRoute
 );
-app.use(
-  "/api/general",
-  categoryRoute,
-  productRoute,
-);  
+app.use("/api/general", categoryRoute, productRoute);
+app.use("/api/common-seller-admin", orderManageRoute);
 app.use(
   "/api/admin/dashboard",
   checkForAuthenticationCookie("token"),
@@ -98,8 +94,7 @@ app.use(
   handleCategoryRoute,
   userDetailRoute,
   sellerDetailRoute,
-  orderManageRoute,
-  productDetailRoute ,
+  productDetailRoute,
   handleReviewPermission
 );
 app.use(

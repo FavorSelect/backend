@@ -209,20 +209,18 @@ const verifySellerEmail = async (req, res) => {
 const sellerSignin = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const seller = await Seller.findOne({ where: { email } });
     if (!seller) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     if (!seller.isVerified) {
-      return res
-        .status(400)
-        .json({ message: "Please verify your email before logging in" });
+      return res.status(400).json({ message: "Please verify your email before logging in" });
     }
     if (!seller.isApproved) {
       return res.status(400).json({
-        message:
-          "Look you are not approved yet, please wait while our team verify your credentials",
+        message: "You are not approved yet. Please wait for admin approval.",
       });
     }
 
@@ -230,18 +228,28 @@ const sellerSignin = async (req, res) => {
     if (!isPasswordMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-    const token = createToken(seller);
+
+    //  Fetch user associated with this seller
+    const user = await User.findByPk(seller.userId);
+    if (!user) {
+      return res.status(404).json({ message: "Associated user not found" });
+    }
+
+
+    const token = createToken(user);
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
       token,
     });
+
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Login failed", error: error.message });
+    console.error("Seller Signin Error:", error);
+    return res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
+
 
 const handleSellerLogout = async (req, res) => {
   res.clearCookie("token");

@@ -3,7 +3,13 @@ const OrderItem = require('../models/orderModel/orderItemModel');
 
 const hasPurchasedProduct = async (req, res, next) => {
   const userId = req.user.id;
-  const { productId } = req.body;
+    if (!req.body || !req.body.productId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing productId in request body.',
+    });
+  }
+  const  {productId} = req.body;
   try {
     const orderItem = await OrderItem.findOne({
       where: {
@@ -12,7 +18,7 @@ const hasPurchasedProduct = async (req, res, next) => {
       include: [
         {
           model: Order,
-          where: { userId, status: 'completed' }, 
+          where: { userId, orderStatus: 'Delivered' }, 
         },
       ],
     });

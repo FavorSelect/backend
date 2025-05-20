@@ -23,10 +23,25 @@ const handleAddReview = async (req, res) => {
       allReviews.reduce((acc, item) => acc + item.rating, 0) /
       allReviews.length;
 
+    
+    const allTexts = allReviews
+      .filter((r) => r.reviewText)
+      .map((r) => r.reviewText);
+    const allPhotos = allReviews
+      .filter((r) => r.reviewPhoto)
+      .map((r) => r.reviewPhoto);
+
+    const reviewsData = {
+      texts: allTexts,
+      photos: allPhotos,
+    };
+
+
     await Product.update(
       {
         averageCustomerRating: avgRating,
         totalCustomerReviews: allReviews.length,
+        customerReviews: JSON.stringify(reviewsData), 
       },
       { where: { id: productId } }
     );
@@ -68,21 +83,39 @@ const handleUpdateReview = async (req, res) => {
 
     await review.save();
 
-    // Recalculate product's average rating and review count
+    // Recalculate average rating and total reviews for the product
     const allReviews = await Review.findAll({ where: { productId } });
     const avgRating =
       allReviews.reduce((acc, item) => acc + item.rating, 0) /
       allReviews.length;
 
+    // Collect all review texts and photos
+    const allTexts = allReviews
+      .filter((r) => r.reviewText)
+      .map((r) => r.reviewText);
+    const allPhotos = allReviews
+      .filter((r) => r.reviewPhoto)
+      .map((r) => r.reviewPhoto);
+
+    const reviewsData = {
+      texts: allTexts,
+      photos: allPhotos,
+    };
+
     await Product.update(
       {
         averageCustomerRating: avgRating,
         totalCustomerReviews: allReviews.length,
+        customerReviews: JSON.stringify(reviewsData),
       },
       { where: { id: productId } }
     );
 
-    res.status(200).json({ success: true, message: "Review updated", review });
+    res.status(200).json({
+      success: true,
+      message: "Review updated",
+      review,
+    });
   } catch (error) {
     console.error("Update Review Error:", error);
     res.status(500).json({
@@ -92,7 +125,6 @@ const handleUpdateReview = async (req, res) => {
     });
   }
 };
-
 const handleGetProductReviews = async (req, res) => {
   const { productId } = req.params;
   try {
@@ -121,12 +153,8 @@ const handleGetProductReviews = async (req, res) => {
 
 const getReviewCountForProduct = async (req, res) => {
   const { productId } = req.params;
-
   try {
-    const reviewCount = await Review.count({
-      where: { productId },
-    });
-
+    const reviewCount = await Review.count({ where: { productId } });
     res.status(200).json({
       success: true,
       productId,
@@ -158,16 +186,28 @@ const handleDeleteReviewByUser = async (req, res) => {
 
     await review.destroy();
 
-    // Recalculate average rating and review count
+    // Recalculate
     const allReviews = await Review.findAll({ where: { productId } });
     const avgRating =
-      allReviews.reduce((acc, item) => acc + item.rating, 0) /
-      (allReviews.length || 1);
+      allReviews.reduce((acc, item) => acc + item.rating, 0) / (allReviews.length || 1);
+
+    const allTexts = allReviews
+      .filter((r) => r.reviewText)
+      .map((r) => r.reviewText);
+    const allPhotos = allReviews
+      .filter((r) => r.reviewPhoto)
+      .map((r) => r.reviewPhoto);
+
+    const reviewsData = {
+      texts: allTexts,
+      photos: allPhotos,
+    };
 
     await Product.update(
       {
         averageCustomerRating: allReviews.length ? avgRating : 0,
         totalCustomerReviews: allReviews.length,
+        customerReviews: JSON.stringify(reviewsData),
       },
       { where: { id: productId } }
     );
@@ -188,26 +228,41 @@ const handleDeleteReviewByUser = async (req, res) => {
 
 const handleDeleteUserReviewByAdmin = async (req, res) => {
   const { reviewId } = req.params;
+
   try {
     const review = await Review.findByPk(reviewId);
-
     if (!review) {
       return res.status(404).json({
         success: false,
         message: "Review not found.",
       });
     }
+
     const productId = review.productId;
     await review.destroy();
-    // Recalculate average rating and review count
+
+    // Recalculate
     const allReviews = await Review.findAll({ where: { productId } });
     const avgRating =
-      allReviews.reduce((acc, item) => acc + item.rating, 0) /
-      (allReviews.length || 1);
+      allReviews.reduce((acc, item) => acc + item.rating, 0) / (allReviews.length || 1);
+
+    const allTexts = allReviews
+      .filter((r) => r.reviewText)
+      .map((r) => r.reviewText);
+    const allPhotos = allReviews
+      .filter((r) => r.reviewPhoto)
+      .map((r) => r.reviewPhoto);
+
+    const reviewsData = {
+      texts: allTexts,
+      photos: allPhotos,
+    };
+
     await Product.update(
       {
         averageCustomerRating: allReviews.length ? avgRating : 0,
         totalCustomerReviews: allReviews.length,
+        customerReviews: JSON.stringify(reviewsData),
       },
       { where: { id: productId } }
     );
@@ -225,6 +280,7 @@ const handleDeleteUserReviewByAdmin = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   handleAddReview,

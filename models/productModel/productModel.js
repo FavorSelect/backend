@@ -85,6 +85,9 @@ const Product = sequelize.define(
     availableStockQuantity: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      validate: {
+        min: 0,
+      },
     },
 
     inventoryStatus: {
@@ -116,9 +119,9 @@ const Product = sequelize.define(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-
     customerReviews: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT, // Stores a JSON string
+      allowNull: true,
     },
 
     // Tags & Metadata
