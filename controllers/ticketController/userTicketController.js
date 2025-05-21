@@ -88,7 +88,7 @@ const getAllTicketsUser = async (req, res) => {
         "description",
         "status",
         "adminReply",
-        "imageUrl",
+        "image",
         "createdAt",
       ],
       include: {

@@ -1,0 +1,173 @@
+const AccountDeletionRequest = require("../../models/accountDeleteRequestModel/accountDeletionRequest");
+const User = require("../../models/authModel/userModel");
+const Seller = require("../../models/authModel/sellerModel");
+
+const reasons = [
+  "Privacy concerns",
+  "Switching to another service",
+  "Too many emails/notifications",
+  "Not useful anymore",
+  "Poor customer support",
+  "Technical issues",
+  "Service too expensive",
+  "Found a better platform",
+  "Creating a new account",
+  "Other",
+];
+
+const generateUniqueId = () => {
+  return Math.floor(100000000000 + Math.random() * 900000000000).toString();
+};
+
+const submitDeletionRequest = async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const userId = req.user?.id || null;
+    const sellerId = req.user?.id || null;
+
+    if (!userId && !sellerId) {
+      return res.status(400).json({ message: "User or Seller ID is required" });
+    }
+
+    if (!reasons.includes(reason)) {
+      return res.status(400).json({ message: "Invalid reason selected" });
+    }
+
+    let uniqueId;
+    let exists = true;
+
+    while (exists) {
+      uniqueId = generateUniqueId();
+      const existing = await AccountDeletionRequest.findOne({
+        where: { uniqueAccountDeletedId: uniqueId },
+      });
+      exists = !!existing;
+    }
+
+    const request = await AccountDeletionRequest.create({
+      userId,
+      sellerId,
+      reason,
+      uniqueAccountDeletedId: uniqueId,
+      status: "pending",
+    });
+
+    res.status(201).json({
+      message: "Account deletion request submitted",
+      request,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error submitting request", error: error.message });
+  }
+};
+
+const getAllDeletionRequests = async (req, res) => {
+  try {
+    const { status } = req.query;
+    const whereCondition = status ? { status } : {};
+
+    const requests = await AccountDeletionRequest.findAll({
+      where: whereCondition,
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "userId",
+        "sellerId",
+        "reason",
+        "status",
+        "uniqueAccountDeletedId",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email"],
+          required: false,
+        },
+        {
+          model: Seller,
+          attributes: ["id", "sellerName", "email", "shopName"],
+          required: false,
+        },
+      ],
+    });
+
+    res.status(200).json({ requests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error fetching deletion requests",
+      error: error.message,
+    });
+  }
+};
+
+const updateDeletionRequestStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!["approved", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const request = await AccountDeletionRequest.findByPk(id);
+
+    if (!request) {
+      return res
+        .status(404)
+        .json({ message: "Account deletion request not found" });
+    }
+
+    if (status === "approved") {
+      if (request.userId) {
+        const user = await User.findByPk(request.userId);
+        if (user) {
+          request.deletedUserEmail = user.email;
+          request.deletedUserName = `${user.firstName || ""} ${
+            user.lastName || ""
+          }`.trim();
+
+          await user.destroy();
+        }
+      }
+
+      if (request.sellerId) {
+        const seller = await Seller.findByPk(request.sellerId);
+        if (seller) {
+          request.deletedSellerEmail = seller.email;
+          request.deletedSellerName = seller.sellerName || "";
+
+          await seller.destroy();
+        }
+      }
+    }if (status === "rejected") {
+      return res.status(200).json({
+        message: "Request rejected, no account deleted",
+        request,
+      });
+    }
+
+    request.status = status;
+    await request.save();
+
+    res
+      .status(200)
+      .json({ message: `Request ${status} successfully`, request });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error updating deletion request",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = {
+  updateDeletionRequestStatus,
+  submitDeletionRequest,
+  getAllDeletionRequests,
+};

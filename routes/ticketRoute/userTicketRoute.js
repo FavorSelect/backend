@@ -13,13 +13,15 @@ const upload = require("../../awsS3Connection/awsUploadMiddleware");
 router.post(
   "/user/raise-ticket",
   checkForAuthenticationCookie("token"),
-  upload.single('imageUrl'),
+  authorizeRoles(["user"]),
+  upload.single("image"),
   createUserTicket
 );
 
 router.get(
   "/user/my-tickets",
   checkForAuthenticationCookie("token"),
+  authorizeRoles(["user"]),
   getMyTicketsUser
 );
 

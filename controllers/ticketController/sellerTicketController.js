@@ -18,21 +18,19 @@ const generateTicketNumber = async () => {
   return ticketNumber;
 };
 
-// Create ticket
 const createSellerTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
-    const sellerId = req.seller.id; // Make sure seller middleware sets this
-    const files = req.files;
-    const imageUrl = files?.imageUrl?.[0]?.location || null;
-
+    const sellerId = req.user.id; 
+    const image = req.file;
+    const imageUrl = image?.location || null
     const ticketNumber = await generateTicketNumber();
 
     const ticket = await SellerTicket.create({
       sellerId,
       subject,
       description,
-      imageUrl,
+      image:imageUrl,
       ticketNumber,
     });
 
@@ -69,7 +67,7 @@ const getMyTicketsSeller = async (req, res) => {
         "description",
         "status",
         "adminReply",
-        "imageUrl",
+        "image",
         "createdAt",
       ],
       order: [["createdAt", "DESC"]],
@@ -93,7 +91,7 @@ const getAllTicketsSeller = async (req, res) => {
         "description",
         "status",
         "adminReply",
-        "imageUrl",
+        "image",
         "createdAt",
       ],
       include: {

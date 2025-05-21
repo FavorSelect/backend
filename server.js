@@ -37,7 +37,8 @@ const logoRoute = require("./routes/advertisementRoute/logoRoute");
 const handleCategoryRoute = require("./routes/adminRoute/handleCategory/handleCategoryRoute");
 const productRoute = require("./routes/productRoute/productRoute");
 const handleReviewPermission = require("./routes/adminRoute/handleReviewPermission/reviewPermission");
-const sellerFeedbackRoute = require('./routes/feedbackRoute/sellerFeedbackRoute')
+const sellerFeedbackRoute = require("./routes/feedbackRoute/sellerFeedbackRoute");
+const accountDeleteRequestRoute = require("./routes/accountDeleteRequestRoute/accountDeleteRequestRoute");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -108,7 +109,12 @@ app.use(
   sellerTicketRoute
 );
 app.use("/api/advertisement", homepageBanner, logoRoute);
-app.use("/api/support", userTicketRoute, sellerTicketRoute);
+app.use(
+  "/api/support",
+  userTicketRoute,
+  sellerTicketRoute,
+  accountDeleteRequestRoute
+);
 initDB(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
