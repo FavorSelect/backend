@@ -28,12 +28,12 @@ const Payment = sequelize.define('Payment', {
   paymentStatus: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Pending', // Example statuses: Pending, Completed, Failed
+    defaultValue: 'Pending', 
   },
 
   paymentReferenceId: {
     type: DataTypes.STRING,
-    allowNull: true, // May be null until payment is processed
+    allowNull: true, 
   },
 
   paymentDate: {

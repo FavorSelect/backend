@@ -1,12 +1,15 @@
 const express = require("express");
 const {
-  handleGetAllOrders,
   handleGetOrderById,
   handleGetOrdersByUserId,
   handleUpdateOrderStatus,
   handleUpdatePaymentStatus,
   handleUpdateShippingDates,
   handleDeleteOrder,
+  handleSellerGetAllOrders,
+  handleAdminGetAllOrders,
+  handleGetOrderByUniqueOrderId,
+  handleGetOrdersByUserEmail,
 } = require("../../controllers/orderController/orderManagement");
 const router = express.Router();
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
@@ -15,8 +18,14 @@ const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
 router.get(
   "/orders",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["admin","admin+", "superadmin","seller"]),
-  handleGetAllOrders
+  authorizeRoles(["seller"]),
+  handleSellerGetAllOrders
+);
+router.get(
+  "/admin/orders",
+  checkForAuthenticationCookie("token"),
+  authorizeRoles(["seller"]),
+  handleAdminGetAllOrders
 );
 router.get(
   "/orders/:orderId",
@@ -25,10 +34,17 @@ router.get(
   handleGetOrderById
 );
 router.get(
-  "/users/:userId/orders",
+  "/orders/user/unique/:uniqueOrderId",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["admin", "admin+", "superadmin", "seller"]),
-  handleGetOrdersByUserId
+  authorizeRoles(["admin", "admin+", "superadmin"]),
+  handleGetOrderByUniqueOrderId
+);
+
+router.get(
+  "/orders/user/email/:email",
+  checkForAuthenticationCookie("token"),
+  authorizeRoles(["admin", "admin+", "superadmin"]),
+  handleGetOrdersByUserEmail
 );
 router.patch(
   "/orders/:orderId/order-status",

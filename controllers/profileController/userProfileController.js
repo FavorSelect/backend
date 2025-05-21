@@ -13,7 +13,7 @@ const handleUpdateUserProfile = async (req, res) => {
         email,
       } = req.body;
      const profilePhoto= req.file;
-const profilePhotoUrl = profilePhoto?.location || null;
+     const profilePhotoUrl = profilePhoto?.location || null;
       const user = await User.findByPk(userId);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });

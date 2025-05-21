@@ -1,126 +1,299 @@
 const { Op } = require("sequelize");
 const Order = require("../../models/orderModel/orderModel");
 const User = require("../../models/authModel/userModel");
+const OrderItem = require("../../models/orderModel/orderItemModel");
+const Product = require("../../models/productModel/productModel");
+const Cart = require("../../models/cartModel/cartModel");
+const CartItem = require("../../models/cartModel/cartItemModel");
+const Address = require("../../models/orderModel/orderAddressModel");
+const Payment = require("../../models/paymentModel/paymentModel");
+const Seller = require("../../models/authModel/sellerModel");
 
-// 1. Get all orders with optional filters
-const handleGetAllOrders = async (req, res) => {
+const handleAdminGetAllOrders = async (req, res) => {
   try {
-    const { orderStatus, paymentStatus, paymentMethod, startDate, endDate } = req.query;
+    const sellerId = req.user.id;
+    const { orderStatus, paymentStatus, paymentMethod, startDate, endDate } =
+      req.query;
     const whereClause = {};
 
     if (orderStatus) whereClause.orderStatus = orderStatus;
     if (paymentStatus) whereClause.paymentStatus = paymentStatus;
     if (paymentMethod) whereClause.paymentMethod = paymentMethod;
     if (startDate && endDate) {
-      whereClause.orderDate = { [Op.between]: [new Date(startDate), new Date(endDate)] };
+      whereClause.orderDate = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
     }
 
     const orders = await Order.findAll({ where: whereClause });
-    res.status(200).json({ message: "Orders retrieved", count: orders.length, orders });
+    res
+      .status(200)
+      .json({ message: "Orders retrieved", count: orders.length, orders });
   } catch (error) {
     console.error("Error getting orders:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+const handleSellerGetAllOrders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const seller = await Seller.findOne({ where: { userId } });
 
-// //  1. Get all orders (optional filters – full control)
-// const getAllOrders = async (req, res) => {
-//   try {
-//     const orders = await Order.findAll();
-//     res.status(200).json({ message: "All orders retrieved", count: orders.length, orders });
-//   } catch (error) {
-//     console.error("Error getting all orders:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
+    if (!seller) {
+      return res
+        .status(404)
+        .json({ message: "Seller not found for this user" });
+    }
 
-// // 2. Get orders by orderStatus
-// const getOrdersByStatus = async (req, res) => {
-//   try {
-//     const { status } = req.params;
-//     const orders = await Order.findAll({ where: { orderStatus: status } });
-//     res.status(200).json({ message: "Orders retrieved by status", count: orders.length, orders });
-//   } catch (error) {
-//     console.error("Error getting orders by status:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
+    const sellerId = seller.id;
+    const { orderStatus, paymentStatus, paymentMethod, startDate, endDate } =
+      req.query;
 
-// //  3. Get orders by paymentStatus
-// const getOrdersByPaymentStatus = async (req, res) => {
-//   try {
-//     const { status } = req.params;
-//     const orders = await Order.findAll({ where: { paymentStatus: status } });
-//     res.status(200).json({ message: "Orders retrieved by payment status", count: orders.length, orders });
-//   } catch (error) {
-//     console.error("Error getting orders by payment status:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
+    const whereClause = {};
+    if (orderStatus) whereClause.orderStatus = orderStatus;
+    if (paymentStatus) whereClause.paymentStatus = paymentStatus;
+    if (paymentMethod) whereClause.paymentMethod = paymentMethod;
+    if (startDate && endDate) {
+      whereClause.orderDate = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    }
+    const orders = await Order.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
 
-// //  4. Get orders by paymentMethod
-// const getOrdersByPaymentMethod = async (req, res) => {
-//   try {
-//     const { method } = req.params;
-//     const orders = await Order.findAll({ where: { paymentMethod: method } });
-//     res.status(200).json({ message: "Orders retrieved by payment method", count: orders.length, orders });
-//   } catch (error) {
-//     console.error("Error getting orders by payment method:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
+              attributes: ["id", "productName", "sellerId", "productPrice"],
+            },
+          ],
+        },
+        {
+          model: Cart,
+          include: [
+            {
+              model: CartItem,
+              include: [
+                {
+                  model: Product,
+                  attributes: [
+                    "id",
+                    "productName",
+                    "productPrice",
+                    "coverImageUrl",
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "email"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "createdAt",
+        "updatedAt",
+      ],
+    });
+    const filteredOrders = orders.filter((order) =>
+      order.orderItems.some((item) => item.product.sellerId === sellerId)
+    );
 
-// // 5. Get orders by date range
-// const getOrdersByDateRange = async (req, res) => {
-//   try {
-//     const { startDate, endDate } = req.query;
-//     if (!startDate || !endDate) {
-//       return res.status(400).json({ error: "startDate and endDate are required." });
-//     }
+    return res.status(200).json({
+      message: "Orders retrieved for seller",
+      count: filteredOrders.length,
+      orders: filteredOrders,
+    });
+  } catch (error) {
+    console.error("Error getting seller-specific orders:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
 
-//     const orders = await Order.findAll({
-//       where: {
-//         orderDate: {
-//           [Op.between]: [new Date(startDate), new Date(endDate)],
-//         },
-//       },
-//     });
-
-//     res.status(200).json({ message: "Orders retrieved by date range", count: orders.length, orders });
-//   } catch (error) {
-//     console.error("Error getting orders by date range:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
-
-
-// 2. Get order by ID
 const handleGetOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const order = await Order.findByPk(orderId);
-    if (!order) return res.status(404).json({ error: "Order not found" });
-    res.status(200).json({ message: "Order retrieved", order });
+    const order = await Order.findByPk(orderId, {
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "email"],
+        },
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: [
+                "id",
+                "productName",
+                "productPrice",
+                "coverImageUrl",
+              ],
+            },
+          ],
+        },
+        {
+          model: Payment,
+          attributes: ["id", "paymentMethod", "paymentStatus", "paymentDate"],
+        },
+        {
+          model: Cart,
+          include: [
+            {
+              model: CartItem,
+              include: [
+                {
+                  model: Product,
+                  attributes: [
+                    "id",
+                    "productName",
+                    "productPrice",
+                    "coverImageUrl",
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: Address,
+          as: "shippingAddress",
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "createdAt",
+        "updatedAt",
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    return res.status(200).json({
+      message: "Order retrieved successfully",
+      order,
+    });
   } catch (error) {
     console.error("Error getting order by ID:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// 3. Get orders by user ID
-const handleGetOrdersByUserId = async (req, res) => {
+const handleGetOrderByUniqueOrderId = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const orders = await Order.findAll({ where: { userId } });
-    res.status(200).json({ message: "Orders retrieved", count: orders.length, orders });
+    const { uniqueOrderId } = req.params;
+
+    const order = await Order.findOne({
+      where: { uniqueOrderId },
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: ["id", "productName", "sellerId", "productPrice"],
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: ["id", "firstName", "email"],
+        },
+      ],
+       order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "createdAt",
+        "updatedAt",
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order retrieved", order });
   } catch (error) {
-    console.error("Error getting orders by user ID:", error);
+    console.error("Error getting order by uniqueOrderId:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// 4. Update order status
+const handleGetOrdersByUserEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+  
+
+    const orders = await Order.findAll({
+      where: { userId: user.id },
+      include: [
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Product,
+              as: "product",
+              attributes: ["id", "productName", "sellerId", "productPrice"],
+            },
+          ],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "createdAt",
+        "updatedAt",
+      ],
+    });
+
+    res.status(200).json({
+      message: "Orders retrieved",
+      count: orders.length,
+      orders,
+    });
+  } catch (error) {
+    console.error("Error getting orders by user email:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 const handleUpdateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -138,7 +311,6 @@ const handleUpdateOrderStatus = async (req, res) => {
   }
 };
 
-// 5. Update payment status
 const handleUpdatePaymentStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -156,7 +328,6 @@ const handleUpdatePaymentStatus = async (req, res) => {
   }
 };
 
-// 6. Update shipping and delivery dates
 const handleUpdateShippingDates = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -176,7 +347,6 @@ const handleUpdateShippingDates = async (req, res) => {
   }
 };
 
-// 7. Delete (cancel) order
 const handleDeleteOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -192,9 +362,11 @@ const handleDeleteOrder = async (req, res) => {
 };
 
 module.exports = {
-  handleGetAllOrders,
+  handleAdminGetAllOrders,
+  handleSellerGetAllOrders,
   handleGetOrderById,
-  handleGetOrdersByUserId,
+   handleGetOrdersByUserEmail ,
+ handleGetOrderByUniqueOrderId,
   handleUpdateOrderStatus,
   handleUpdatePaymentStatus,
   handleUpdateShippingDates,
