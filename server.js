@@ -26,7 +26,7 @@ const reviewLikeRoute = require("./routes/reviewLikeRoute/reviewLikeRoute");
 const googleAuthRoute = require("./routes/googleAuthRoute/googleAuthRoute");
 const facebookAuthRoute = require("./routes/facebookAuth/facebookAuthRoute");
 const twitterAuthRoute = require("./routes/twitterAuthRoute/twitterAuthRoute");
-const homepageBanner = require("./routes/advertisementRoute/homepageBanner");
+const BannerRoute = require("./routes/advertisementRoute/Banner");
 const userTicketRoute = require("./routes/ticketRoute/userTicketRoute");
 const sellerTicketRoute = require("./routes/ticketRoute/sellerTicketRoute");
 const userDetailRoute = require("./routes/adminRoute/userDetail/userDetailRoute");
@@ -108,7 +108,7 @@ app.use(
   sellerMembershipRoute,
   sellerTicketRoute
 );
-app.use("/api/advertisement", homepageBanner, logoRoute);
+app.use("/api/advertisement",BannerRoute, logoRoute);
 app.use(
   "/api/support",
   userTicketRoute,

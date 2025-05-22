@@ -206,6 +206,7 @@ const handleSignin = async (req, res) => {
       success: true,
       message: "Login successful",
       token,
+      user,
     });
   } catch (error) {
     return res
@@ -213,6 +214,7 @@ const handleSignin = async (req, res) => {
       .json({ message: "Login failed", error: error.message });
   }
 };
+
 
 const handleLogout = async (req, res) => {
   res.clearCookie("token");
@@ -247,6 +249,8 @@ const handleUserResetPasswordFromUrl = async (req, res) => {
   try {
     const { resetToken } = req.params;
     const { newPassword } = req.body;
+    console.log(newPassword);
+    console.log(resetToken);
     const decoded = JWT.verify(resetToken, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId);
     if (!user) {
