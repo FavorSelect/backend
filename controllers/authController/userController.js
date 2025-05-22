@@ -230,10 +230,12 @@ const handleFindMyAccountPasswordURL = async (req, res) => {
     const resetToken = JWT.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const resetLink = `${process.env.FRONTEND_URL}/find-my-account/${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/set-password/${resetToken}`;
     await sendForgetPasswordURL(user.email, resetLink);
 
-    return res.status(200).json({ message: "reset link sent to email", resetLink });
+    return res
+      .status(200)
+      .json({ message: "reset link sent to email", resetLink });
   } catch (error) {
     return res
       .status(500)
@@ -281,7 +283,7 @@ const handleUserResetPasswordFromOtp = async (req, res) => {
     user.password = hashedPassword;
 
     await user.save();
-    await sendRecoveryEmail(user.email, user.firstName);;
+    await sendRecoveryEmail(user.email, user.firstName);
     return res.status(200).json({ message: "Password Reset successfully" });
   } catch (error) {
     return res
