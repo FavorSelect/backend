@@ -244,11 +244,7 @@ const handleFindMyAccountPasswordURL = async (req, res) => {
 const handleUserResetPasswordFromUrl = async (req, res) => {
   try {
     const { resetToken } = req.params;
-    const { newPassword, confirmPassword } = req.body;
-
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
+    const { newPassword } = req.body;
     const decoded = JWT.verify(resetToken, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.userId);
     if (!user) {
@@ -258,7 +254,6 @@ const handleUserResetPasswordFromUrl = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
-
     await sendRecoveryEmail(user.email, user.name);
 
     return res.status(200).json({ message: "Password reset successfully" });
