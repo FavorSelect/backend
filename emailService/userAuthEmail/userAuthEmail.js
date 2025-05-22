@@ -1,18 +1,18 @@
-
 const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
 
+const logo = process.env.LOGO;
 const sendVerificationEmail = async (email, fullName, otp) => {
     try {
       const response = await transporter.sendMail({
         from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
-        subject: "🔐 Email Verification Code - FavorSelect",
+        subject: " Email Verification Code - FavorSelect",
         text: `Hi ${fullName},\n\nYour FavorSelect verification code is: ${otp}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this code, you can safely ignore this email.\n\n- FavorSelect Team`,
         html: `
           <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
           <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-height: 60px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-height: 60px;" />
             </div>
             <h2 style="text-align: center; padding: 20px; background-color:#d63384;  border-radius: 6px; color: #f6f1f3;">Verification Code</h2>
             <div style="text-align: center; padding: 16px;  margin: 20px 0;">
@@ -43,15 +43,15 @@ const sendVerificationEmail = async (email, fullName, otp) => {
       const response = await transporter.sendMail({
         from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
-        subject: "✅ Email Verified",
-        text: `Hi ${fullName},\n\nYour email has been successfully verified! ✅\n\n\n\nLogin: ${loginURL}\n\nThanks for joining FavorSelect!\n\n- The FavorSelect Team`,
+        subject: " Email Verified",
+        text: `Hi ${fullName},\n\nYour email has been successfully verified! \n\n\n\nLogin: ${loginURL}\n\nThanks for joining FavorSelect!\n\n- The FavorSelect Team`,
         html: `
           <div style="max-width: 600px; background-color: #fff0f5; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(255, 105, 180, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #d63384; font-size: 26px; text-align: center; margin-bottom: 16px;">
-              ✅ Welcome, ${fullName}!
+               Welcome, ${fullName}!
             </h2>
             <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
               Your email has been successfully verified. 
@@ -88,7 +88,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #fff0f5; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);">
             <div style="text-align: center; padding: 15px 0;">
-              <img src="https://logo.png" alt="FavorSelect Logo" style="max-width: 150px;">
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 150px;">
             </div>
             <div style="background-color: #ffffff; padding: 25px; border-radius: 10px;">
               <h2 style="color: #d63384; text-align: center;">Reset Your Password</h2>
@@ -132,7 +132,7 @@ const sendVerificationEmail = async (email, fullName, otp) => {
         html: `
           <div style="max-width: 600px; background-color: #ffe6f0; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(255, 105, 180, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #d63384; font-size: 26px; text-align: center; margin-bottom: 16px;">
               Hi ${name}, your password has been reset!
@@ -168,15 +168,15 @@ const sendVerificationEmail = async (email, fullName, otp) => {
       const response = await transporter.sendMail({
         from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
-        subject: "🔐 Password Changed Successfully",
-        text: `Hi ${fullName},\n\nYour password has been successfully changed! 🔐\n\n\n\nIf you did not request this change, please contact support immediately.\n\nLogin: ${loginURL}\n\nThanks for using FavorSelect!\n\n- The FavorSelect Team`,
+        subject: " Password Changed Successfully",
+        text: `Hi ${fullName},\n\nYour password has been successfully changed! \n\n\n\nIf you did not request this change, please contact support immediately.\n\nLogin: ${loginURL}\n\nThanks for using FavorSelect!\n\n- The FavorSelect Team`,
         html: `
           <div style="max-width: 600px; background-color: #f0f8ff; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #007bff; font-size: 26px; text-align: center; margin-bottom: 16px;">
-              🔐 Password Changed Successfully, ${fullName}!
+               Password Changed Successfully, ${fullName}!
             </h2>
             <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
               Your password has been successfully changed. If you did not request this change, please contact our support team.
@@ -209,15 +209,15 @@ const sendVerificationEmail = async (email, fullName, otp) => {
       const response = await transporter.sendMail({
         from: '"FavorSelect Team" <favorselect113@gmail.com>',
         to: email,
-        subject: "🔄 Profile Updated Successfully",
-        text: `Hi ${fullName},\n\nYour profile has been successfully updated! 🔄\n\n\n\nIf you did not make these changes, please contact support immediately.\n\nProfile: ${loginURL}\n\nThanks for being with FavorSelect!\n\n- The FavorSelect Team`,
+        subject: " Profile Updated Successfully",
+        text: `Hi ${fullName},\n\nYour profile has been successfully updated! \n\n\n\nIf you did not make these changes, please contact support immediately.\n\nProfile: ${loginURL}\n\nThanks for being with FavorSelect!\n\n- The FavorSelect Team`,
         html: `
           <div style="max-width: 600px; background-color: #e8f0fe; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(23, 162, 184, 0.2); font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-width: 140px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
             </div>
             <h2 style="color: #17a2b8; font-size: 26px; text-align: center; margin-bottom: 16px;">
-              🔄 Profile Updated Successfully, ${fullName}!
+              Profile Updated Successfully, ${fullName}!
             </h2>
             <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
               Your profile details have been successfully updated. If you did not make these changes, please contact our support team.

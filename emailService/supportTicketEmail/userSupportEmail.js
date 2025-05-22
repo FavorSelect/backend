@@ -1,5 +1,6 @@
 const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
 
+const logo = process.env.LOGO;
 const sendUserTicketCreationEmail = async (email, fullName, ticketNumber, subject) => {
   try {
     const response = await transporter.sendMail({
@@ -11,7 +12,7 @@ const sendUserTicketCreationEmail = async (email, fullName, ticketNumber, subjec
         <div style="background-color: #f3f4f6; padding: 40px 0; font-family: Arial, sans-serif;">
           <div style="max-width: 580px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
             <div style="text-align: center; margin-bottom: 30px;">
-              <img src="https://your-favorselect-logo-url.com/logo.png" alt="FavorSelect Logo" style="max-height: 60px;" />
+              <img src="${logo}" alt="FavorSelect Logo" style="max-height: 60px;" />
             </div>
             <h2 style="text-align: center; padding: 20px; background-color:#198754; border-radius: 6px; color: #ffffff;">Ticket Created</h2>
             <p style="font-size: 16px; text-align: center;">Hi <strong>${fullName}</strong>, your support ticket has been created successfully.</p>

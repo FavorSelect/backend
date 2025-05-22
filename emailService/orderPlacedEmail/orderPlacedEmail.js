@@ -3,7 +3,6 @@ const logo = process.env.LOGO;
 
 const sendOrderEmail = async (email, customerName, orderId, productDetails) => {
   try {
-    // Generate HTML for all products
     const productsHtml = productDetails.map(item => `
       <div style="margin-bottom: 20px; text-align: left;">
         <p><strong>Product:</strong> ${item.productName}</p>

@@ -233,7 +233,7 @@ const handleFindMyAccountPasswordURL = async (req, res) => {
     const resetLink = `${process.env.FRONTEND_URL}/find-my-account/${resetToken}`;
     await sendForgetPasswordURL(user.email, resetLink);
 
-    return res.status(200).json({ message: "reset link sent to email" });
+    return res.status(200).json({ message: "reset link sent to email", resetLink });
   } catch (error) {
     return res
       .status(500)
