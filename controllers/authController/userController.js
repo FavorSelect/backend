@@ -227,7 +227,7 @@ const handleFindMyAccountPasswordURL = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const resetToken = JWT.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const resetToken = JWT.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     const resetLink = `${process.env.FRONTEND_URL}/find-my-account/${resetToken}`;
@@ -254,7 +254,7 @@ const handleUserResetPasswordFromUrl = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
-    await sendRecoveryEmail(user.email, user.name);
+    await sendRecoveryEmail(user.email, user.firstName);
     return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     return res
