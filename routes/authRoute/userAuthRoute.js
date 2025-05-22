@@ -1,13 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const { handleSignUp, handleSignin, handleLogout, handleVerifyEmail, handleForgotPasswordURL, handleUserResetPassword, resendUserVerificationOtp} = require("../../controllers/authController/userController");
+const {
+  handleSignUp,
+  handleSignin,
+  handleLogout,
+  handleVerifyEmail,
+  resendUserVerificationOtp,
+  handleFindMyAccountPasswordURL,
+  handleResetPasswordOtp,
+  handleVerifyResetPasswordOtp,
+  handleUserResetPasswordFromUrl,
+  handleUserResetPasswordFromOtp,
+} = require("../../controllers/authController/userController");
 
-router.post("/signup",handleSignUp);
+router.post("/signup", handleSignUp);
 router.post("/signin", handleSignin);
 router.post("/logout", handleLogout);
 router.post("/verify-email", handleVerifyEmail);
-router.post("/resend-otp",  resendUserVerificationOtp);
-router.post("/forget-password", handleForgotPasswordURL);
-router.post("/reset-password/:resetToken", handleUserResetPassword);
+router.post("/resend-otp", resendUserVerificationOtp);
+router.post("/reset-password-otp", handleResetPasswordOtp);
+router.post("/verify-otp", handleVerifyResetPasswordOtp);
+router.post("/find-my-account", handleFindMyAccountPasswordURL);
+router.post("/find-my-account/:resetToken", handleUserResetPasswordFromUrl);
+router.post("/reset-password", handleUserResetPasswordFromOtp);
 
 module.exports = router;
