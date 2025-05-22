@@ -281,7 +281,7 @@ const handleUserResetPasswordFromOtp = async (req, res) => {
     user.password = hashedPassword;
 
     await user.save();
-    await sendChangePasswordEmail(user.email, user.firstName);
+    await sendRecoveryEmail(user.email, user.firstName);;
     return res.status(200).json({ message: "Password Reset successfully" });
   } catch (error) {
     return res
