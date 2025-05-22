@@ -285,11 +285,8 @@ const handleSellerForgotPasswordURL = async (req, res) => {
 const handleSellerResetPassword = async (req, res) => {
   try {
     const { resetToken } = req.params;
-    const { newPassword, confirmPassword } = req.body;
+    const { newPassword} = req.body;
 
-    if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
     const decoded = JWT.verify(resetToken, process.env.JWT_SECRET);
     const seller = await Seller.findByPk(decoded.sellerId);
     if (!seller) {

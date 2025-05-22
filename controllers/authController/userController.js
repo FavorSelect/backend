@@ -255,7 +255,6 @@ const handleUserResetPasswordFromUrl = async (req, res) => {
     user.password = hashedPassword;
     await user.save();
     await sendRecoveryEmail(user.email, user.name);
-
     return res.status(200).json({ message: "Password reset successfully" });
   } catch (error) {
     return res
