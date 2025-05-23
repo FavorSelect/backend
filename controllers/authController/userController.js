@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const setTokenCookie = require("../../authService/setTokenCookie");
+const clearTokenCookie = require("../../authService/clearCookie");
 const User = require("../../models/authModel/userModel");
 const {
   sendWelcomeEmail,
@@ -224,11 +225,10 @@ const handleSignin = async (req, res) => {
 };
 
 
-const handleLogout = async (req, res) => {
-  res.clearCookie("token");
+const handleLogout = (req, res) => {
+  clearTokenCookie(res);
   res.status(200).json({ message: "Logged out successfully" });
 };
-
 const handleFindMyAccountPasswordURL = async (req, res) => {
   const { email } = req.body;
 
