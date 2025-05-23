@@ -88,7 +88,7 @@ const googleCallback = async (req, res) => {
     setTokenCookie(res, token); 
 
    res.redirect(
-  `http://localhost:3000?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&email=${encodeURIComponent(user.email)}`
+  `http://localhost:3000/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&email=${encodeURIComponent(user.email)}`
 );
 
   } catch (error) {
