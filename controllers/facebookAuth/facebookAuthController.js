@@ -75,6 +75,7 @@ const facebookCallback = async (req, res) => {
           lastName,
           email: email || null,
           password: null,
+           isVerified: true,
         });
       }
     }
@@ -86,8 +87,11 @@ const facebookCallback = async (req, res) => {
     );
 
     setTokenCookie(res, token); 
+  res.redirect(
+  `http://localhost:3000?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&email=${encodeURIComponent(user.email)}`
+);
 
-    res.redirect(`http://localhost:3000/`);
+
   } catch (error) {
     if (error.response?.data) {
       console.error("Facebook API Error:", error.response.data);

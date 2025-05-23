@@ -75,6 +75,7 @@ const googleCallback = async (req, res) => {
           email,
           profilePhoto: picture,
           password: null,
+           isVerified: true,
         });
       }
     }
@@ -86,7 +87,10 @@ const googleCallback = async (req, res) => {
     );
     setTokenCookie(res, token); 
 
-    res.redirect(`http://localhost:3000`);
+   res.redirect(
+  `http://localhost:3000?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&email=${encodeURIComponent(user.email)}`
+);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
