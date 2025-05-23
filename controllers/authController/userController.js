@@ -15,9 +15,15 @@ const handleSignUp = async (req, res) => {
   const { firstName, lastName, email, password, phone } = req.body;
   try {
     const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
-    }
+
+if (existingUser) {
+  if (!existingUser.password) {
+    return res.status(400).json({
+      message: "You signed up with Google. Please log in with Google or reset your password.",
+    });
+  }
+  return res.status(400).json({ message: "Email already registered" });
+}
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000
     ).toString();

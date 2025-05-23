@@ -35,7 +35,7 @@ const facebookCallback = async (req, res) => {
 
     const access_token = tokenRes.data.access_token;
 
-    // Get user info
+    
     const userRes = await axios.get('https://graph.facebook.com/me', {
       params: {
         fields: 'id,name,email',
@@ -44,26 +44,39 @@ const facebookCallback = async (req, res) => {
     });
     const { id: facebookId, name, email } = userRes.data;
     const [firstName, lastName] = (name || '').split(' ');
+    
+   // Step 3: Try finding user by facebookId
     let user = await User.findOne({ where: { facebookId } });
 
-if (!user) {
-  user = await User.findOne({ where: { email } }); // Check if email already exists
+    if (user) {
+      //  Found by Facebook ID
+      if (email && user.email !== email) {
+        user.email = email; // Optionally update email
+        await user.save();
+      }
+    } else {
+      // Step 4: Not found by Facebook ID — try email
+      if (email) {
+        user = await User.findOne({ where: { email } });
 
-  if (!user) {
-    user = await User.create({
-      facebookId,
-      firstName: firstName || 'Facebook',
-      lastName: lastName || 'User',
-      email: email || null,
-      password: null,
-    });
-  } else {
-    // Link existing user to Facebook
-    user.facebookId = facebookId;
-    await user.save();
-  }
-}
+        if (user) {
+          //  Existing user with same email — link Facebook ID
+          user.facebookId = facebookId;
+          await user.save();
+        }
+      }
 
+      // Step 5: Still no user — create new
+      if (!user) {
+        user = await User.create({
+          facebookId,
+          firstName,
+          lastName,
+          email: email || null,
+          password: null,
+        });
+      }
+    }
 
     const token = jwt.sign(
       { userId: user.id, email: user.email, name: `${user.firstName} ${user.lastName}` },

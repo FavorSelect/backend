@@ -12,7 +12,7 @@ const TWITTER_API_SECRET_KEY = process.env.TWITTER_CLIENT_SECRET;
 const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const tokenStore = {}; // In-memory store for oauth_token_secret (should use Redis or DB in production)
+const tokenStore = {}; 
 
 const createOAuthClient = () => {
   return oauth({
@@ -28,7 +28,7 @@ const createOAuthClient = () => {
 };
 
 const redirectToTwitter = async (req, res) => {
-  console.log('🔁 [Step 1] Redirecting to Twitter...');
+
   const oauthClient = createOAuthClient();
 
   const request_data = {
@@ -40,7 +40,7 @@ const redirectToTwitter = async (req, res) => {
   };
 
   const headers = oauthClient.toHeader(oauthClient.authorize(request_data));
-  console.log('🔐 OAuth Headers:', headers);
+
 
   try {
     const response = await axios.post(request_data.url, null, {
@@ -54,7 +54,7 @@ const redirectToTwitter = async (req, res) => {
     const oauth_token = parsed.oauth_token;
     const oauth_token_secret = parsed.oauth_token_secret;
 
-    console.log('✅ Got request token, redirecting user...');
+   
 
   
     tokenStore[oauth_token] = oauth_token_secret;
@@ -119,20 +119,25 @@ const twitterCallback = async (req, res) => {
     const oauthAccessTokenSecret = parsed.oauth_token_secret;
 
 
-    let user = await User.findOne({ where: { twitterId } });
+  let user = await User.findOne({ where: { twitterId } });
 
-    if (!user) {
-      user = await User.create({
-        twitterId,
-        firstName: name,
-        lastName: '',
-        email: null,
-        password: null,
-      });
-      console.log(' New user created');
-    } else {
-      console.log(' Existing user found');
-    }
+if (user) {
+  if (user.firstName !== name) {
+    user.firstName = name;
+    await user.save();
+    console.log('Updated Twitter username');
+  }
+
+} else {
+  user = await User.create({
+    twitterId,
+    firstName: name,
+    lastName: '',
+    email: null,  
+    password: null,   
+  });
+}
+
 
     const token = jwt.sign(
       { userId: user.id, name: `${user.firstName} ${user.lastName}` },
@@ -140,7 +145,7 @@ const twitterCallback = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    console.log('🔐 JWT token generated:', token);
+    console.log(' JWT token generated:', token);
 
     delete tokenStore[oauth_token];
 
