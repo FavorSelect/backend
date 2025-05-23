@@ -57,21 +57,16 @@ const googleCallback = async (req, res) => {
     let user = await User.findOne({ where: { googleId } });
 
     if (user) {
-      // Found by Google ID: safe to trust, even if email changed on Google.
       if (user.email !== email) {
-        user.email = email; // Optionally update to match current Google email
+        user.email = email;
         await user.save();
       }
     } else {
-      //  Not found by Google ID, check by email
       user = await User.findOne({ where: { email } });
-
       if (user) {
-        // User exists with email but no Google ID
-        user.googleId = googleId; // Link Google ID to existing user
+        user.googleId = googleId; 
         await user.save();
       } else {
-        //  User doesn't exist at all, create new
         user = await User.create({
           googleId,
           firstName: firstName || "Google",
