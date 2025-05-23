@@ -84,7 +84,7 @@ const googleCallback = async (req, res) => {
       JWT_SECRET,
       { expiresIn: "1h" }
     );
-setTokenCookie(res, token); 
+    setTokenCookie(res, token); 
 
     res.redirect(`http://localhost:3000`);
   } catch (error) {
