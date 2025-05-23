@@ -229,7 +229,7 @@ const sellerSignin = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    //  Fetch user associated with this seller
+    
     const user = await User.findByPk(seller.userId);
     if (!user) {
       return res.status(404).json({ message: "Associated user not found" });

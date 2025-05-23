@@ -23,7 +23,7 @@ const googleCallback = async (req, res) => {
   }
 
   try {
-    // Get the access token from Google
+    //Get the access token from Google
     const response = await axios.post('https://oauth2.googleapis.com/token', 
       qs.stringify({
         code,
@@ -63,7 +63,6 @@ const googleCallback = async (req, res) => {
       });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user.id, email: user.email, name: user.name },
       JWT_SECRET,

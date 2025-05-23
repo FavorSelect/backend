@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
 const { Op } = require("sequelize");
+const setTokenCookie = require("../../authService/setTokenCookie");
 const User = require("../../models/authModel/userModel");
 const {
   sendWelcomeEmail,
@@ -201,6 +202,7 @@ const handleSignin = async (req, res) => {
     }
 
     const token = createToken(user);
+    setTokenCookie(res, token); 
 
     return res.status(200).json({
       success: true,

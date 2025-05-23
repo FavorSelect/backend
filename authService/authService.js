@@ -17,7 +17,7 @@ function createToken(user) {
       isVerified: user.isVerified,
       contactNumber: user.contactNumber || null,
     };
-    return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+    return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
   } catch (error) {
     console.error("Error creating token:", error.message);
     return null;

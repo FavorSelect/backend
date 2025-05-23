@@ -74,7 +74,7 @@ const handleAddProduct = async (req, res) => {
 
       productWarrantyInfo: productWarrantyInfo || null,
       productReturnPolicy: productReturnPolicy || null,
-      sellerId  // 🔗 link seller and product
+      sellerId  //🔗link seller and product
     });
 
     await elasticClient.index({

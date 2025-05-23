@@ -1,5 +1,6 @@
 const { sendApprovedEmail, sendApprovalRejectEmail } = require('../../../emailService/sellerAuthEmail/sellerAuthEmail');
-const Seller  = require('../../../models/authModel/sellerModel')
+const Seller  = require('../../../models/authModel/sellerModel');
+
 const getPendingSellerApproval = async (req, res) => {
     try {
       const pendingSellers = await Seller.findAll({
