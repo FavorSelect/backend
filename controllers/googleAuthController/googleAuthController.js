@@ -1,4 +1,5 @@
 const axios = require("axios");
+const setTokenCookie = require("../../authService/setTokenCookie");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/authModel/userModel");
 require("dotenv").config();
@@ -83,7 +84,9 @@ const googleCallback = async (req, res) => {
       JWT_SECRET,
       { expiresIn: "1h" }
     );
-    res.redirect(`http://localhost:3000/?token=${token}`);
+setTokenCookie(res, token); 
+
+    res.redirect(`http://localhost:3000`);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

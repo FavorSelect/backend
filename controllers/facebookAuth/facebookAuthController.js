@@ -1,4 +1,5 @@
 const axios = require('axios');
+const setTokenCookie = require("../../authService/setTokenCookie");
 const jwt = require('jsonwebtoken');
 const User = require('../../models/authModel/userModel'); 
 require('dotenv').config();
@@ -44,7 +45,7 @@ const facebookCallback = async (req, res) => {
     });
     const { id: facebookId, name, email } = userRes.data;
     const [firstName, lastName] = (name || '').split(' ');
-    
+
    // Step 3: Try finding user by facebookId
     let user = await User.findOne({ where: { facebookId } });
 
@@ -84,7 +85,9 @@ const facebookCallback = async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.redirect(`http://localhost:3000/?token=${token}`);
+    setTokenCookie(res, token); 
+
+    res.redirect(`http://localhost:3000/`);
   } catch (error) {
     if (error.response?.data) {
       console.error("Facebook API Error:", error.response.data);

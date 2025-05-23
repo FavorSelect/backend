@@ -1,4 +1,5 @@
 const axios = require('axios');
+const setTokenCookie = require("../../authService/setTokenCookie");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const querystring = require('querystring');
@@ -145,11 +146,11 @@ if (user) {
       { expiresIn: '1h' }
     );
 
-    console.log(' JWT token generated:', token);
-
     delete tokenStore[oauth_token];
 
-    res.redirect(`http://localhost:3000/?token=${token}`);
+    setTokenCookie(res, token); 
+
+    res.redirect(`http://localhost:3000`);
   } catch (err) {
     console.error(' Error exchanging Twitter token:', err.response?.data || err.message);
     return res.status(500).json({ message: 'Error logging in with Twitter' });
