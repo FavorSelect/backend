@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const setTokenCookie = require("../../authService/setTokenCookie");
 const Seller = require("../../models/authModel/sellerModel");
 const User = require("../../models/authModel/userModel");
 const { Op } = require("sequelize");
@@ -237,6 +238,7 @@ const sellerSignin = async (req, res) => {
 
 
     const token = createToken(user);
+    setTokenCookie(res, token); 
 
     return res.status(200).json({
       success: true,
