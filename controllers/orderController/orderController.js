@@ -54,13 +54,13 @@ const handleBuyNow = async (req, res) => {
     // Create the order
     const order = await Order.create(
       {
-        orderId: customOrderId,
+        uniqueOrderId: customOrderId,
         userId,
         cartId: null,
         totalAmount: totalPrice,
         addressId,
         paymentStatus:
-          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+        paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
         paymentMethod,
       },
       { transaction: t }
@@ -70,6 +70,7 @@ const handleBuyNow = async (req, res) => {
     await OrderItem.create(
       {
         orderId: order.id,
+        uniqueOrderId:order.uniqueOrderId,
         productId: product.id,
         quantity,
         price: product.productPrice,
@@ -87,9 +88,8 @@ const handleBuyNow = async (req, res) => {
 
     await t.commit();
 
-    // Optional email notification
-    console.log("order.orderId:", order.orderId);
-    await sendOrderEmail(req.user.email, req.user.firstName, order.orderId, {
+
+    await sendOrderEmail(req.user.email, req.user.firstName, order.uniqueOrderId, {
       productName: product.productName,
       quantity,
       price: product.productPrice,

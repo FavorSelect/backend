@@ -1,13 +1,20 @@
-const  Product  = require("../../models/productModel/productModel");
-const elasticClient= require('../../config/elasticSearchConfig/elasticSearchClient');
-const Category = require('../../models/categoryModel/categoryModel');
-const Seller = require('../../models/authModel/sellerModel');
+const Product = require("../../models/productModel/productModel");
+const elasticClient = require("../../config/elasticSearchConfig/elasticSearchClient");
+const Category = require("../../models/categoryModel/categoryModel");
+const Seller = require("../../models/authModel/sellerModel");
 const { Op } = require("sequelize");
 
 const handleAddProduct = async (req, res) => {
- 
   try {
-    const sellerId = req.user.id; 
+    const seller = await Seller.findOne({ where: { userId: req.user.id } });
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller not found for the logged-in user.",
+      });
+    }
+    const sellerId = seller.id;
+
     const {
       productName,
       productDescription,
@@ -66,7 +73,7 @@ const handleAddProduct = async (req, res) => {
 
       availableStockQuantity: availableStockQuantity || 0,
       productWeight: productWeight || null,
-      status: 'pending',
+      status: "pending",
 
       coverImageUrl: req.file.location,
       galleryImageUrls: galleryImageUrls || null,
@@ -74,15 +81,15 @@ const handleAddProduct = async (req, res) => {
 
       productWarrantyInfo: productWarrantyInfo || null,
       productReturnPolicy: productReturnPolicy || null,
-      sellerId  //🔗link seller and product
+      sellerId, //🔗link seller and product
     });
 
     await elasticClient.index({
-      index: 'products',
+      index: "products",
       id: product.id.toString(),
       document: {
-        ...product.toJSON()
-      }
+        ...product.toJSON(),
+      },
     });
 
     res.status(201).json({
@@ -158,9 +165,9 @@ const handleUpdateProduct = async (req, res) => {
     await product.update(updateFields);
 
     await elasticClient.update({
-      index: 'products',
+      index: "products",
       id: product.id.toString(),
-      doc: product.toJSON()
+      doc: product.toJSON(),
     });
 
     res.status(200).json({
@@ -193,8 +200,8 @@ const handleDeleteProduct = async (req, res) => {
     await product.destroy();
 
     await elasticClient.delete({
-      index: 'products',
-      id: product.id.toString()
+      index: "products",
+      id: product.id.toString(),
     });
 
     res.status(200).json({
@@ -294,17 +301,17 @@ const handleDeleteProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
-      where: { status: 'approved' },
+      where: { status: "approved" },
       include: [
         {
           model: Category,
-          attributes: ['categoryName'], 
+          attributes: ["categoryName"],
         },
-         {
-            model: Seller,
-            as: 'seller',
-            attributes: ['id', 'sellerName', 'email', 'shopName'],
-          },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
       ],
     });
 
@@ -321,7 +328,6 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
-
 
 // const getAllProducts = async (req, res) => {
 //   try {
@@ -398,7 +404,6 @@ const getAllProducts = async (req, res) => {
 //   }
 // };
 
-
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -406,13 +411,13 @@ const getProductById = async (req, res) => {
       include: [
         {
           model: Category,
-          attributes: ['categoryName'],
+          attributes: ["categoryName"],
         },
-         {
-            model: Seller,
-            as: 'seller',
-            attributes: ['id', 'sellerName', 'email', 'shopName'],
-          },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
       ],
     });
 
@@ -449,17 +454,17 @@ const searchProducts = async (req, res) => {
 
   try {
     const { hits } = await elasticClient.search({
-      index: 'products',
+      index: "products",
       query: {
         multi_match: {
           query,
-          fields: ['productName', 'productBrand'],
-          fuzziness: 'AUTO',
+          fields: ["productName", "productBrand"],
+          fuzziness: "AUTO",
         },
       },
     });
 
-    const productIds = hits.hits.map(hit => hit._source.id);
+    const productIds = hits.hits.map((hit) => hit._source.id);
 
     if (productIds.length === 0) {
       return res.status(200).json({
@@ -472,17 +477,17 @@ const searchProducts = async (req, res) => {
     const products = await Product.findAll({
       where: {
         id: productIds,
-        status: 'approved',
+        status: "approved",
       },
       include: [
         {
           model: Category,
-          attributes: ['categoryName'],
+          attributes: ["categoryName"],
         },
         {
           model: Seller,
-          as: 'seller',
-          attributes: ['id', 'sellerName', 'email', 'shopName'],
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
         },
       ],
     });
@@ -491,7 +496,6 @@ const searchProducts = async (req, res) => {
       success: true,
       products,
     });
-
   } catch (error) {
     console.error("Elasticsearch Search Error:", error);
     res.status(500).json({
@@ -513,11 +517,11 @@ const getProductsByCategory = async (req, res) => {
           where: { categoryName },
           attributes: ["categoryName"],
         },
-         {
-            model: Seller,
-            as: 'seller',
-            attributes: ['id', 'sellerName', 'email', 'shopName'],
-          },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
       ],
     });
 
@@ -535,7 +539,6 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-
 const getProductsByBrand = async (req, res) => {
   const { brandName } = req.params;
 
@@ -550,11 +553,11 @@ const getProductsByBrand = async (req, res) => {
           model: Category,
           attributes: ["categoryName"],
         },
-         {
-            model: Seller,
-            as: 'seller',
-            attributes: ['id', 'sellerName', 'email', 'shopName'],
-          },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
       ],
     });
 
@@ -583,11 +586,11 @@ const getRecentProducts = async (req, res) => {
           model: Category,
           attributes: ["categoryName"],
         },
-         {
-            model: Seller,
-            as: 'seller',
-            attributes: ['id', 'sellerName', 'email', 'shopName'],
-          },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
       ],
     });
 
@@ -605,7 +608,6 @@ const getRecentProducts = async (req, res) => {
   }
 };
 
-
 module.exports = {
   handleAddProduct,
   handleUpdateProduct,
@@ -615,5 +617,5 @@ module.exports = {
   searchProducts,
   getProductsByCategory,
   getProductsByBrand,
-  getRecentProducts
+  getRecentProducts,
 };

@@ -6,13 +6,10 @@ const Seller = require("../../models/authModel/sellerModel");
 const Membership = require("../../models/membershipModel/sellerMembershipModel");
 
 const handleAssignMembershipToSeller = async (req, res) => {
-  const membershipId = req.params.membershipId; // from URL
-  const sellerId = req.user.id; // from JWT middleware
-
-  console.log("Assigning membership to sellerId:", sellerId);
-
+  const membershipId = req.params.membershipId;
   try {
-    const seller = await Seller.findByPk(sellerId);
+    const userId = req.user.id;
+    const seller = await Seller.findOne({ where: { userId } });
     if (!seller) {
       return res.status(404).json({ message: "Seller not found" });
     }
@@ -44,19 +41,18 @@ const handleAssignMembershipToSeller = async (req, res) => {
       .status(200)
       .json({ message: "Membership assigned successfully" });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        message: "Error assigning membership to seller",
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Error assigning membership to seller",
+      error: error.message,
+    });
   }
 };
 
 const handleRenewSellerMembership = async (req, res) => {
-  const { sellerId, membershipId } = req.params;
+  const {membershipId } = req.params;
   try {
-    const seller = await Seller.findByPk(sellerId);
+     const userId = req.user.id; 
+      const seller = await Seller.findOne({ where: { userId } });
     const membership = await Membership.findByPk(membershipId);
 
     if (!seller || !membership) {
@@ -68,12 +64,10 @@ const handleRenewSellerMembership = async (req, res) => {
     // Check if the current membership has expired
     const currentDate = new Date();
     if (seller.membershipEnd && new Date(seller.membershipEnd) > currentDate) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Membership is still active. No need to renew.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Membership is still active. No need to renew.",
+      });
     }
 
     // Calculate the new membership start and end dates
@@ -119,13 +113,11 @@ const handleGetAllMemberships = async (req, res) => {
 
     return res.status(200).json({ success: true, memberships });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error retrieving memberships",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving memberships",
+      error: error.message,
+    });
   }
 };
 
@@ -143,23 +135,19 @@ const handleGetMembershipById = async (req, res) => {
 
     return res.status(200).json({ success: true, membership });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error retrieving membership",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Error retrieving membership",
+      error: error.message,
+    });
   }
 };
 const getSellerMembershipStatus = async (req, res) => {
   try {
-    const sellerId = req.user.id;
-
-    const seller = await Seller.findByPk(sellerId, {
-      include: ["Membership"],
-    });
-
+   
+   const userId = req.user.id; 
+      const seller = await Seller.findOne({ where: { userId }, include: ["Membership"], });
+  
     if (!seller) return res.status(404).json({ error: "Seller not found" });
 
     const today = new Date();
