@@ -11,6 +11,10 @@ const handleUpdateUserProfile = async (req, res) => {
         lastName,
         phone,
         email,
+        state,
+        city,
+        country,
+      zipCode,
       } = req.body;
      const profilePhoto= req.file;
      const profilePhotoUrl = profilePhoto?.location || null;
@@ -24,6 +28,10 @@ const handleUpdateUserProfile = async (req, res) => {
       user.phone = phone || user.phone;
       user.email = email || user.email;
       user.profilePhoto = profilePhotoUrl || user.profilePhoto;
+      user.state = state || user.state;
+      user.city = city || user.city;
+      user.country = country || user.country;
+      user.zipCode = zipCode || user.zipCode;
   
       await user.save();
       await sendUpdateProfileEmail(user.email, user.firstName)
