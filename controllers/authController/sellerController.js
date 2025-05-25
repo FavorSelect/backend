@@ -86,6 +86,7 @@ const sellerSignup = async (req, res) => {
       role: 'seller',
       firstName: sellerName,
       isVerified: true,
+      isTwoFactorAuthEnable:false,
     }, { transaction: t });
 
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();

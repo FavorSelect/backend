@@ -9,6 +9,7 @@ const {
   sendVerificationEmail,
   sendForgetPasswordURL,
   sendRecoveryEmail,
+  sendTwoFactorOtp,
 } = require("../../emailService/userAuthEmail/userAuthEmail");
 const { createToken } = require("../../authService/authService");
 
@@ -38,6 +39,7 @@ if (existingUser) {
       password: hashedPassword,
       isVerified: false,
       verificationCode,
+      isTwoFactorAuthEnable:false,
       verificationCodeExpiresAt: verificationCodeExpiresAt,
     });
     await sendVerificationEmail(
@@ -148,6 +150,29 @@ const handleVerifyEmail = async (req, res) => {
   }
 };
 
+
+
+const toggleTwoFactorAuth = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+    const { enable } = req.body; 
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.isTwoFactorAuthEnable = enable;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Two-Factor Authentication ${enable ? "enabled" : "disabled"}`,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
 const handleVerifyResetPasswordOtp = async (req, res) => {
   try {
     const { verificationCode } = req.body;
@@ -198,9 +223,9 @@ const handleSignin = async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res
-        .status(400)
-        .json({ message: "Please verify your email before logging in" });
+      return res.status(400).json({
+        message: "Please verify your email before logging in",
+      });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -208,8 +233,28 @@ const handleSignin = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // If 2FA is enabled, send OTP 
+    if (user.isTwoFactorAuthEnable) {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      user.verificationCode = otp;
+      user.verificationCodeExpiresAt = otpExpiresAt;
+      await user.save();
+
+      await sendTwoFactorOtp(user.email, user.firstName, otp); 
+
+      return res.status(202).json({
+        success: true,
+        message: "OTP sent to your email. Please verify to complete login.",
+        twoFactorRequired: true,
+        email: user.email,
+      });
+    }
+
+    // If no 2FA, log user in
     const token = createToken(user);
-    setTokenCookie(res, token); 
+    setTokenCookie(res, token);
 
     return res.status(200).json({
       success: true,
@@ -221,6 +266,42 @@ const handleSignin = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Login failed", error: error.message });
+  }
+};
+
+const verify2FALogin = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (
+      !user ||
+      !user.verificationCode ||
+      user.verificationCode !== otp ||
+      new Date() > user.verificationCodeExpiresAt
+    ) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+   
+    user.verificationCode = null;
+    user.verificationCodeExpiresAt = null;
+    await user.save();
+
+    const token = createToken(user);
+    setTokenCookie(res, token);
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "2FA verification failed", error: error.message });
   }
 };
 
@@ -315,4 +396,6 @@ module.exports = {
   handleResetPasswordOtp,
   handleVerifyResetPasswordOtp,
   handleUserResetPasswordFromOtp,
+  toggleTwoFactorAuth,
+   verify2FALogin
 };

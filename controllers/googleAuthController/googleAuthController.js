@@ -84,11 +84,11 @@ const googleCallback = async (req, res) => {
       }
     }
 
-  const token = jwt.sign(
-  { id: user.id, email: user.email, name: user.firstName },
-  JWT_SECRET,
-  { expiresIn: "1h" }
-);
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.firstName },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     setTokenCookie(res, token);
 

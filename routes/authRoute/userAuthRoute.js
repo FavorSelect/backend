@@ -11,6 +11,8 @@ const {
   handleVerifyResetPasswordOtp,
   handleUserResetPasswordFromUrl,
   handleUserResetPasswordFromOtp,
+  toggleTwoFactorAuth,
+  verify2FALogin,
 } = require("../../controllers/authController/userController");
 
 router.post("/signup", handleSignUp);
@@ -23,5 +25,7 @@ router.post("/verify-otp", handleVerifyResetPasswordOtp);
 router.post("/find-my-account", handleFindMyAccountPasswordURL);
 router.post("/find-my-account/:resetToken", handleUserResetPasswordFromUrl);
 router.post("/reset-password", handleUserResetPasswordFromOtp);
+router.patch('/two-factor-toggle', toggleTwoFactorAuth);
+router.patch('/verify-two-facor',  verify2FALogin);
 
 module.exports = router;

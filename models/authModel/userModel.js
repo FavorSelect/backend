@@ -92,6 +92,10 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+     isTwoFactorAuthEnable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false, 
+  },
     verificationCode: {
       type: DataTypes.STRING,
     },

@@ -78,6 +78,50 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     }
   };
 
+
+  const sendTwoFactorOtp = async (email, fullName, otp) => {
+  try {
+    const verifyLoginURL = `${process.env.FRONTEND_URL}/verify-2fa`; 
+    const response = await transporter.sendMail({
+      from: '"FavorSelect Team" <favorselect113@gmail.com>',
+      to: email,
+      subject: "Your 2FA Login OTP - FavorSelect",
+      text: `Hi ${fullName},\n\nYour OTP for login is: ${otp}\nIt is valid for 10 minutes.\n\nIf you didn't attempt to login, please ignore this message.\n\n- The FavorSelect Team`,
+      html: `
+        <div style="max-width: 600px; background-color: #fff0f5; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(255, 105, 180, 0.2); font-family: Arial, sans-serif;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
+          </div>
+          <h2 style="color: #d63384; font-size: 26px; text-align: center; margin-bottom: 16px;">
+             Hi ${fullName} 
+          </h2>
+          <p style="color: #555; font-size: 17px; text-align: center; line-height: 1.6;">
+            Your one-time password (OTP) for logging in is:
+          </p>
+          <div style="text-align: center; margin: 20px 0;">
+            <span style="display: inline-block; font-size: 28px; font-weight: bold; background: #d63384; color: #fff; padding: 12px 24px; border-radius: 8px;">
+              ${otp}
+            </span>
+          </div>
+          <p style="text-align: center; font-size: 15px; color: #888;">
+            This OTP is valid for 10 minutes. Do not share this with anyone.
+          </p>
+          <p style="text-align: center; font-size: 15px; color: #888;">
+            If you did not request this, please ignore the email.
+          </p>
+          <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #d63384;">
+             - The FavorSelect Team
+          </p>
+        </div>
+      `,
+    });
+
+    console.log("2FA OTP email sent successfully:", response);
+  } catch (error) {
+    console.error("Error sending 2FA OTP email:", error);
+  }
+};
+
   const sendForgetPasswordURL = async (email, URL) => {
     try {
       const response = await transporter.sendMail({
@@ -250,7 +294,8 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     sendRecoveryEmail,
     sendForgetPasswordURL ,
     sendWelcomeEmail,
-    sendVerificationEmail
+    sendVerificationEmail,
+    sendTwoFactorOtp
 
   }
     
