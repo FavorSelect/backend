@@ -1,7 +1,7 @@
 const {sequelize} = require('./dbConnection');
 const Cart = require('../models/cartModel/cartModel');
 const User = require('../models/authModel/userModel'); 
-const  Product  = require('../models/productModel/productModel');
+const Product  = require('../models/productModel/productModel');
 const Category = require('../models/categoryModel/categoryModel')
 const CartItem = require('../models/cartModel/cartItemModel');
 const Order = require('../models/orderModel/orderModel');
@@ -15,8 +15,15 @@ const Seller = require('../models/authModel/sellerModel');
 const ReviewLike = require('../models/reviewLikeModel/reviewLikeModel');
 const Membership = require('../models/membershipModel/sellerMembershipModel');
 const homepageBanner = require('../models/advertisementModel/homepageBanner');
-const Logo = require('../models/advertisementModel/logoModel')
-
+const Logo = require('../models/advertisementModel/logoModel');
+const AccountDeletionRequest  = require('../models/accountDeleteRequestModel/accountDeletionRequest');
+const BrandPoster = require('../models/advertisementModel/brandAdsPoster');
+const ProductPosterAds = require('../models/advertisementModel/productPosterAds');
+const ThePopular = require('../models/advertisementModel/thepopular');
+const WeeklyPromotion = require('../models/advertisementModel/weeklyPromotion');
+const SellerFeedback = require('../models/feedbackModel/sellerFeedback');
+const SellerTicket = require('../models/ticketModel/sellerTicket');
+const UserTicket = require('../models/ticketModel/userTicketModel')
 
 
 

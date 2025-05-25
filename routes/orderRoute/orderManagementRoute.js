@@ -24,7 +24,7 @@ router.get(
 router.get(
   "/admin/orders",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["seller"]),
+  authorizeRoles(["admin", "admin+", "superadmin"]),
   handleAdminGetAllOrders
 );
 router.get(

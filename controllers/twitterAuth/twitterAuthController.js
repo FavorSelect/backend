@@ -13,6 +13,12 @@ const TWITTER_API_SECRET_KEY = process.env.TWITTER_CLIENT_SECRET;
 const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
+
+if (!TWITTER_API_KEY || !TWITTER_API_SECRET_KEY || !TWITTER_REDIRECT_URI || !JWT_SECRET) {
+  throw new Error("Missing environment variables for Twitter OAuth");
+}
+
+
 const tokenStore = {};
 
 const createOAuthClient = () => {

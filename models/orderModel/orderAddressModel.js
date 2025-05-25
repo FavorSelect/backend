@@ -56,7 +56,7 @@ const Address = sequelize.define('Address', {
 
   type: {
     type: DataTypes.STRING,
-    allowNull: false, // Can be 'shipping', 'billing', etc.
+    allowNull: true, 
   },
 
   isDefault: {
