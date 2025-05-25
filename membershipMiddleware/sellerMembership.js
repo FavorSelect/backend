@@ -2,8 +2,8 @@ const  Seller  = require("../models/authModel/sellerModel");
 
 const checkSellerMembership = async (req, res, next) => {
   try {
-    const sellerId = req.user.id; 
-    const seller = await Seller.findByPk(sellerId);
+       const userId = req.user.id; 
+      const seller = await Seller.findOne({ where: { userId } });
     if (!seller) {
       return res.status(404).json({ success: false, message: "Seller not found" });
     }

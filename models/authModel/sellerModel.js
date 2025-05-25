@@ -61,9 +61,9 @@ const Seller = sequelize.define('Seller', {
  userId: {
   type: DataTypes.INTEGER,
   allowNull: false,
-  unique: true, // if one user has one seller profile
+  unique: true, 
   references: {
-    model: 'users', // table name for User model
+    model: 'users', 
     key: 'id',
   }
 },

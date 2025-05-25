@@ -67,7 +67,7 @@ const handleGetUserAddresses = async (req, res) => {
       order: [["isDefault", "DESC"]],
     });
 
-    res.status(200).json({ success: true, addresses });
+    res.status(200).json({ success: true,message:"user address added successfult", addresses });
   } catch (error) {
     console.error("Get Addresses Error:", error);
     res

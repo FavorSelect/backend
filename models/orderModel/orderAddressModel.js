@@ -61,7 +61,7 @@ const Address = sequelize.define('Address', {
 
   isDefault: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false, // Default address flag
+    defaultValue: false, 
   },
 
 }, {

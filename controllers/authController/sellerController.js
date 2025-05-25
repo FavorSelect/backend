@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { sequelize } = require("../../mysqlConnection/dbConnection");
 const setTokenCookie = require("../../authService/setTokenCookie");
 const Seller = require("../../models/authModel/sellerModel");
 const User = require("../../models/authModel/userModel");
@@ -14,7 +15,9 @@ const {
 } = require("../../emailService/userAuthEmail/userAuthEmail");
 const { createToken } = require("../../authService/authService");
 
+
 const sellerSignup = async (req, res) => {
+  const t = await sequelize.transaction();  
   try {
     const {
       sellerName,
@@ -33,6 +36,7 @@ const sellerSignup = async (req, res) => {
       password,
     } = req.body;
     const files = req.files;
+
     if (
       !files.shopLogo ||
       !files.businessLicenseDocument ||
@@ -45,11 +49,9 @@ const sellerSignup = async (req, res) => {
     }
 
     const shopLogoUrl = files.shopLogo[0].location;
-    const businessLicenseDocumentUrl =
-      files.businessLicenseDocument[0].location;
+    const businessLicenseDocumentUrl = files.businessLicenseDocument[0].location;
     const taxDocumentUrl = files.taxDocument[0].location;
 
-    // Check if any required field is missing
     if (
       !sellerName ||
       !shopName ||
@@ -66,34 +68,30 @@ const sellerSignup = async (req, res) => {
       !zipCode ||
       !password
     ) {
-      return res
-        .status(400)
-        .json({ message: "All required fields must be filled" });
+      return res.status(400).json({ message: "All required fields must be filled" });
     }
 
-    //  Check if email already exists
-    const existingSeller = await Seller.findOne({ where: { email } });
+    const existingSeller = await Seller.findOne({ where: { email }, transaction: t });
     if (existingSeller) {
-      return res
-        .status(409)
-        .json({ message: "Seller with this email already exists" });
+      await t.rollback();
+      return res.status(409).json({ message: "Seller with this email already exists" });
     }
 
-    //  Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    //create a user first to link with seller
+
+   
     const newUser = await User.create({
       email,
       password: hashedPassword,
       role: 'seller',
       firstName: sellerName,
-    });
+      isVerified: true,
+    }, { transaction: t });
 
-    const verificationCode = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
-    //  Create seller
+
+
     const newSeller = await Seller.create({
       sellerName,
       shopName,
@@ -116,24 +114,22 @@ const sellerSignup = async (req, res) => {
       taxDocument: taxDocumentUrl,
       password: hashedPassword,
       verificationCode,
-      verificationCodeExpiresAt: verificationCodeExpiresAt,
-    });
+      verificationCodeExpiresAt,
+    }, { transaction: t });
 
-    await sendVerificationEmail(
-      newSeller.email,
-      newSeller.sellerName,
-      verificationCode
-    );
+    await t.commit();
+
+    await sendVerificationEmail(newSeller.email, newSeller.sellerName, verificationCode);
+
     return res.status(201).json({
       message: "Seller registered successfully. Pending approval.",
       newSeller,
       userId: newUser.id,
     });
   } catch (error) {
+    await t.rollback();
     console.error("Seller Signup Error:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error during seller signup" });
+    return res.status(500).json({ message: "Server error during seller signup" });
   }
 };
 
