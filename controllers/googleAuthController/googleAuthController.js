@@ -56,6 +56,9 @@ const googleCallback = async (req, res) => {
     );
 
     const { sub: googleId, name, email, picture } = userResponse.data;
+
+    const [firstName = "Google", ...lastNameParts] = name.split(" ");
+    const lastName = lastNameParts.join(" ") || "User";
     let user = await User.findOne({ where: { googleId } });
 
     if (user) {
@@ -71,8 +74,8 @@ const googleCallback = async (req, res) => {
       } else {
         user = await User.create({
           googleId,
-          firstName: firstName || "Google",
-          lastName: lastName || "User",
+          firstName,
+          lastName,
           email,
           profilePhoto: picture,
           password: null,
@@ -82,7 +85,7 @@ const googleCallback = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.firstName },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
