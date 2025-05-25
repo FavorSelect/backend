@@ -1,4 +1,5 @@
 const axios = require('axios');
+const encrypt = require('../../authService/encrption');
 const setTokenCookie = require("../../authService/setTokenCookie");
 const jwt = require('jsonwebtoken');
 const User = require('../../models/authModel/userModel'); 
@@ -87,9 +88,14 @@ const facebookCallback = async (req, res) => {
     );
 
     setTokenCookie(res, token); 
-  res.redirect(
-  `http://localhost:3000/?name=${encodeURIComponent(user.firstName + ' ' + user.lastName)}&email=${encodeURIComponent(user.email)}`
-);
+
+       const userData = JSON.stringify({
+    name: user.firstName + ' ' + user.lastName,
+    email: user.email,
+  });
+
+  const encrypted = encrypt(userData);
+     res.redirect(`http://localhost:3000/?data=${encodeURIComponent(encrypted)}`);
 
 
   } catch (error) {

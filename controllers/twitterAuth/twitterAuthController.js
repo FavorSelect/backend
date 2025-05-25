@@ -1,4 +1,5 @@
 const axios = require("axios");
+const encrypt = require("../../authService/encrption");
 const setTokenCookie = require("../../authService/setTokenCookie");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -13,11 +14,14 @@ const TWITTER_API_SECRET_KEY = process.env.TWITTER_CLIENT_SECRET;
 const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-
-if (!TWITTER_API_KEY || !TWITTER_API_SECRET_KEY || !TWITTER_REDIRECT_URI || !JWT_SECRET) {
+if (
+  !TWITTER_API_KEY ||
+  !TWITTER_API_SECRET_KEY ||
+  !TWITTER_REDIRECT_URI ||
+  !JWT_SECRET
+) {
   throw new Error("Missing environment variables for Twitter OAuth");
 }
-
 
 const tokenStore = {};
 
@@ -158,10 +162,15 @@ const twitterCallback = async (req, res) => {
 
     setTokenCookie(res, token);
 
+    const userData = JSON.stringify({
+      name: user.firstName + " " + user.lastName,
+      email: user.email,
+    });
+
+    const encrypted = encrypt(userData);
+
     res.redirect(
-      `http://localhost:3000/?name=${encodeURIComponent(
-        user.firstName + " " + user.lastName
-      )}&email=${encodeURIComponent(user.email)}`
+      `http://localhost:3000/?data=${encodeURIComponent(encrypted)}`
     );
   } catch (err) {
     console.error(
