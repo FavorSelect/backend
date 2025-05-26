@@ -25,7 +25,6 @@ router.post("/verify-otp", handleVerifyResetPasswordOtp);
 router.post("/find-my-account", handleFindMyAccountPasswordURL);
 router.post("/find-my-account/:resetToken", handleUserResetPasswordFromUrl);
 router.post("/reset-password", handleUserResetPasswordFromOtp);
-router.patch('/two-factor-auth', toggleTwoFactorAuth);
 router.patch('/verify-two-factor',  verify2FALogin);
 
 module.exports = router;

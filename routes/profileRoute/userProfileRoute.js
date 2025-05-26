@@ -3,6 +3,7 @@ const {
   getUserProfile,
   handleUpdateUserProfile,
   handleChangePassword,
+  toggleTwoFactorAuth,
 } = require("../../controllers/profileController/userProfileController");
 const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
@@ -15,5 +16,6 @@ router.put(
   handleUpdateUserProfile
 );
 router.put("/edit/change-password", handleChangePassword);
+router.patch('/two-factor-auth', toggleTwoFactorAuth);
 
 module.exports = router;
