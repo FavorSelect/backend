@@ -122,6 +122,45 @@ const sendVerificationEmail = async (email, fullName, otp) => {
   }
 };
 
+const sendTwoFactorAuthStatusEmail = async (email, fullName, isEnabled) => {
+  try {
+    const statusText = isEnabled ? "enabled" : "disabled";
+    const actionColor = isEnabled ? "#198754" : "#dc3545";
+    const actionBgColor = isEnabled ? "#d1e7dd" : "#f8d7da";
+    const actionMessage = isEnabled
+      ? "You have successfully enabled Two-Factor Authentication (2FA) for your account."
+      : "You have disabled Two-Factor Authentication (2FA) for your account. If this wasn't you, please secure your account immediately.";
+
+    const response = await transporter.sendMail({
+      from: '"FavorSelect Team" <favorselect113@gmail.com>',
+      to: email,
+      subject: `Two-Factor Authentication ${statusText} - FavorSelect`,
+      text: `Hi ${fullName},\n\n${actionMessage}\n\n- The FavorSelect Team`,
+      html: `
+        <div style="max-width: 600px; background-color: ${actionBgColor}; margin: 0 auto; padding: 24px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${logo}" alt="FavorSelect Logo" style="max-width: 140px;" />
+          </div>
+          <h2 style="color: ${actionColor}; font-size: 26px; text-align: center; margin-bottom: 16px;">
+            Hi ${fullName},
+          </h2>
+          <p style="color: #333; font-size: 17px; text-align: center; line-height: 1.6;">
+            ${actionMessage}
+          </p>
+          <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #d63384;">
+            - The FavorSelect Team
+          </p>
+        </div>
+      `,
+    });
+
+    console.log(`2FA status email (${statusText}) sent successfully to ${email}`);
+  } catch (error) {
+    console.error("Error sending 2FA status email:", error);
+  }
+};
+
+
   const sendForgetPasswordURL = async (email, URL) => {
     try {
       const response = await transporter.sendMail({
@@ -295,7 +334,8 @@ const sendVerificationEmail = async (email, fullName, otp) => {
     sendForgetPasswordURL ,
     sendWelcomeEmail,
     sendVerificationEmail,
-    sendTwoFactorOtp
+    sendTwoFactorOtp,
+     sendTwoFactorAuthStatusEmail
 
   }
     
