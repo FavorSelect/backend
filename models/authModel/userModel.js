@@ -93,8 +93,8 @@ const User = sequelize.define(
       defaultValue: false,
     },
      isTwoFactorAuthEnable: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false, 
+     type: DataTypes.BOOLEAN,
+      defaultValue: false, 
   },
     verificationCode: {
       type: DataTypes.STRING,

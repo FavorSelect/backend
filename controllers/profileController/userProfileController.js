@@ -120,6 +120,7 @@ const toggleTwoFactorAuth = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `Two-Factor Authentication ${enable ? "enabled" : "disabled"}`,
+      isTwoFactorAuthEnable: user.isTwoFactorAuthEnable
     });
   } catch (error) {
     return res

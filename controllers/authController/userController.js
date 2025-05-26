@@ -226,9 +226,8 @@ const handleSignin = async (req, res) => {
       return res.status(202).json({
         success: true,
         message: "OTP sent to your email. Please verify to complete login.",
-        twoFactorRequired: true,
+        isTwoFactorAuthEnable: user.isTwoFactorAuthEnable,
         email: user.email,
-        verificationCode,
       });
     }
 
@@ -239,6 +238,7 @@ const handleSignin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful",
+      isTwoFactorAuthEnable:user.isTwoFactorAuthEnable,
       token,
       user,
     });
