@@ -250,18 +250,22 @@ const handleSignin = async (req, res) => {
 };
 
 const verify2FALogin = async (req, res) => {
-  const { email, verificationCode } = req.body;
-
   try {
-    const user = await User.findOne({ where: { email } });
+    const { verificationCode } = req.body;
+    const user = await User.findOne({
+      where: {
+        verificationCode: verificationCode,
+        verificationCodeExpiresAt: {
+          [Op.gt]: new Date(),
+        },
+      },
+    });
 
-    if (
-      !user ||
-      !user.verificationCode ||
-      user.verificationCode !== verificationCode ||
-      new Date() > user.verificationCodeExpiresAt
-    ) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
     }
 
    
@@ -284,7 +288,6 @@ const verify2FALogin = async (req, res) => {
       .json({ message: "2FA verification failed", error: error.message });
   }
 };
-
 
 const handleLogout = (req, res) => {
   clearTokenCookie(res);

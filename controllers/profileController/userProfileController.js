@@ -126,8 +126,6 @@ const toggleTwoFactorAuth = async (req, res) => {
   }
 };
 
-
-  
   module.exports = {
     handleUpdateUserProfile,
     getUserProfile,
