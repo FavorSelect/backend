@@ -18,48 +18,61 @@ const reasons = [
 const generateUniqueId = () => {
   return Math.floor(100000000000 + Math.random() * 900000000000).toString();
 };
-
 const submitDeletionRequest = async (req, res) => {
   try {
     const { reason } = req.body;
-    const userId = req.user?.id || null;
-    const sellerId = req.user?.id || null;
+    const userId = req.user?.id;
 
-    if (!userId && !sellerId) {
-      return res.status(400).json({ message: "User or Seller ID is required" });
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
     }
+
 
     if (!reasons.includes(reason)) {
       return res.status(400).json({ message: "Invalid reason selected" });
     }
 
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+
+    const seller = await Seller.findOne({ where: { userId } });
+  
+
     let uniqueId;
     let exists = true;
-
     while (exists) {
       uniqueId = generateUniqueId();
       const existing = await AccountDeletionRequest.findOne({
         where: { uniqueAccountDeletedId: uniqueId },
       });
       exists = !!existing;
+      if (exists) console.log(" Unique ID already exists, regenerating:", uniqueId);
     }
 
+   
     const request = await AccountDeletionRequest.create({
       userId,
-      sellerId,
+      sellerId: seller ? seller.id : null,
       reason,
       uniqueAccountDeletedId: uniqueId,
       status: "pending",
     });
 
-    res.status(201).json({
+
+    return res.status(201).json({
       message: "Account deletion request submitted",
       request,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error submitting request", error: error.message });
+    console.error(" Error in submitDeletionRequest:", error);
+    return res.status(500).json({
+      message: "Error submitting request",
+      error: error.message,
+    });
   }
 };
 

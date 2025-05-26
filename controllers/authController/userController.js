@@ -214,20 +214,21 @@ const handleSignin = async (req, res) => {
 
     // If 2FA is enabled, send OTP 
     if (user.isTwoFactorAuthEnable) {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationCodeExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-      user.verificationCode = otp;
-      user.verificationCodeExpiresAt = otpExpiresAt;
+      user.verificationCode = verificationCode;
+      user.verificationCodeExpiresAt = verificationCodeExpiresAt;
       await user.save();
 
-      await sendTwoFactorOtp(user.email, user.firstName, otp); 
+      await sendTwoFactorOtp(user.email, user.firstName, verificationCode); 
 
       return res.status(202).json({
         success: true,
         message: "OTP sent to your email. Please verify to complete login.",
         twoFactorRequired: true,
         email: user.email,
+        verificationCode,
       });
     }
 
@@ -249,7 +250,7 @@ const handleSignin = async (req, res) => {
 };
 
 const verify2FALogin = async (req, res) => {
-  const { email, otp } = req.body;
+  const { email, verificationCode } = req.body;
 
   try {
     const user = await User.findOne({ where: { email } });
@@ -257,7 +258,7 @@ const verify2FALogin = async (req, res) => {
     if (
       !user ||
       !user.verificationCode ||
-      user.verificationCode !== otp ||
+      user.verificationCode !== verificationCode ||
       new Date() > user.verificationCodeExpiresAt
     ) {
       return res.status(400).json({ message: "Invalid or expired OTP" });

@@ -1,15 +1,16 @@
 
-# 📦 FavorSelect - Backend Server
+#  FavorSelect - Backend Server
 
-This is the backend server for **FavorSelect**, an e-commerce platform. It is built with **Node.js**, **Express**, **MySQL**, and integrates third-party services like **AWS S3**, **Twilio**, and **Upstash Redis**.
+This is the backend server for **FavorSelect**, an e-commerce platform. It is built with **Node.js**, **Express**, **MySQL**, and integrates third-party services like **AWS S3**, **Twilio**, **ElasticDB** and **Upstash Redis** and **Stripe** for payment processing and social login provider **Google OAuth** , **Facebook OAuth** and **Twitter OAuth**.
 
 ---
 
-## 🚀 Features
+##  Features
 
 - JWT-based authentication for users and sellers
 - Secure email and phone OTP verification
 - AWS S3 integration for image uploads
+- Elastic DB integration for better searching and filtering
 - Redis-based cache/session management with Upstash
 - Twilio SMS integration
 - Social login support: Google, Facebook, Twitter
@@ -19,7 +20,7 @@ This is the backend server for **FavorSelect**, an e-commerce platform. It is bu
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 favorselect-backend/
@@ -108,7 +109,7 @@ favorselect-backend/
 
 ---
 
-## 🛠️ Environment Setup
+##  Environment Setup
 
 Create a `.env` file with the following template:
 
@@ -163,47 +164,12 @@ ELASTICSEARCH_PASSWORD=your_cloud_password
 
 ---
 
-## 🧪 API Endpoints Overview
+##  API Endpoints Overview
 
-### 🔐 Auth Routes
-- `/api/auth/signup`
-- `/api/auth/signin`
-- `/api/auth/verify-email`
-- `/api/auth/reset-password`
-- `/api/auth/forget-password`
-- Social Login:
-  - `/api/auth/google`
-  - `/api/auth/facebook`
-  - `/api/auth/twitter`
-
-### 👤 User Routes
-(Require token)
-- `/api/user/profile`
-- `/api/user/cart`
-- `/api/user/wishlist`
-- `/api/user/review`
-- `/api/user/order`
-- `/api/user/address`
-
-### 🛒 Seller Routes
-(Require token)
-- `/api/seller/profile`
-- `/api/seller/product`
-- `/api/seller/membership`
-
-### 🛠 Admin Routes
-(Require token + admin role)
-- `/api/admin/product-approval`
-- `/api/admin/seller-approval`
-- `/api/admin/membership`
-- `/api/admin/category`
-
-### 📢 Advertisement Route
-- `/api/advertisement` (Homepage banner logic)
-
+Will be added in the next update.
 ---
 
-## 💾 Installation
+##  Installation
 
 ```bash
 git clone <repo_url>
@@ -213,7 +179,7 @@ npm install
 
 ---
 
-## 🚦 Running the Server
+##  Running the Server
 
 ```bash
 npm run dev
@@ -223,7 +189,7 @@ Server runs at: `http://localhost:8000` (or the port in `.env`)
 
 ---
 
-## 🛡️ Security Notes
+##  Security Notes
 
 - Never commit your `.env` file
 - Rotate sensitive credentials regularly (JWT, DB, Twilio, etc.)
@@ -231,12 +197,12 @@ Server runs at: `http://localhost:8000` (or the port in `.env`)
 
 ---
 
-## 📬 Contact
+##  Contact
 
-📧 favorselect113@gmail.com
+ favorselect113@gmail.com
 
 ---
 
-## 📝 License
+##  License
 
 This project is licensed under the [MIT License](LICENSE).

@@ -27,10 +27,6 @@ const AccountDeletionRequest = sequelize.define('AccountDeletionRequest', {
     },
     onDelete: 'SET NULL'
   },
-  role: {
-    type: DataTypes.ENUM('user', 'seller'),
-    allowNull: false
-  },
  reason: {
   type: DataTypes.STRING,
   allowNull: true
