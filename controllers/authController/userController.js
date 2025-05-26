@@ -227,7 +227,6 @@ const handleSignin = async (req, res) => {
         success: true,
         message: "OTP sent to your email. Please verify to complete login.",
         isTwoFactorAuthEnable: user.isTwoFactorAuthEnable,
-        email: user.email,
       });
     }
 
@@ -238,7 +237,6 @@ const handleSignin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      isTwoFactorAuthEnable:user.isTwoFactorAuthEnable,
       token,
       user,
     });
@@ -252,6 +250,10 @@ const handleSignin = async (req, res) => {
 const verify2FALogin = async (req, res) => {
   try {
     const { verificationCode } = req.body;
+
+    console.log("Received 2FA verification code:", verificationCode);
+
+    // Find user with matching verification code and expiration still valid
     const user = await User.findOne({
       where: {
         verificationCode: verificationCode,
@@ -262,27 +264,38 @@ const verify2FALogin = async (req, res) => {
     });
 
     if (!user) {
+      console.log("Invalid or expired verification code.");
       return res.status(400).json({
         success: false,
         message: "Invalid or expired verification code",
       });
     }
 
-   
+    console.log("User verified:", user.email);
+
+    // Clear the verification fields
     user.verificationCode = null;
     user.verificationCodeExpiresAt = null;
     await user.save();
 
+    console.log("Verification fields cleared.");
+
+    // Create token
     const token = createToken(user);
+    console.log("JWT token created:", token);
+
+    // Set cookie
     setTokenCookie(res, token);
+    console.log("Token cookie set successfully.");
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
       token,
-      user,
+      user, 
     });
   } catch (error) {
+    console.error("2FA verification error:", error.message);
     return res
       .status(500)
       .json({ message: "2FA verification failed", error: error.message });
@@ -379,6 +392,5 @@ module.exports = {
   handleResetPasswordOtp,
   handleVerifyResetPasswordOtp,
   handleUserResetPasswordFromOtp,
-
    verify2FALogin
 };

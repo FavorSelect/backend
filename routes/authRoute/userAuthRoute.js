@@ -11,7 +11,6 @@ const {
   handleVerifyResetPasswordOtp,
   handleUserResetPasswordFromUrl,
   handleUserResetPasswordFromOtp,
-  toggleTwoFactorAuth,
   verify2FALogin,
 } = require("../../controllers/authController/userController");
 

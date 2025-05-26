@@ -3,16 +3,16 @@ const User = require("../../models/authModel/userModel");
 const Seller = require("../../models/authModel/sellerModel");
 
 const reasons = [
-  "Privacy concerns",
-  "Switching to another service",
-  "Too many emails/notifications",
-  "Not useful anymore",
-  "Poor customer support",
-  "Technical issues",
-  "Service too expensive",
-  "Found a better platform",
-  "Creating a new account",
-  "Other",
+  "Concerned about data privacy and security",
+  "Transitioning to a different shopping platform",
+  "Receiving excessive emails or promotional content",
+  "No longer finding the platform relevant or useful",
+  "Dissatisfied with customer support experience",
+  "Encountering unresolved technical issues",
+  "Product pricing does not meet expectations",
+  "Found a platform that better suits my needs",
+  "Creating a new account for business or personal use",
+  "Other (please specify)"
 ];
 
 const generateUniqueId = () => {
