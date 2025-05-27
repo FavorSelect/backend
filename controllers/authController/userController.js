@@ -199,7 +199,7 @@ const handleSignin = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
-    }
+    } 
 
     if (!user.isVerified) {
       return res.status(400).json({
@@ -252,8 +252,6 @@ const verify2FALogin = async (req, res) => {
     const { verificationCode } = req.body;
 
     console.log("Received 2FA verification code:", verificationCode);
-
-    // Find user with matching verification code and expiration still valid
     const user = await User.findOne({
       where: {
         verificationCode: verificationCode,
@@ -273,18 +271,18 @@ const verify2FALogin = async (req, res) => {
 
     console.log("User verified:", user.email);
 
-    // Clear the verification fields
+    
     user.verificationCode = null;
     user.verificationCodeExpiresAt = null;
     await user.save();
 
     console.log("Verification fields cleared.");
 
-    // Create token
+    
     const token = createToken(user);
     console.log("JWT token created:", token);
 
-    // Set cookie
+    
     setTokenCookie(res, token);
     console.log("Token cookie set successfully.");
 

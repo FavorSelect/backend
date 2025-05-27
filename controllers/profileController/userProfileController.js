@@ -129,9 +129,33 @@ const toggleTwoFactorAuth = async (req, res) => {
   }
 };
 
+const getTwoFactorAuthStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ['isTwoFactorAuthEnable']
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json({
+      success: true,
+      isTwoFactorAuthEnable: user.isTwoFactorAuthEnable
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   handleUpdateUserProfile,
   getUserProfile,
   handleChangePassword,
   toggleTwoFactorAuth,
+  getTwoFactorAuthStatus
 };
