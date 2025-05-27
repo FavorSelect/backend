@@ -76,6 +76,39 @@ const submitDeletionRequest = async (req, res) => {
   }
 };
 
+
+const getDeletionRequestStatus = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const request = await AccountDeletionRequest.findOne({
+      where: { userId },
+      order: [['createdAt', 'DESC']], // Latest request
+      attributes: ['id','uniqueAccountDeletedId', 'status', 'reason', 'createdAt', 'updatedAt'],
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "No account deletion request found" });
+    }
+
+    return res.status(200).json({
+      message: "Account deletion request found",
+      request,
+    });
+  } catch (error) {
+    console.error("Error fetching deletion request:", error);
+    return res.status(500).json({
+      message: "Error fetching deletion request",
+      error: error.message,
+    });
+  }
+};
+
+
 const getAllDeletionRequests = async (req, res) => {
   try {
     const { status } = req.query;
@@ -183,4 +216,5 @@ module.exports = {
   updateDeletionRequestStatus,
   submitDeletionRequest,
   getAllDeletionRequests,
+  getDeletionRequestStatus
 };

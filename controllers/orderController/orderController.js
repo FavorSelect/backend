@@ -67,7 +67,7 @@ const handleBuyNow = async (req, res) => {
     );
 
     // Create order item
-    await OrderItem.create(
+   const orderItem = await OrderItem.create(
       {
         orderId: order.id,
         uniqueOrderId:order.uniqueOrderId,
@@ -99,7 +99,7 @@ const handleBuyNow = async (req, res) => {
 
     res
       .status(201)
-      .json({ message: "Order placed successfully", orderId: customOrderId });
+      .json({ message: "Order placed successfully", orderId: customOrderId ,order ,orderItem});
   } catch (error) {
     await t.rollback();
     res.status(500).json({ message: error.message || "Internal Server Error" });

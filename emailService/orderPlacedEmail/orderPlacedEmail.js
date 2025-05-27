@@ -1,9 +1,13 @@
 const { transporter } = require("../../config/nodemailerConfig/emailConfigMiddleware");
 const logo = process.env.LOGO;
 
+
 const sendOrderEmail = async (email, customerName, orderId, productDetails) => {
   try {
-    const productsHtml = productDetails.map(item => `
+    const products = Array.isArray(productDetails) ? productDetails : [productDetails];
+
+
+    const productsHtml = products.map(item => `
       <div style="margin-bottom: 20px; text-align: left;">
         <p><strong>Product:</strong> ${item.productName}</p>
         <p><strong>Quantity:</strong> ${item.quantity}</p>
@@ -12,8 +16,7 @@ const sendOrderEmail = async (email, customerName, orderId, productDetails) => {
       </div>
     `).join("");
 
-    // Generate plain text for all products
-    const productsText = productDetails.map(item => (
+    const productsText = products.map(item => (
       `Product: ${item.productName}\nQuantity: ${item.quantity}\nPrice: $${item.price.toFixed(2)}\nTotal: $${item.totalPrice.toFixed(2)}\n`
     )).join("\n");
 
@@ -42,10 +45,11 @@ const sendOrderEmail = async (email, customerName, orderId, productDetails) => {
       `
     });
 
-    console.log("Order confirmation email sent:", response);
+    console.log(" Order confirmation email sent:", response);
   } catch (error) {
-    console.error("Error sending order confirmation email:", error);
+    console.error(" Error sending order confirmation email:", error);
   }
 };
 
 module.exports = { sendOrderEmail };
+
