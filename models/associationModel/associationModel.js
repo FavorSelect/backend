@@ -93,8 +93,8 @@ Product.belongsTo(Seller, { foreignKey: "sellerId", as: "seller" });
 
 // ReviewLike ↔ User & Review
 User.hasMany(ReviewLike, { foreignKey: "userId", onDelete: "CASCADE" });
-Review.hasMany(ReviewLike, { foreignKey: "reviewId", onDelete: "CASCADE" });
-ReviewLike.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Review.hasMany(ReviewLike, { as: "likes",foreignKey: "reviewId", onDelete: "CASCADE" });
+ReviewLike.belongsTo(User, {  as: "user",foreignKey: "userId", onDelete: "CASCADE" });
 ReviewLike.belongsTo(Review, { foreignKey: "reviewId", onDelete: "CASCADE" });
 
 // User ↔ UserTicket

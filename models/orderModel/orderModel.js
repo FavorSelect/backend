@@ -82,7 +82,7 @@ addressId: {
 
 }, {
   tableName: 'orders',
-  timestamps: true, // Will create createdAt and updatedAt fields
+  timestamps: true, 
 });
 
 

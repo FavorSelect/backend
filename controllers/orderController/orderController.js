@@ -60,17 +60,17 @@ const handleBuyNow = async (req, res) => {
         totalAmount: totalPrice,
         addressId,
         paymentStatus:
-        paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
         paymentMethod,
       },
       { transaction: t }
     );
 
     // Create order item
-   const orderItem = await OrderItem.create(
+    const orderItem = await OrderItem.create(
       {
         orderId: order.id,
-        uniqueOrderId:order.uniqueOrderId,
+        uniqueOrderId: order.uniqueOrderId,
         productId: product.id,
         quantity,
         price: product.productPrice,
@@ -88,18 +88,27 @@ const handleBuyNow = async (req, res) => {
 
     await t.commit();
 
-
-    await sendOrderEmail(req.user.email, req.user.firstName, order.uniqueOrderId, {
-      productName: product.productName,
-      quantity,
-      price: product.productPrice,
-      totalPrice,
-      productImageUrl: product.coverImageUrl,
-    });
+    await sendOrderEmail(
+      req.user.email,
+      req.user.firstName,
+      order.uniqueOrderId,
+      {
+        productName: product.productName,
+        quantity,
+        price: product.productPrice,
+        totalPrice,
+        productImageUrl: product.coverImageUrl,
+      }
+    );
 
     res
       .status(201)
-      .json({ message: "Order placed successfully", orderId: customOrderId ,order ,orderItem});
+      .json({
+        message: "Order placed successfully",
+        orderId: customOrderId,
+        order,
+        orderItem,
+      });
   } catch (error) {
     await t.rollback();
     res.status(500).json({ message: error.message || "Internal Server Error" });
@@ -242,7 +251,7 @@ const handlePlaceOrderFromCart = async (req, res) => {
 
 const handleGetUserOrders = async (req, res) => {
   const userId = req.user.id;
-  const { status } = req.query; 
+  const { status } = req.query;
   try {
     const whereClause = { userId };
     if (status) {
@@ -259,14 +268,19 @@ const handleGetUserOrders = async (req, res) => {
             {
               model: Product,
               as: "product",
-              attributes: ["id", "productName", "productPrice", "coverImageUrl"]
-            }
-          ]
+              attributes: [
+                "id",
+                "productName",
+                "productPrice",
+                "coverImageUrl",
+              ],
+            },
+          ],
         },
         {
           model: Address,
-          as: "shippingAddress"
-        }
+          as: "shippingAddress",
+        },
       ],
       order: [["createdAt", "DESC"]],
       attributes: [
@@ -275,8 +289,11 @@ const handleGetUserOrders = async (req, res) => {
         "orderStatus",
         "totalAmount",
         "createdAt",
-        "updatedAt"
-      ]
+        "updatedAt",
+        "orderDate",
+        "shippingDate",
+        "deliveryDate",
+      ],
     });
 
     res.status(200).json({ success: true, count: orders.length, orders });
@@ -284,12 +301,12 @@ const handleGetUserOrders = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching orders",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
-const  handleGetSingleOrderDetails = async (req, res) => {
+const handleGetSingleOrderDetails = async (req, res) => {
   const { orderId } = req.params;
   const userId = req.user.id;
   try {
@@ -303,28 +320,53 @@ const  handleGetSingleOrderDetails = async (req, res) => {
             {
               model: Product,
               as: "product",
-              attributes: ["id", "productName", "productDescription", "productPrice", "coverImageUrl"]
-            }
-          ]
+              attributes: [
+                "id",
+                "productName",
+                "productDescription",
+                "productPrice",
+                "coverImageUrl",
+              ],
+            },
+          ],
         },
         {
           model: Address,
-          as: "shippingAddress"
-        }
+          as: "shippingAddress",
+        },
       ],
-       attributes: ["id", "uniqueOrderId", "orderStatus", "totalAmount", "paymentMethod","paymentStatus", "createdAt", "updatedAt"]
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "paymentMethod",
+        "paymentStatus",
+        "orderDate",
+        "shippingDate",
+        "deliveryDate",
+        "createdAt",
+        "updatedAt",
+      ],
     });
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     res.status(200).json({ success: true, order });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error fetching order details", error: error.message });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error fetching order details",
+        error: error.message,
+      });
   }
 };
-
 
 module.exports = {
   handleGetSingleOrderDetails,

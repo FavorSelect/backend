@@ -1,6 +1,7 @@
 const Review = require("../../models/reviewModel/reviewModel");
 const Product = require("../../models/productModel/productModel");
 const User = require("../../models/authModel/userModel");
+const ReviewLike = require('../../models/reviewLikeModel/reviewLikeModel')
 
 const handleAddReview = async (req, res) => {
   const userId = req.user.id;
@@ -133,14 +134,26 @@ const handleGetProductReviews = async (req, res) => {
       include: [
         {
           model: User,
-          as: "user", 
-          attributes: ["id", "fullName", "email"],
+          as: "user",
+          attributes: ["id", "firstName", "email"],
         },
+        {
+          model: ReviewLike,
+          as: "likes",
+          include: [
+            {
+              model: User,
+              as: "user", // user who liked the review
+              attributes: ["id", "firstName", "email"],
+            }
+          ]
+        }
       ],
       order: [["reviewDate", "DESC"]],
     });
+
     const totalReviews = reviews.length;
-    res.status(200).json({ success: true, reviews, totalReviews });
+    res.status(200).json({ success: true, totalReviews, reviews });
   } catch (error) {
     console.error("Get Product Reviews Error:", error);
     res.status(500).json({

@@ -51,6 +51,10 @@ const Review = sequelize.define(
       allowNull: true, // Optional
     },
 
+
+
+
+
     reviewDate: {
       type: DataTypes.DATE,
       allowNull: false,
