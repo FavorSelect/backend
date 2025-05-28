@@ -30,18 +30,30 @@ const addToWishlist = async (req, res) => {
 
 const getWishlist = async (req, res) => {
   const userId = req.user.id;
+
   try {
     const wishlistItems = await Wishlist.findAll({
       where: { userId },
       include: [{ model: Product, as: 'Product' }], 
     });
 
-    res.status(200).json({ success: true, wishlist: wishlistItems });
+    const wishlistCount = wishlistItems.length;
+
+    res.status(200).json({ 
+      success: true,
+      wishlistCount,
+      wishlist: wishlistItems 
+    });
   } catch (error) {
     console.error("Get Wishlist Error:", error);
-    res.status(500).json({ success: false, message: "Server error while fetching wishlist", error: error.message });
+    res.status(500).json({ 
+      success: false,
+      message: "Server error while fetching wishlist",
+      error: error.message 
+    });
   }
 };
+
 
 const removeFromWishlist = async (req, res) => {
   const userId = req.user.id;

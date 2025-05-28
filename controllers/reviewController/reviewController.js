@@ -147,6 +147,10 @@ const handleGetProductReviews = async (req, res) => {
               attributes: ["id", "firstName", "email"],
             }
           ]
+        }, {
+          model: Product,
+          as: "product",
+          attributes: ["id", "productName", "productPrice", "coverImageUrl"],
         }
       ],
       order: [["reviewDate", "DESC"]],
@@ -167,6 +171,7 @@ const handleGetProductReviews = async (req, res) => {
 
 const handleGetUserReviewsWithProducts = async (req, res) => {
   const userId = req.user.id;
+
   try {
     const userReviews = await Review.findAll({
       where: { userId },
@@ -176,6 +181,18 @@ const handleGetUserReviewsWithProducts = async (req, res) => {
           as: 'product',
           attributes: ['id', 'productName', 'coverImageUrl', 'productPrice'], 
         },
+        {
+          model: ReviewLike,
+          as: 'likes',
+          attributes: ['id', 'userId'],
+          include: [
+            {
+              model: User,
+              as: 'user',
+              attributes: ['id', 'firstName', 'email'],
+            }
+          ]
+        }
       ],
       order: [['reviewDate', 'DESC']],
     });
@@ -194,7 +211,6 @@ const handleGetUserReviewsWithProducts = async (req, res) => {
     });
   }
 };
-
 
 const getReviewCountForProduct = async (req, res) => {
   const { productId } = req.params;
