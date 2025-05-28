@@ -282,7 +282,7 @@ const verify2FALogin = async (req, res) => {
     const token = createToken(user);
     console.log("JWT token created:", token);
 
-    
+  
     setTokenCookie(res, token);
     console.log("Token cookie set successfully.");
 

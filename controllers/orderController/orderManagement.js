@@ -11,7 +11,6 @@ const Seller = require("../../models/authModel/sellerModel");
 
 const handleAdminGetAllOrders = async (req, res) => {
   try {
-    const sellerId = req.user.id;
     const { orderStatus, paymentStatus, paymentMethod, startDate, endDate } =
       req.query;
     const whereClause = {};

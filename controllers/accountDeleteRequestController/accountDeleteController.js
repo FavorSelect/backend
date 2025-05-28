@@ -1,6 +1,7 @@
 const AccountDeletionRequest = require("../../models/accountDeleteRequestModel/accountDeletionRequest");
 const User = require("../../models/authModel/userModel");
 const Seller = require("../../models/authModel/sellerModel");
+const { sendAccountDeletionStatusEmail } = require("../../emailService/deletionRequest/deletionRequest");
 
 const reasons = [
   "Concerned about data privacy and security",
@@ -12,7 +13,7 @@ const reasons = [
   "Product pricing does not meet expectations",
   "Found a platform that better suits my needs",
   "Creating a new account for business or personal use",
-  "Other (please specify)"
+  "Other (please specify)",
 ];
 
 const generateUniqueId = () => {
@@ -27,20 +28,16 @@ const submitDeletionRequest = async (req, res) => {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-
     if (!reasons.includes(reason)) {
       return res.status(400).json({ message: "Invalid reason selected" });
     }
-
 
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-
     const seller = await Seller.findOne({ where: { userId } });
-  
 
     let uniqueId;
     let exists = true;
@@ -50,10 +47,10 @@ const submitDeletionRequest = async (req, res) => {
         where: { uniqueAccountDeletedId: uniqueId },
       });
       exists = !!existing;
-      if (exists) console.log(" Unique ID already exists, regenerating:", uniqueId);
+      if (exists)
+        console.log(" Unique ID already exists, regenerating:", uniqueId);
     }
 
-   
     const request = await AccountDeletionRequest.create({
       userId,
       sellerId: seller ? seller.id : null,
@@ -61,7 +58,6 @@ const submitDeletionRequest = async (req, res) => {
       uniqueAccountDeletedId: uniqueId,
       status: "pending",
     });
-
 
     return res.status(201).json({
       message: "Account deletion request submitted",
@@ -76,7 +72,6 @@ const submitDeletionRequest = async (req, res) => {
   }
 };
 
-
 const getDeletionRequestStatus = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -87,12 +82,21 @@ const getDeletionRequestStatus = async (req, res) => {
 
     const request = await AccountDeletionRequest.findOne({
       where: { userId },
-      order: [['createdAt', 'DESC']], // Latest request
-      attributes: ['id','uniqueAccountDeletedId', 'status', 'reason', 'createdAt', 'updatedAt'],
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "uniqueAccountDeletedId",
+        "status",
+        "reason",
+        "createdAt",
+        "updatedAt",
+      ],
     });
 
     if (!request) {
-      return res.status(404).json({ message: "No account deletion request found" });
+      return res
+        .status(404)
+        .json({ message: "No account deletion request found" });
     }
 
     return res.status(200).json({
@@ -107,7 +111,6 @@ const getDeletionRequestStatus = async (req, res) => {
     });
   }
 };
-
 
 const getAllDeletionRequests = async (req, res) => {
   try {
@@ -190,7 +193,8 @@ const updateDeletionRequestStatus = async (req, res) => {
           await seller.destroy();
         }
       }
-    }if (status === "rejected") {
+    }
+    if (status === "rejected") {
       return res.status(200).json({
         message: "Request rejected, no account deleted",
         request,
@@ -200,6 +204,12 @@ const updateDeletionRequestStatus = async (req, res) => {
     request.status = status;
     await request.save();
 
+    await sendAccountDeletionStatusEmail(
+      email,
+      fullName,
+      request.uniqueAccountDeletedId,
+      request.status
+    );
     res
       .status(200)
       .json({ message: `Request ${status} successfully`, request });
@@ -216,5 +226,5 @@ module.exports = {
   updateDeletionRequestStatus,
   submitDeletionRequest,
   getAllDeletionRequests,
-  getDeletionRequestStatus
+  getDeletionRequestStatus,
 };

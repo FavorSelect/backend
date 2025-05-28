@@ -242,9 +242,15 @@ const handlePlaceOrderFromCart = async (req, res) => {
 
 const handleGetUserOrders = async (req, res) => {
   const userId = req.user.id;
+  const { status } = req.query; 
   try {
+    const whereClause = { userId };
+    if (status) {
+      whereClause.orderStatus = status;
+    }
+
     const orders = await Order.findAll({
-      where: { userId },
+      where: whereClause,
       include: [
         {
           model: OrderItem,
@@ -263,12 +269,23 @@ const handleGetUserOrders = async (req, res) => {
         }
       ],
       order: [["createdAt", "DESC"]],
-      attributes: ["id", "uniqueOrderId","orderStatus", "totalAmount", "createdAt", "updatedAt"]
+      attributes: [
+        "id",
+        "uniqueOrderId",
+        "orderStatus",
+        "totalAmount",
+        "createdAt",
+        "updatedAt"
+      ]
     });
 
-    res.status(200).json({ success: true, orders });
+    res.status(200).json({ success: true, count: orders.length, orders });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error fetching orders", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching orders",
+      error: error.message
+    });
   }
 };
 

@@ -207,12 +207,12 @@ const verifySellerEmail = async (req, res) => {
 const sellerSignin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const seller = await Seller.findOne({ where: { email } });
+
     if (!seller) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
-
+    
     if (!seller.isVerified) {
       return res.status(400).json({ message: "Please verify your email before logging in" });
     }

@@ -36,11 +36,11 @@ const initDB = (callback) => {
     })
     .then(() => {
       console.log(' All models synced');
-      callback(); // Call the callback to start server
+      callback(); 
     })
     .catch((error) => {
       console.error(' Error connecting to the database:', error);
-      process.exit(1); // Exit on failure
+      process.exit(1); 
     });
 };
 
