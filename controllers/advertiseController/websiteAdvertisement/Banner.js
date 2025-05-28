@@ -1,4 +1,4 @@
-const HomepageBanner = require("../../models/advertisementModel/homepageBanner");
+const HomepageBanner = require("../../../models/advertisementModel/websiteAdvertisement/homepageBanner");
 
 const handleAddHomepageBanner = async (req, res) => {
   try {

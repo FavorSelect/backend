@@ -15,7 +15,8 @@ const ReviewLike = require("../reviewLikeModel/reviewLikeModel");
 const UserTicket = require("../ticketModel/userTicketModel");
 const SellerTicket = require("../ticketModel/sellerTicket");
 const SellerFeedback = require('../feedbackModel/sellerFeedback')
-const AccountDeletionRequest = require('../accountDeleteRequestModel/accountDeletionRequest')
+const AccountDeletionRequest = require('../accountDeleteRequestModel/accountDeletionRequest');
+const EmailPreference = require('../advertisementModel/promotionToUser/emailPreference');
 
 // Cart ↔ CartItem
 Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });
@@ -153,3 +154,14 @@ Order.hasOne(SellerFeedback, {
 AccountDeletionRequest.belongsTo(User, { foreignKey: 'userId' });
 AccountDeletionRequest.belongsTo(Seller, { foreignKey: 'sellerId' });
 
+
+User.hasOne(EmailPreference, {
+  foreignKey: 'userId',
+  as: 'emailPreference',
+  onDelete: 'CASCADE',
+});
+
+EmailPreference.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
+});

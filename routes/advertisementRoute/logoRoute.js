@@ -3,7 +3,7 @@ const router = express.Router();
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
 const upload = require('../../awsS3Connection/awsUploadMiddleware');
-const { handleAddLogo } = require("../../controllers/advertiseController/logoController");
+const { handleAddLogo } = require("../../controllers/advertiseController/websiteAdvertisement/logoController");
 
 router.post(
   "/add-logo",

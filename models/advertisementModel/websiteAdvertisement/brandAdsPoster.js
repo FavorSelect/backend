@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../mysqlConnection/dbConnection');
-const  ProductPosterAds = sequelize.define('ProductPosterAds', {
+const { sequelize } = require('../../../mysqlConnection/dbConnection');
+const  BrandPoster = sequelize.define('BrandPoster', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -18,8 +18,8 @@ const  ProductPosterAds = sequelize.define('ProductPosterAds', {
   },
 
 }, {
-  tableName: 'product_posters_ads',
+  tableName: 'brand_posters',
   timestamps: true,
 });
 
-module.exports =   ProductPosterAds;
+module.exports =  BrandPoster;

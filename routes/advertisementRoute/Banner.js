@@ -10,7 +10,7 @@ const {
   getThePopularBanners,
   getBrandPosterBanners,
   getProductPosterAdsBanners,
-} = require("../../controllers/advertiseController/Banner");
+} = require("../../controllers/advertiseController/websiteAdvertisement/Banner");
 const router = express.Router();
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");

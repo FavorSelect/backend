@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../mysqlConnection/dbConnection');
+const { sequelize } = require('../../../mysqlConnection/dbConnection');
 const HomepageBanner = sequelize.define('HomepageBanner', {
   id: {
     type: DataTypes.INTEGER,

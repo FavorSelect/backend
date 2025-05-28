@@ -1,4 +1,4 @@
-const Logo = require("../../models/advertisementModel/logoModel");
+const Logo = require("../../../models/advertisementModel/websiteAdvertisement/logoModel");
 
 const handleAddLogo = async (req, res) => {
   try {

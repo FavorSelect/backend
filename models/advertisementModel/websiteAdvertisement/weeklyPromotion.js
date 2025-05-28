@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../../mysqlConnection/dbConnection');
+const { sequelize } = require('../../../mysqlConnection/dbConnection');
 const  WeeklyPromotion = sequelize.define('WeeklyPromotion', {
   id: {
     type: DataTypes.INTEGER,
