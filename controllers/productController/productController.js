@@ -3,6 +3,7 @@ const elasticClient = require("../../config/elasticSearchConfig/elasticSearchCli
 const Category = require("../../models/categoryModel/categoryModel");
 const Seller = require("../../models/authModel/sellerModel");
 const { Op } = require("sequelize");
+const { extractLabelsFromImageS3 } = require("../../awsRekognition/awsRekognition");
 
 const handleAddProduct = async (req, res) => {
   try {
@@ -57,6 +58,14 @@ const handleAddProduct = async (req, res) => {
       });
     }
 
+
+
+   const imageKey = decodeURIComponent(new URL(req.file.location).pathname.slice(1));
+const rekognitionLabels = await extractLabelsFromImageS3(process.env.AWS_BUCKET_NAME, imageKey);
+
+
+    const productTags = rekognitionLabels.join(", ");
+
     const product = await Product.create({
       productName,
       productDescription,
@@ -82,6 +91,8 @@ const handleAddProduct = async (req, res) => {
       productWarrantyInfo: productWarrantyInfo || null,
       productReturnPolicy: productReturnPolicy || null,
       sellerId, //🔗link seller and product
+       productTags,
+         rekognitionLabels,
     });
 
     await elasticClient.index({

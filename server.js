@@ -40,7 +40,8 @@ const productRoute = require("./routes/productRoute/productRoute");
 const handleReviewPermission = require("./routes/adminRoute/handleReviewPermission/reviewPermission");
 const sellerFeedbackRoute = require("./routes/feedbackRoute/sellerFeedbackRoute");
 const accountDeleteRequestRoute = require("./routes/accountDeleteRequestRoute/accountDeleteRequestRoute");
-const emailPreference = require('./routes/promotionRoute/emailPreference')
+const emailPreference = require('./routes/promotionRoute/emailPreference');
+const imageSearchRoute = require("./routes/imageSearch/imageSearchRoute");
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -88,7 +89,7 @@ app.use(
   sellerFeedbackRoute,
   emailPreference
 );
-app.use("/api/general", categoryRoute, productRoute);
+app.use("/api/general", categoryRoute, productRoute,imageSearchRoute);
 app.use("/api/common-seller-admin", orderManageRoute);
 app.use(
   "/api/admin/dashboard",

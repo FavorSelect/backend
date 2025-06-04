@@ -18,7 +18,15 @@ const Product = sequelize.define(
         key: "id",
       },
     },
+    productTags: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
 
+    rekognitionLabels: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
     productName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -122,11 +130,6 @@ const Product = sequelize.define(
     customerReviews: {
       type: DataTypes.TEXT, // Stores a JSON string
       allowNull: true,
-    },
-
-    // Tags & Metadata
-    productTags: {
-      type: DataTypes.STRING,
     },
 
     productWarrantyInfo: {
