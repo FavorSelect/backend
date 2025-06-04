@@ -17,6 +17,11 @@ const SellerTicket = require("../ticketModel/sellerTicket");
 const SellerFeedback = require('../feedbackModel/sellerFeedback')
 const AccountDeletionRequest = require('../accountDeleteRequestModel/accountDeletionRequest');
 const EmailPreference = require('../advertisementModel/promotionToUser/emailPreference');
+const SearchHistory = require('../../models/searchHistory/userSearchHistory');
+
+
+SearchHistory.belongsTo(User, { foreignKey: 'userId' });
+SearchHistory.belongsTo(Product, { foreignKey: 'productId' });
 
 // Cart ↔ CartItem
 Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });

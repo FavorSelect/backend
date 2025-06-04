@@ -42,6 +42,8 @@ const sellerFeedbackRoute = require("./routes/feedbackRoute/sellerFeedbackRoute"
 const accountDeleteRequestRoute = require("./routes/accountDeleteRequestRoute/accountDeleteRequestRoute");
 const emailPreference = require('./routes/promotionRoute/emailPreference');
 const imageSearchRoute = require("./routes/imageSearch/imageSearchRoute");
+const recommendationRoute = require('./routes/recommendationRoute/recommendation')
+
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -90,6 +92,7 @@ app.use(
   emailPreference
 );
 app.use("/api/general", categoryRoute, productRoute,imageSearchRoute);
+app.use("/api/recommendation", checkForAuthenticationCookie("token"), recommendationRoute);
 app.use("/api/common-seller-admin", orderManageRoute);
 app.use(
   "/api/admin/dashboard",
