@@ -16,7 +16,7 @@ const checkForAuthenticationCookie = require("../../authMiddleware/authMiddlewar
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
 
 router.get(
-  "/orders",
+  "/seller/orders",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["seller"]),
   handleSellerGetAllOrders
@@ -28,9 +28,15 @@ router.get(
   handleAdminGetAllOrders
 );
 router.get(
-  "/orders/:orderId",
+  "/admin/orders/:orderId",
   checkForAuthenticationCookie("token"),
-  authorizeRoles(["admin", "admin+", "superadmin", "seller"]),
+  authorizeRoles(["admin", "admin+", "superadmin"]),
+  handleGetOrderById
+);
+router.get(
+  "/seller/orders/:orderId",
+  checkForAuthenticationCookie("token"),
+  authorizeRoles([ "seller"]),
   handleGetOrderById
 );
 router.get(

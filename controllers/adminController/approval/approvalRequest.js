@@ -19,6 +19,32 @@ const getPendingSellerApproval = async (req, res) => {
     }
   };
 
+  const getPendingSellerDetailsById = async (req, res) => {
+  try {
+    const { sellerId  } = req.params;
+
+    const seller = await Seller.findOne({
+      where: {
+       id: sellerId,
+        isApproved: false
+      }
+    });
+
+    if (!seller) {
+      return res.status(404).json({ success: false, message: "Seller not found or already approved" });
+    }
+
+    res.status(200).json({ success: true, seller });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
 
 const handleApproveSeller = async (req, res) => {
   try {
@@ -67,6 +93,7 @@ const handleRejectSeller = async (req, res) => {
 module.exports = {
     handleRejectSeller,
     handleApproveSeller,
-    getPendingSellerApproval
+    getPendingSellerApproval,
+    getPendingSellerDetailsById
 }
 

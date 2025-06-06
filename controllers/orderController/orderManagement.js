@@ -11,28 +11,62 @@ const Seller = require("../../models/authModel/sellerModel");
 
 const handleAdminGetAllOrders = async (req, res) => {
   try {
-    const { orderStatus, paymentStatus, paymentMethod, startDate, endDate } =
-      req.query;
+    const { orderStatus, uniqueOrderId, orderDate } = req.query;
+
     const whereClause = {};
 
-    if (orderStatus) whereClause.orderStatus = orderStatus;
-    if (paymentStatus) whereClause.paymentStatus = paymentStatus;
-    if (paymentMethod) whereClause.paymentMethod = paymentMethod;
-    if (startDate && endDate) {
-      whereClause.orderDate = {
-        [Op.between]: [new Date(startDate), new Date(endDate)],
+    if (orderStatus) {
+      whereClause.orderStatus = orderStatus;
+    }
+
+    if (uniqueOrderId) {
+      whereClause.uniqueOrderId = {
+        [Op.like]: `%${uniqueOrderId}%`,
       };
     }
 
-    const orders = await Order.findAll({ where: whereClause });
-    res
-      .status(200)
-      .json({ message: "Orders retrieved", count: orders.length, orders });
+    if (orderDate) {
+      const date = new Date(orderDate);
+      whereClause.orderDate = {
+        [Op.gte]: new Date(date.setHours(0, 0, 0, 0)),
+        [Op.lt]: new Date(date.setHours(24, 0, 0, 0)),
+      };
+    }
+
+    const orders = await Order.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email"],
+        },
+        {
+          model: OrderItem,
+          as: "orderItems", 
+          attributes: [
+            "productId",
+            "productName",
+            "quantity",
+            "price",
+            "totalPrice",
+            "productImageUrl",
+          ],
+        },
+      ],
+      order: [["orderDate", "DESC"]],
+    });
+
+    res.status(200).json({
+      message: "Orders retrieved successfully",
+      count: orders.length,
+      orders,
+    });
   } catch (error) {
     console.error("Error getting orders:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 const handleSellerGetAllOrders = async (req, res) => {
   try {
