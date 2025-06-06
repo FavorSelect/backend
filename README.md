@@ -17,6 +17,9 @@ This is the backend server for **FavorSelect**, an e-commerce platform. It is bu
 - Full admin, seller, and user API segregation
 - Role-based access control (admin, admin+, superadmin)
 - Product management, wishlist, reviews, carts, orders, and more
+- Stripe payment gateway integration
+- Auto Recommendation of products based on user search, activity
+- Product search from images facility
 
 ---
 
@@ -35,6 +38,9 @@ favorselect-backend/
 │   ├── twilioConfig/          # Twilio setup
 ├── controllers/                # All route controller logic
 │   ├── addressController/
+│   ├── accountDeleteRequestController/
+│   ├── imageSearchController/
+│   ├── recommendationController/
 │   ├── adminController/
 │   ├── advertiseController/
 │   ├── authController/

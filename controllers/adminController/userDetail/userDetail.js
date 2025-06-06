@@ -4,19 +4,34 @@ const Order = require('../../../models/orderModel/orderModel');
 const Review = require('../../../models/reviewModel/reviewModel');
 const Address = require('../../../models/orderModel/orderAddressModel');
 
+
 const handleGetAllUsers = async (req, res) => {
   try {
-    const { provider, status,isVerified  } = req.query;
-    const whereClause = {};
-    if (provider) {
-      whereClause.authProvider = provider.toLowerCase();
+    const { id, email, name, status } = req.query;
+
+    const whereClause = {
+      isVerified: true, 
+    };
+
+    if (id) {
+      whereClause.id = id;
     }
-      if (isVerified !== undefined) {
-      whereClause.isVerified = isVerified === 'true';
+
+    if (email) {
+      whereClause.email = { [Op.like]: `%${email}%` };
     }
+
+    if (name) {
+      whereClause[Op.or] = [
+        { firstName: { [Op.like]: `%${name}%` } },
+        { lastName: { [Op.like]: `%${name}%` } },
+      ];
+    }
+
     if (status) {
-      whereClause.status = status.toLowerCase(); // 'active', 'suspended', deleted etc.
+      whereClause.status = status.toLowerCase();
     }
+
     const users = await User.findAll({
       where: whereClause,
       attributes: [
@@ -26,12 +41,13 @@ const handleGetAllUsers = async (req, res) => {
         "email",
         "authProvider",
         "status",
+        "isVerified",
         "createdAt",
       ],
     });
 
     res.status(200).json({
-      message: "Users retrieved successfully",
+      message: "Verified users retrieved successfully",
       count: users.length,
       users,
     });
