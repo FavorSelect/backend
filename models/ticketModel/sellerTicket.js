@@ -26,7 +26,7 @@ const SellerTicket = sequelize.define(
       
     },
     status: {
-      type: DataTypes.ENUM("open", "in_progress", "closed"),
+      type: DataTypes.ENUM("open", "in_progress", "closed","resolved"),
       defaultValue: "open",
     },
     adminReply: { type: DataTypes.TEXT },

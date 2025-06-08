@@ -41,9 +41,10 @@ const UserTicket = sequelize.define('UserTicket', {
   },
 
   status: {
-    type: DataTypes.ENUM('Open', 'InProgress', 'Resolved','Closed'),
+    type: DataTypes.ENUM("open", "in_progress", "closed","resolved"),
     defaultValue: 'Open'
   },
+
 
   adminReply: {
     type: DataTypes.TEXT,

@@ -123,7 +123,7 @@ const getTicketByIdSeller = async (req, res) => {
     }
      
     const ticket = await SellerTicket.findOne({
-      where: { ticketId },
+      where: {id:ticketId },
       attributes: [
         "id",
         "ticketNumber",
@@ -161,7 +161,7 @@ const replyToTicketSeller = async (req, res) => {
     const ticket = await SellerTicket.findByPk(ticketId, {
       include: {
         model: Seller,
-        attributes: ["firstName", "lastName", "email"],
+        attributes: ["sellerName", "email","contactNumber"],
       },
     });
 
@@ -175,7 +175,7 @@ const replyToTicketSeller = async (req, res) => {
     if (seller?.email) {
       await sendSellerTicketReplyEmail(
         seller.email,
-        `${seller.firstName} ${seller.lastName}`,
+        `${seller.sellerName}`,
         ticket.ticketNumber,
         ticket.subject,
         ticket.adminReply,
@@ -185,6 +185,7 @@ const replyToTicketSeller = async (req, res) => {
 
     res.status(200).json({ message: "Reply added successfully", ticket });
   } catch (error) {
+      console.error("Error replying to seller ticket:", error);
     res.status(500).json({ error: "Failed to reply to ticket" });
   }
 };
