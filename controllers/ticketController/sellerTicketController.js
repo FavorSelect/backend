@@ -21,20 +21,26 @@ const generateTicketNumber = async () => {
 const createSellerTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
-    const sellerId = req.user.id; 
+    const userId = req.user.id;
     const image = req.file;
-    const imageUrl = image?.location || null
+    const imageUrl = image?.location || null;
+
+  
+    const seller = await Seller.findOne({ where: { userId } });
+
+    if (!seller) {
+      return res.status(404).json({ error: "Seller account not found for this user" });
+    }
+
     const ticketNumber = await generateTicketNumber();
 
     const ticket = await SellerTicket.create({
-      sellerId,
+      sellerId: seller.id,
       subject,
       description,
-      image:imageUrl,
+       imageUrl,
       ticketNumber,
     });
-
-    const seller = await Seller.findByPk(sellerId);
 
     if (seller?.email) {
       await sendSellerTicketCreationEmail(
@@ -55,6 +61,7 @@ const createSellerTicket = async (req, res) => {
     res.status(500).json({ error: "Failed to create ticket" });
   }
 };
+
 
 const getMyTicketsSeller = async (req, res) => {
   try {
@@ -91,12 +98,12 @@ const getAllTicketsSeller = async (req, res) => {
         "description",
         "status",
         "adminReply",
-        "image",
+        "imageUrl",
         "createdAt",
       ],
       include: {
         model: Seller,
-        attributes: ["id", "firstName", "lastName", "email"],
+        attributes: ["id", "sellerName", "email","contactNumber"],
       },
       order: [["createdAt", "DESC"]],
     });
@@ -106,6 +113,45 @@ const getAllTicketsSeller = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch tickets" });
   }
 };
+
+const getTicketByIdSeller = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    if (!ticketId) {
+      return res.status(400).json({ error: "Ticket ID is required" });
+    }
+     
+    const ticket = await SellerTicket.findOne({
+      where: { ticketId },
+      attributes: [
+        "id",
+        "ticketNumber",
+        "subject",
+        "description",
+        "status",
+        "adminReply",
+        "imageUrl",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: {
+        model: Seller,
+        attributes: ["id", "sellerName", "email", "contactNumber"],
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    res.status(200).json({ ticket });
+  } catch (error) {
+    console.error("Error fetching seller ticket:", error);
+    res.status(500).json({ error: "Failed to fetch ticket" });
+  }
+};
+
 
 const replyToTicketSeller = async (req, res) => {
   try {
@@ -148,4 +194,5 @@ module.exports = {
   getMyTicketsSeller,
   getAllTicketsSeller,
   replyToTicketSeller,
+   getTicketByIdSeller
 };

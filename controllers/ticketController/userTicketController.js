@@ -75,6 +75,45 @@ const getMyTicketsUser = async (req, res) => {
   }
 };
 
+const getTicketsByTicketId = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    if (!ticketId) {
+      return res.status(400).json({ error: "Ticket ID is required" });
+    }
+
+    const ticket = await UserTicket.findOne({
+      where: { id: ticketId },
+      attributes: [
+        "id",
+        "ticketNumber",
+        "subject",
+        "description",
+        "status",
+        "adminReply",
+        "image",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: {
+        model: User,
+        attributes: ["id", "firstName", "lastName", "email","phone"],
+      },
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
+
+    res.status(200).json({ ticket });
+  } catch (error) {
+    console.error("Error fetching ticket:", error);
+    res.status(500).json({ error: "Failed to fetch ticket" });
+  }
+};
+
+
 const getAllTicketsUser = async (req, res) => {
   try {
     const { status } = req.query;
@@ -145,4 +184,5 @@ module.exports = {
   getAllTicketsUser,
   getMyTicketsUser,
   createUserTicket,
+  getTicketsByTicketId
 };
