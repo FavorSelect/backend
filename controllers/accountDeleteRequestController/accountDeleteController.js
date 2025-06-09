@@ -1,7 +1,9 @@
 const AccountDeletionRequest = require("../../models/accountDeleteRequestModel/accountDeletionRequest");
 const User = require("../../models/authModel/userModel");
 const Seller = require("../../models/authModel/sellerModel");
-const { sendAccountDeletionStatusEmail } = require("../../emailService/deletionRequest/deletionRequest");
+const {
+  sendAccountDeletionStatusEmail,
+} = require("../../emailService/deletionRequest/deletionRequest");
 
 const reasons = [
   "Concerned about data privacy and security",
@@ -112,6 +114,50 @@ const getDeletionRequestStatus = async (req, res) => {
   }
 };
 
+const getDeletionRequestById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const request = await AccountDeletionRequest.findOne({
+      where: { id },
+      attributes: [
+        "id",
+        "userId",
+        "sellerId",
+        "reason",
+        "status",
+        "uniqueAccountDeletedId",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["id", "firstName", "lastName", "email"],
+          required: false,
+        },
+        {
+          model: Seller,
+          attributes: ["id", "sellerName", "email", "shopName"],
+          required: false,
+        },
+      ],
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "Deletion request not found" });
+    }
+
+    res.status(200).json({ request });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error fetching deletion request",
+      error: error.message,
+    });
+  }
+};
+
 const getAllDeletionRequests = async (req, res) => {
   try {
     const { status } = req.query;
@@ -171,6 +217,9 @@ const updateDeletionRequestStatus = async (req, res) => {
         .json({ message: "Account deletion request not found" });
     }
 
+    let email = null;
+    let fullName = null;
+
     if (status === "approved") {
       if (request.userId) {
         const user = await User.findByPk(request.userId);
@@ -179,6 +228,9 @@ const updateDeletionRequestStatus = async (req, res) => {
           request.deletedUserName = `${user.firstName || ""} ${
             user.lastName || ""
           }`.trim();
+
+          email = user.email;
+          fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
           await user.destroy();
         }
@@ -189,6 +241,9 @@ const updateDeletionRequestStatus = async (req, res) => {
         if (seller) {
           request.deletedSellerEmail = seller.email;
           request.deletedSellerName = seller.sellerName || "";
+
+          email = seller.email;
+          fullName = seller.sellerName || "";
 
           await seller.destroy();
         }
@@ -204,12 +259,15 @@ const updateDeletionRequestStatus = async (req, res) => {
     request.status = status;
     await request.save();
 
-    await sendAccountDeletionStatusEmail(
-      email,
-      fullName,
-      request.uniqueAccountDeletedId,
-      request.status
-    );
+    if (email && fullName) {
+      await sendAccountDeletionStatusEmail(
+        email,
+        fullName,
+        request.uniqueAccountDeletedId,
+        request.status
+      );
+    }
+
     res
       .status(200)
       .json({ message: `Request ${status} successfully`, request });
@@ -227,4 +285,5 @@ module.exports = {
   submitDeletionRequest,
   getAllDeletionRequests,
   getDeletionRequestStatus,
+  getDeletionRequestById,
 };

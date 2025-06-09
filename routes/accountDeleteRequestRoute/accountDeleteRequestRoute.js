@@ -4,6 +4,7 @@ const {
   getAllDeletionRequests,
   updateDeletionRequestStatus,
   getDeletionRequestStatus,
+  getDeletionRequestById,
 } = require("../../controllers/accountDeleteRequestController/accountDeleteController");
 const checkForAuthenticationCookie = require("../../authMiddleware/authMiddleware");
 const { authorizeRoles } = require("../../authMiddleware/roleMiddleware");
@@ -28,8 +29,14 @@ router.get(
   authorizeRoles(["admin", "admin+", "superadmin"]),
   getAllDeletionRequests
 );
+router.get(
+  "/deletion-requests/:id",
+  checkForAuthenticationCookie("token"),
+  authorizeRoles(["admin", "admin+", "superadmin"]),
+ getDeletionRequestById
+);
 router.patch(
-  "/deletion-request/:id/status",
+  "/deletion-requests/:id",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
   updateDeletionRequestStatus
