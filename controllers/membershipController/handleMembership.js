@@ -21,7 +21,7 @@ const handleCreateMembership = async (req, res) => {
 
 const handleUpdateMembership = async (req, res) => {
   const { membershipId } = req.params;
-  const { planName, price, description, isActive } = req.body;
+  const { planName, price, description, isActive,durationInDays } = req.body;
 
   try {
     const membership = await Membership.findByPk(membershipId);
@@ -30,7 +30,7 @@ const handleUpdateMembership = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Membership not found' });
     }
 
-    await membership.update({ planName, price, description, isActive });
+    await membership.update({ planName, price, description, isActive ,durationInDays});
 
     return res.status(200).json({ success: true, message: 'Membership updated successfully', membership });
   } catch (error) {
