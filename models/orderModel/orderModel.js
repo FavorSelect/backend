@@ -69,7 +69,7 @@ addressId: {
 
   orderDate: {
     type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW, // Automatically sets the current date
+    defaultValue: DataTypes.NOW, 
   },
 
   shippingDate: {

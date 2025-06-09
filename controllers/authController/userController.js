@@ -12,6 +12,7 @@ const {
   sendTwoFactorOtp,
 } = require("../../emailService/userAuthEmail/userAuthEmail");
 const { createToken } = require("../../authService/authService");
+const { updateCustomers } = require("../statistics/adminStats");
 
 const handleSignUp = async (req, res) => {
   const { firstName, lastName, email, password, phone } = req.body;
@@ -42,6 +43,7 @@ if (existingUser) {
       isTwoFactorAuthEnable:false,
       verificationCodeExpiresAt: verificationCodeExpiresAt,
     });
+    await updateCustomers();
     await sendVerificationEmail(
       newUser.email,
       newUser.firstName,

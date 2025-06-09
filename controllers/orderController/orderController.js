@@ -8,6 +8,7 @@ const { sequelize } = require("../../mysqlConnection/dbConnection");
 const {
   sendOrderEmail,
 } = require("../../emailService/orderPlacedEmail/orderPlacedEmail");
+const {updateRevenueAndOrders} = require("../statistics/adminStats");
 
 //orderId like -->  333-5555555-6666666
 function generateFormattedOrderId() {
@@ -42,7 +43,6 @@ const handleBuyNow = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Check if enough stock is available
     if (product.availableStockQuantity < quantity) {
       await t.rollback();
       return res.status(400).json({ message: "Not enough stock available" });
@@ -51,7 +51,6 @@ const handleBuyNow = async (req, res) => {
     const totalPrice = product.productPrice * quantity;
     const customOrderId = generateFormattedOrderId();
 
-    // Create the order
     const order = await Order.create(
       {
         uniqueOrderId: customOrderId,
@@ -66,7 +65,6 @@ const handleBuyNow = async (req, res) => {
       { transaction: t }
     );
 
-    // Create order item
     const orderItem = await OrderItem.create(
       {
         orderId: order.id,
@@ -81,12 +79,12 @@ const handleBuyNow = async (req, res) => {
       { transaction: t }
     );
 
-    // Update product stock
     product.availableStockQuantity -= quantity;
     product.totalSoldCount += quantity;
     await product.save({ transaction: t });
 
     await t.commit();
+    await updateRevenueAndOrders(totalPrice);
 
     await sendOrderEmail(
       req.user.email,
@@ -237,6 +235,7 @@ const handlePlaceOrderFromCart = async (req, res) => {
     await CartItem.destroy({ where: { cartId: cart.id }, transaction: t });
 
     await t.commit();
+    await updateRevenueAndOrders(totalPrice);
 
     return res.status(201).json({
       message: "Order placed successfully from cart",

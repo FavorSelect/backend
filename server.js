@@ -42,7 +42,10 @@ const sellerFeedbackRoute = require("./routes/feedbackRoute/sellerFeedbackRoute"
 const accountDeleteRequestRoute = require("./routes/accountDeleteRequestRoute/accountDeleteRequestRoute");
 const emailPreference = require('./routes/promotionRoute/emailPreference');
 const imageSearchRoute = require("./routes/imageSearch/imageSearchRoute");
-const recommendationRoute = require('./routes/recommendationRoute/recommendation')
+const recommendationRoute = require('./routes/recommendationRoute/recommendation');
+const adminStatsRoute = require('./routes/statistic/adminDashboard');
+const recentAdminStats = require('./routes/statistic/recent');
+const graphStatsRoute = require('./routes/statistic/graphStats')
 
 
 const app = express();
@@ -105,7 +108,10 @@ app.use(
   userDetailRoute,
   sellerDetailRoute,
   productDetailRoute,
-  handleReviewPermission
+  handleReviewPermission,
+  adminStatsRoute,
+  recentAdminStats,
+  graphStatsRoute
 );
 app.use(
   "/api/seller/dashboard",
