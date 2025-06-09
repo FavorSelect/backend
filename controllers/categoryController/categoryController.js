@@ -1,6 +1,6 @@
+const { Op } = require("sequelize");
 const Category = require("../../models/categoryModel/categoryModel");
 
-//  Add Category (main or subcategory)
 const handleAddCategory = async (req, res) => {
   try {
     const { categoryName, categoryDescription, parentCategoryId } = req.body;
@@ -34,19 +34,15 @@ const handleAddCategory = async (req, res) => {
   }
 };
 
-//  Update Category
 const handleUpdateCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id;
+    const categoryId = req.params.categoryId;
     const { categoryName, categoryDescription, parentCategoryId } = req.body;
-    const categoryImage = req.file;
-    if (!categoryImage) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Please upload an cover image" });
-    }
-    const categoryImageUrl = categoryImage.location;
+       const categoryImage = req.file || null;
+    const categoryImageUrl = categoryImage?.location || null;
+
     const category = await Category.findByPk(categoryId);
+    console.log("Requested category ID:", categoryId);
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -54,7 +50,8 @@ const handleUpdateCategory = async (req, res) => {
     category.categoryName = categoryName || category.categoryName;
     category.categoryDescription =
       categoryDescription || category.categoryDescription;
-    category.categoryImage = categoryImageUrl || category.categoryImageUrl;
+   category.categoryImage = categoryImageUrl || category.categoryImage;
+
     category.parentCategoryId = parentCategoryId || null;
 
     await category.save();
@@ -63,21 +60,20 @@ const handleUpdateCategory = async (req, res) => {
       .status(200)
       .json({ message: "Category updated successfully", category });
   } catch (error) {
+      console.error("Update Category Error:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };
 
-//  Delete Category (and optionally its subcategories)
 const handleDeleteCategory = async (req, res) => {
   try {
-    const categoryId = req.params.id;
+    const categoryId = req.params.categoryId;
 
     const category = await Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    // Optionally delete all subcategories
     await Category.destroy({ where: { parentCategoryId: categoryId } });
 
     await category.destroy();
@@ -88,7 +84,57 @@ const handleDeleteCategory = async (req, res) => {
   }
 };
 
-//  Get All Categories (with subcategories)
+const handleDeleteAllSubcategories = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+
+    const category = await Category.findByPk(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Category.destroy({ where: { parentCategoryId: categoryId } });
+
+    return res
+      .status(200)
+      .json({ message: "Subcategories deleted successfully" });
+  } catch (error) {
+    console.error("Delete Subcategories Error:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+const handleDeleteSelectedSubcategories = async (req, res) => {
+  try {
+    const { subcategoryIds } = req.body;
+
+    if (!Array.isArray(subcategoryIds) || subcategoryIds.length === 0) {
+      return res.status(400).json({ message: "No subcategory IDs provided" });
+    }
+
+    // Delete only subcategories with the provided IDs
+    //example { "subcategoryIds": [4, 5, 6] }
+            
+                    
+
+    await Category.destroy({
+      where: {
+        id: subcategoryIds,
+         parentCategoryId: { [Op.not]: null },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Selected subcategories deleted successfully" });
+  } catch (error) {
+    console.error("Delete Selected Subcategories Error:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+
 const handleGetAllCategories = async (req, res) => {
   try {
     const categories = await Category.findAll({
@@ -106,8 +152,8 @@ const handleGetAllCategories = async (req, res) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
-// GET /api/categories/:id/with-subcategories
 
+// GET /api/categories/:id/with-subcategories
 const getSingleCategoryWithSubcategories = async (req, res) => {
   try {
     const { id } = req.params;
@@ -136,5 +182,7 @@ module.exports = {
   handleDeleteCategory,
   handleUpdateCategory,
   handleAddCategory,
-  getSingleCategoryWithSubcategories
+  getSingleCategoryWithSubcategories,
+   handleDeleteAllSubcategories,
+   handleDeleteSelectedSubcategories
 };

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../../../awsS3Connection/awsUploadMiddleware");
-const { handleAddCategory, handleUpdateCategory, handleDeleteCategory } = require("../../../controllers/categoryController/categoryController");
+const { handleAddCategory, handleUpdateCategory, handleDeleteCategory, handleDeleteAllSubcategories, handleDeleteSelectedSubcategories } = require("../../../controllers/categoryController/categoryController");
 
 
 router.post(
@@ -16,4 +16,8 @@ router.patch(
   handleUpdateCategory
 );
 router.delete("/categories/:categoryId", handleDeleteCategory);
+router.delete('/categories/:categoryId/sub-categories', handleDeleteAllSubcategories);
+router.delete('/categories/subcategories', handleDeleteSelectedSubcategories);
+
+
 module.exports = router;
