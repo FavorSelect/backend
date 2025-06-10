@@ -3,18 +3,24 @@ const elasticClient = require("../../config/elasticSearchConfig/elasticSearchCli
 const Category = require("../../models/categoryModel/categoryModel");
 const Seller = require("../../models/authModel/sellerModel");
 const { Op } = require("sequelize");
-const { extractLabelsFromImageS3 } = require("../../awsRekognition/awsRekognition");
+const {
+  extractLabelsFromImageS3,
+} = require("../../awsRekognition/awsRekognition");
 
 const handleAddProduct = async (req, res) => {
   try {
-    const seller = await Seller.findOne({ where: { userId: req.user.id } });
-    if (!seller) {
-      return res.status(404).json({
-        success: false,
-        message: "Seller not found for the logged-in user.",
-      });
+    let sellerId = null;
+
+    if (req.user.role === "seller") {
+      const seller = await Seller.findOne({ where: { userId: req.user.id } });
+      if (!seller) {
+        return res.status(404).json({
+          success: false,
+          message: "Seller not found for the logged-in user.",
+        });
+      }
+      sellerId = seller.id;
     }
-    const sellerId = seller.id;
 
     const {
       productName,
@@ -35,6 +41,11 @@ const handleAddProduct = async (req, res) => {
 
       galleryImageUrls,
       productVideoUrl,
+
+      productSizes,
+      productColors,
+      productDimensions,
+      productMaterial,
 
       productWarrantyInfo,
       productReturnPolicy,
@@ -58,11 +69,13 @@ const handleAddProduct = async (req, res) => {
       });
     }
 
-
-
-   const imageKey = decodeURIComponent(new URL(req.file.location).pathname.slice(1));
-const rekognitionLabels = await extractLabelsFromImageS3(process.env.AWS_BUCKET_NAME, imageKey);
-
+    const imageKey = decodeURIComponent(
+      new URL(req.file.location).pathname.slice(1)
+    );
+    const rekognitionLabels = await extractLabelsFromImageS3(
+      process.env.AWS_BUCKET_NAME,
+      imageKey
+    );
 
     const productTags = rekognitionLabels.join(", ");
 
@@ -74,6 +87,11 @@ const rekognitionLabels = await extractLabelsFromImageS3(process.env.AWS_BUCKET_
       stockKeepingUnit: stockKeepingUnit || null,
       productModelNumber: productModelNumber || null,
       productBestSaleTag: productBestSaleTag || null,
+
+      productMaterial: productMaterial || null,
+      productDimensions: productDimensions || null,
+      productColors: productColors || null,
+      productSizes: productSizes || null,
 
       productDiscountPercentage: productDiscountPercentage || null,
       productPrice,
@@ -90,9 +108,10 @@ const rekognitionLabels = await extractLabelsFromImageS3(process.env.AWS_BUCKET_
 
       productWarrantyInfo: productWarrantyInfo || null,
       productReturnPolicy: productReturnPolicy || null,
-      sellerId, //🔗link seller and product
-       productTags,
-         rekognitionLabels,
+      sellerId,
+      UserId: req.user.id,
+      productTags,
+      rekognitionLabels,
     });
 
     await elasticClient.index({
@@ -146,6 +165,10 @@ const handleUpdateProduct = async (req, res) => {
       productVideoUrl,
       productWarrantyInfo,
       productReturnPolicy,
+      productSizes,
+      productColors,
+      productDimensions,
+      productMaterial,
     } = req.body;
 
     const updateFields = {
@@ -166,6 +189,11 @@ const handleUpdateProduct = async (req, res) => {
       productVideoUrl: productVideoUrl || null,
       productWarrantyInfo: productWarrantyInfo || null,
       productReturnPolicy: productReturnPolicy || null,
+
+      productMaterial: productMaterial || null,
+      productDimensions: productDimensions || null,
+      productColors: productColors || null,
+      productSizes: productSizes || null,
     };
 
     // Check if image uploaded
@@ -316,6 +344,7 @@ const getAllProducts = async (req, res) => {
       include: [
         {
           model: Category,
+          as: "category",
           attributes: ["categoryName"],
         },
         {

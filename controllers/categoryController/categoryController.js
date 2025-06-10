@@ -38,29 +38,39 @@ const handleUpdateCategory = async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
     const { categoryName, categoryDescription, parentCategoryId } = req.body;
-       const categoryImage = req.file || null;
+    const categoryImage = req.file || null;
     const categoryImageUrl = categoryImage?.location || null;
 
-    const category = await Category.findByPk(categoryId);
     console.log("Requested category ID:", categoryId);
+    console.log("Incoming parentCategoryId:", parentCategoryId, typeof parentCategoryId);
+
+ 
+    const category = await Category.findByPk(categoryId);
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    category.categoryName = categoryName || category.categoryName;
-    category.categoryDescription =
-      categoryDescription || category.categoryDescription;
-   category.categoryImage = categoryImageUrl || category.categoryImage;
 
-    category.parentCategoryId = parentCategoryId || null;
+    category.categoryName = categoryName || category.categoryName;
+    category.categoryDescription = categoryDescription || category.categoryDescription;
+    category.categoryImage = categoryImageUrl || category.categoryImage;
+
+    
+    if (parentCategoryId === "null" || parentCategoryId === "" || parentCategoryId === undefined) {
+      category.parentCategoryId = null;
+    } else {
+      category.parentCategoryId = parseInt(parentCategoryId); 
+    }
+
 
     await category.save();
 
-    return res
-      .status(200)
-      .json({ message: "Category updated successfully", category });
+    return res.status(200).json({
+      message: "Category updated successfully",
+      category,
+    });
   } catch (error) {
-      console.error("Update Category Error:", error);
+    console.error("Update Category Error:", error);
     return res.status(500).json({ message: "Server error", error });
   }
 };

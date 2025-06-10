@@ -12,12 +12,22 @@ const Product = sequelize.define(
     },
     sellerId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "Sellers",
         key: "id",
       },
     },
+
+    UserId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+
     productTags: {
       type: DataTypes.JSON,
       allowNull: true,
@@ -143,6 +153,24 @@ const Product = sequelize.define(
     isNewArrivalProduct: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+
+    //size , color and dimension
+    productSizes: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    productColors: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    productDimensions: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    productMaterial: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
 
     // Analytics

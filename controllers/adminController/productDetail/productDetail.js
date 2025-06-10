@@ -1,13 +1,13 @@
 const Product = require('../../../models/productModel/productModel');
 const Category = require('../../../models/categoryModel/categoryModel');
 
-// Get all products with category name
 const getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
       include: [
         {
           model: Category,
+          as:"category",
           attributes: ['categoryName'],
         },
       ],
@@ -18,7 +18,7 @@ const getAllProducts = async (req, res) => {
   }
 };
 
-// Get product by ID
+
 const getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
@@ -31,7 +31,7 @@ const getProductById = async (req, res) => {
   }
 };
 
-// Get total count of products
+
 const getProductCount = async (req, res) => {
   try {
     const count = await Product.count();
@@ -41,7 +41,7 @@ const getProductCount = async (req, res) => {
   }
 };
 
-// Get product stats (stock, views, sales)
+
 const getProductStats = async (req, res) => {
  try {
     const [stats] = await Product.findAll({
@@ -64,7 +64,7 @@ const getProductStats = async (req, res) => {
   }
 };
 
-// Get products by status (approved, pending, rejected)
+
 const getProductsByStatus = async (req, res) => {
   try {
     const { status } = req.params;

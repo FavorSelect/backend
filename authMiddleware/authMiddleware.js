@@ -1,17 +1,27 @@
 const { validateToken } = require("../authService/authService");
+const { parse } = require("cookie");
+
 
 function checkForAuthenticationCookie() {
   return (req, res, next) => {
     try {
-      const authHeaders = req.headers["authorization"];
-      const tokenCookieValue = authHeaders && authHeaders.split(" ")[1];
+      let token;
 
-      if (!tokenCookieValue) {
-        return res.status(400).json({ error: "No token found. Looks like you are not logged in." });
+      if (req.headers.cookie) {
+        const parsedCookies = parse(req.headers.cookie);
+        token = parsedCookies.token;
+      }
+      if (!token && req.headers.authorization) {
+        const authHeader = req.headers.authorization;
+        if (authHeader.startsWith("Bearer ")) {
+          token = authHeader.split(" ")[1];
+        }
+      }
+      if (!token) {
+        return res.status(401).json({ error: "No token found. Please login." });
       }
 
-      const userPayload = validateToken(tokenCookieValue);
-
+      const userPayload = validateToken(token);
       if (!userPayload) {
         return res.status(401).json({ error: "Invalid or expired token." });
       }
@@ -19,8 +29,8 @@ function checkForAuthenticationCookie() {
       req.user = userPayload;
       next();
     } catch (error) {
-      console.error("Error validating token:", error.message);
-      return res.status(500).json({ error: "Authentication error!" });
+      console.error("Auth error:", error.message);
+      return res.status(500).json({ error: "Authentication failed." });
     }
   };
 }
