@@ -41,7 +41,6 @@ const handleAddProduct = async (req, res) => {
 
       galleryImageUrls,
       productVideoUrl,
-
       productSizes,
       productColors,
       productDimensions,

@@ -1,4 +1,8 @@
+const BrandPoster = require("../../../models/advertisementModel/websiteAdvertisement/brandAdsPoster");
 const HomepageBanner = require("../../../models/advertisementModel/websiteAdvertisement/homepageBanner");
+const ProductPosterAds = require("../../../models/advertisementModel/websiteAdvertisement/productPosterAds");
+const ThePopular = require("../../../models/advertisementModel/websiteAdvertisement/thepopular");
+const WeeklyPromotion = require("../../../models/advertisementModel/websiteAdvertisement/weeklyPromotion");
 
 const handleAddHomepageBanner = async (req, res) => {
   try {
@@ -266,9 +270,9 @@ module.exports = {
   handleAddThePopularBanner,
   handleAddBrandAdsPosterBanner,
   handleAddProductPosterAdsBanner,
-    getProductPosterAdsBanners,
-      getHomepageBanners,
-        getThePopularBanners,
-         getWeeklyPromotionBanners,
-          getBrandPosterBanners,
+  getProductPosterAdsBanners,
+  getHomepageBanners,
+  getThePopularBanners,
+  getWeeklyPromotionBanners,
+  getBrandPosterBanners,
 };

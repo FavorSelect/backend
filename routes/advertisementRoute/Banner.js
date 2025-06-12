@@ -24,26 +24,28 @@ router.post(
   handleAddHomepageBanner
 );
 router.post(
-  "/add-homepage-banners",
+  "/add-weekly-banners",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
   upload.single('image'),
   handleAddWeeklyPromotionBanner
 );
 router.post(
-  "/add-homepage-banners",
+  "/add-popular-banners",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
   upload.single('image'),
  handleAddThePopularBanner
-);router.post(
-  "/add-homepage-banners",
+);
+router.post(
+  "/add-brand-banners",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
   upload.single('image'),
  handleAddBrandAdsPosterBanner
-);router.post(
-  "/add-homepage-banners",
+);
+router.post(
+  "/add-product-banners",
   checkForAuthenticationCookie("token"),
   authorizeRoles(["admin", "admin+", "superadmin"]),
   upload.single('image'),
