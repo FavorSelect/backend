@@ -14,13 +14,17 @@ const {
 const optionalAuthentication = require("../../authMiddleware/optionalMiddleware");
 const router = express.Router();
 
+
+//http://localhost:8000/api/general/products
 router.get("/products", getAllProducts);
+
 router.get(
   "/products/:productId",
   optionalAuthentication("token"),
   handleTrackProductClick,
   getProductById
 );
+//http://localhost:8000/api/general/products/search/query?query=green
 router.get(
   "/products/search/query",
   optionalAuthentication("token"),

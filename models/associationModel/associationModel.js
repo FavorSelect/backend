@@ -21,6 +21,22 @@ const SearchHistory = require('../../models/searchHistory/userSearchHistory');
 const Notification = require('../notifications/userNotification');
 const UserCoupon = require("../couponModel/userCouponModel");
 const Coupon = require("../couponModel/couponModel");
+const AppliedCoupon = require("../couponModel/appliedCoupon");
+
+Coupon.hasMany(Order, {
+  foreignKey: "appliedCouponId",
+  as: "ordersWithCoupon",
+});
+
+Order.belongsTo(Coupon, {
+  foreignKey: "appliedCouponId",
+  as: "appliedCoupon",
+});
+
+AppliedCoupon.belongsTo(User, { foreignKey: "userId" });
+AppliedCoupon.belongsTo(Coupon, { foreignKey: "couponId" });
+AppliedCoupon.belongsTo(Product, { foreignKey: "productId" });
+
 
 User.hasMany(UserCoupon, {
   foreignKey: "userId",
@@ -201,3 +217,4 @@ EmailPreference.belongsTo(User, {
   foreignKey: 'userId',
   as: 'user',
 });
+

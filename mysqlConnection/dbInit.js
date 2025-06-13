@@ -9,7 +9,6 @@ const OrderItem = require('../models/orderModel/orderItemModel');
 const Address = require('../models/orderModel/orderAddressModel');
 const Wishlist = require('../models/wishListModel/wishListModel');
 const Review = require('../models/reviewModel/reviewModel');
-const Coupon = require('../models/couponModel/couponModel');
 const Payment = require('../models/paymentModel/paymentModel');
 const Seller = require('../models/authModel/sellerModel');
 const ReviewLike = require('../models/reviewLikeModel/reviewLikeModel');
@@ -23,8 +22,10 @@ const ThePopular = require('../models/advertisementModel/websiteAdvertisement/th
 const WeeklyPromotion = require('../models/advertisementModel/websiteAdvertisement/weeklyPromotion');
 const SellerFeedback = require('../models/feedbackModel/sellerFeedback');
 const SellerTicket = require('../models/ticketModel/sellerTicket');
-const UserTicket = require('../models/ticketModel/userTicketModel')
-
+const UserTicket = require('../models/ticketModel/userTicketModel');
+const AppliedCoupon = require('../models/couponModel/appliedCoupon');
+const Coupon = require('../models/couponModel/couponModel');
+const UserCoupon = require('../models/couponModel/userCouponModel')
 
 
 const initDB = (callback) => {

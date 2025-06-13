@@ -21,37 +21,6 @@ const handleCreateCoupon = async (req, res) => {
 };
 
 
-// const handleApplyCoupon = async (req, res) => {
-//   const { code, cartTotal } = req.body;
-//   const userId = req.user.id;
-
-//   const coupon = await Coupon.findOne({ where: { code } });
-//   if (!coupon) return res.status(404).json({ message: "Coupon not found" });
-
-//   const userCoupon = await UserCoupon.findOne({
-//     where: { userId, couponId: coupon.id, used: false },
-//   });
-//   if (!userCoupon) return res.status(403).json({ message: "Coupon not assigned or already used" });
-
-//   const now = new Date();
-//   if (now < coupon.validFrom || now > coupon.validTill) {
-//     return res.status(400).json({ message: "Coupon not valid at this time" });
-//   }
-
-//   const discount = coupon.discountPercentage
-//     ? (coupon.discountPercentage / 100) * cartTotal
-//     : coupon.discountAmount;
-
-//   res.status(200).json({ discount: discount.toFixed(2), couponCode: coupon.code });
-// };
-
-// const markCouponAsUsed = async (userId, couponId) => {
-//   await UserCoupon.update({ used: true }, {
-//     where: { userId, couponId },
-//   });
-// };
-
-
 const getAllCouponsWithUserDetails = async (req, res) => {
   try {
     const coupons = await Coupon.findAll({

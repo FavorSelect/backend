@@ -450,6 +450,7 @@ const getProductById = async (req, res) => {
       include: [
         {
           model: Category,
+          as:"category",
           attributes: ["categoryName"],
         },
         {
@@ -521,6 +522,7 @@ const searchProducts = async (req, res) => {
       include: [
         {
           model: Category,
+          as:"category",
           attributes: ["categoryName"],
         },
         {
@@ -553,6 +555,7 @@ const getProductsByCategory = async (req, res) => {
       include: [
         {
           model: Category,
+          as: "category",
           where: { categoryName },
           attributes: ["categoryName"],
         },
@@ -590,6 +593,7 @@ const getProductsByBrand = async (req, res) => {
       include: [
         {
           model: Category,
+          as: "category",
           attributes: ["categoryName"],
         },
         {
@@ -623,6 +627,7 @@ const getRecentProducts = async (req, res) => {
       include: [
         {
           model: Category,
+          as: "category",
           attributes: ["categoryName"],
         },
         {

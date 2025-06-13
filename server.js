@@ -48,7 +48,9 @@ const recentAdminStats = require('./routes/statistic/recent');
 const graphStatsRoute = require('./routes/statistic/graphStats');
 const adminNotificationsRoute = require('./routes/adminRoute/notifications/userNotification');
 const generalNotificationsRoute = require('./routes/notifications/userNotification');
-const couponManagementRoute = require('./routes/adminRoute/couponRoute/userCoupon')
+const couponManagementRoute = require('./routes/adminRoute/couponRoute/userCoupon');
+const userCouponRoute = require('./routes/couponRoute/userCouponRoute');
+const optionalAuthentication = require("./authMiddleware/optionalMiddleware");
 
 
 const app = express();
@@ -95,10 +97,11 @@ app.use(
   orderRoute,
   reviewLikeRoute,
   sellerFeedbackRoute,
-  emailPreference
+  emailPreference,
+   userCouponRoute
 );
 app.use("/api/general", categoryRoute, productRoute,imageSearchRoute,generalNotificationsRoute);
-app.use("/api/recommendation", checkForAuthenticationCookie("token"), recommendationRoute);
+app.use("/api/recommendation",  optionalAuthentication("token"), recommendationRoute);
 app.use("/api/common-seller-admin", orderManageRoute);
 app.use(
   "/api/admin/dashboard",

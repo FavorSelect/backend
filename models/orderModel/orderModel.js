@@ -3,6 +3,7 @@ const { sequelize } = require('../../mysqlConnection/dbConnection');
 const Cart  = require('../cartModel/cartModel'); 
 const User  = require('../authModel/userModel');
 const  CartItem  = require('../cartModel/cartItemModel'); 
+const Coupon = require('../couponModel/couponModel');
 
 const Order = sequelize.define('Order', {
   id: {
@@ -25,6 +26,14 @@ uniqueOrderId: {
     },
     onDelete: 'CASCADE',
   },
+appliedCouponId: {
+  type: DataTypes.INTEGER,
+  allowNull: true,
+  references: {
+    model: Coupon,
+    key: "id"
+  }
+},
 
   cartId: {
     type: DataTypes.INTEGER,

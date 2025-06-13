@@ -12,6 +12,7 @@ const { updateRevenueAndOrders } = require("../statistics/adminStats");
 const { createUserNotification } = require("../notifications/userNotification");
 const UserCoupon = require("../../models/couponModel/userCouponModel");
 const Coupon = require("../../models/couponModel/couponModel");
+const AppliedCoupon = require("../../models/couponModel/appliedCoupon");
 
 //orderId like -->  333-5555555-6666666
 function generateFormattedOrderId() {
@@ -26,8 +27,7 @@ function generateFormattedOrderId() {
 }
 
 const handleBuyNow = async (req, res) => {
-  const { productId, quantity, addressId, paymentMethod, couponCode } =
-    req.body;
+  const { productId, quantity, addressId, paymentMethod } = req.body;
   const userId = req.user.id;
 
   const t = await sequelize.transaction();
@@ -52,36 +52,26 @@ const handleBuyNow = async (req, res) => {
       return res.status(400).json({ message: "Not enough stock available" });
     }
 
+    const userCoupon = await UserCoupon.findOne({
+      where: {
+        userId,
+        used: false,
+        applied: true,
+      },
+      include: [
+        {
+          model: Coupon,
+          as: "coupon",
+        },
+      ],
+      transaction: t,
+    });
+
     let discountAmount = 0;
     let appliedCouponId = null;
 
-    if (couponCode) {
-      const coupon = await Coupon.findOne({ where: { code: couponCode } });
-      if (!coupon) {
-        await t.rollback();
-        return res.status(400).json({ message: "Invalid coupon code" });
-      }
-
-      if (
-        !coupon.isActive ||
-        new Date() < coupon.validFrom ||
-        new Date() > coupon.validTill
-      ) {
-        await t.rollback();
-        return res
-          .status(400)
-          .json({ message: "Coupon is not valid right now" });
-      }
-
-      const userCoupon = await UserCoupon.findOne({
-        where: { userId, couponId: coupon.id, used: false },
-      });
-
-      if (!userCoupon) {
-        await t.rollback();
-        return res.status(400).json({ message: "You can't use this coupon" });
-      }
-
+    if (userCoupon && userCoupon.Coupon) {
+      const coupon = userCoupon.Coupon;
       const productTotal = product.productPrice * quantity;
 
       if (coupon.discountPercentage) {
@@ -93,8 +83,8 @@ const handleBuyNow = async (req, res) => {
       if (discountAmount > productTotal) discountAmount = productTotal;
 
       appliedCouponId = coupon.id;
-
       userCoupon.used = true;
+      userCoupon.applied = false;
       await userCoupon.save({ transaction: t });
 
       coupon.usageCount += 1;
@@ -102,10 +92,10 @@ const handleBuyNow = async (req, res) => {
 
       await createUserNotification({
         userId,
-        title: "Coupon Applied",
-        message: `Your coupon ${couponCode} was applied and saved ₹${discountAmount.toFixed(
-          2
-        )} on this order.`,
+        title: "Coupon Used",
+        message: `Your coupon ${
+          coupon.code
+        } was used to save ₹${discountAmount.toFixed(2)}.`,
         type: "coupon",
         coverImage: null,
       });
@@ -124,6 +114,7 @@ const handleBuyNow = async (req, res) => {
         paymentStatus:
           paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
         paymentMethod,
+        appliedCouponId,
       },
       { transaction: t }
     );
@@ -184,7 +175,7 @@ const handleBuyNow = async (req, res) => {
 
 const handlePlaceOrderFromCart = async (req, res) => {
   const userId = req.user.id;
-  const { paymentMethod, addressId, couponCode } = req.body;
+  const { paymentMethod, addressId } = req.body;
 
   const allowedMethods = [
     "CashOnDelivery",
@@ -230,54 +221,51 @@ const handlePlaceOrderFromCart = async (req, res) => {
       0
     );
 
-    let coupon = null;
     let discountAmount = 0;
+    let appliedCouponId = null;
 
-    if (couponCode) {
-      coupon = await Coupon.findOne({
-        where: { code: couponCode, isActive: true },
-        transaction: t,
-      });
-      const userCoupon = await UserCoupon.findOne({
-        where: { couponId: coupon?.id, userId, used: false },
-        transaction: t,
-      });
+    const userCoupon = await UserCoupon.findOne({
+      where: {
+        userId,
+        used: false,
+        applied: true,
+      },
+      include: Coupon,
+      transaction: t,
+    });
 
-      if (!coupon || !userCoupon) {
-        await t.rollback();
-        return res
-          .status(400)
-          .json({ message: "Invalid or already used coupon" });
-      }
+    if (userCoupon && userCoupon.Coupon) {
+      const coupon = userCoupon.Coupon;
 
-      const now = new Date();
-      if (now < coupon.validFrom || now > coupon.validTill) {
-        await t.rollback();
-        return res
-          .status(400)
-          .json({ message: "Coupon expired or not yet valid" });
-      }
-
-      if (coupon.discountAmount) {
-        discountAmount = coupon.discountAmount;
-      } else if (coupon.discountPercentage) {
+      if (coupon.discountPercentage) {
         discountAmount = (coupon.discountPercentage / 100) * totalAmount;
+      } else if (coupon.discountAmount) {
+        discountAmount = coupon.discountAmount;
       }
 
-      totalAmount -= discountAmount;
-      await coupon.increment("usageCount", { by: 1, transaction: t });
-      await userCoupon.update({ used: true }, { transaction: t });
+      if (discountAmount > totalAmount) discountAmount = totalAmount;
+
+      appliedCouponId = coupon.id;
+
+      userCoupon.used = true;
+      userCoupon.applied = false;
+      await userCoupon.save({ transaction: t });
+
+      coupon.usageCount += 1;
+      await coupon.save({ transaction: t });
 
       await createUserNotification({
         userId,
-        title: "Coupon Applied",
-        message: `You saved ₹${discountAmount.toFixed(
-          2
-        )} with coupon "${couponCode}"`,
+        title: "Coupon Used",
+        message: `Your coupon ${
+          coupon.code
+        } was used to save ₹${discountAmount.toFixed(2)}.`,
         type: "coupon",
         coverImage: null,
       });
     }
+
+    const finalAmount = totalAmount - discountAmount;
 
     if (paymentMethod !== "CashOnDelivery") {
       const paymentSuccess = true;
@@ -293,12 +281,13 @@ const handlePlaceOrderFromCart = async (req, res) => {
       {
         userId,
         cartId: cart.id,
-        totalAmount,
+        totalAmount: finalAmount,
+        appliedCouponId,
         addressId,
         orderId: customOrderId,
         paymentMethod,
         paymentStatus:
-        paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
         orderDate: new Date(),
       },
       { transaction: t }

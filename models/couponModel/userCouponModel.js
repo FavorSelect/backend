@@ -31,6 +31,11 @@ const UserCoupon = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+
+    applied: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     assignedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
