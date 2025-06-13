@@ -8,7 +8,10 @@ const { sequelize } = require("../../mysqlConnection/dbConnection");
 const {
   sendOrderEmail,
 } = require("../../emailService/orderPlacedEmail/orderPlacedEmail");
-const {updateRevenueAndOrders} = require("../statistics/adminStats");
+const { updateRevenueAndOrders } = require("../statistics/adminStats");
+const { createUserNotification } = require("../notifications/userNotification");
+const UserCoupon = require("../../models/couponModel/userCouponModel");
+const Coupon = require("../../models/couponModel/couponModel");
 
 //orderId like -->  333-5555555-6666666
 function generateFormattedOrderId() {
@@ -23,7 +26,8 @@ function generateFormattedOrderId() {
 }
 
 const handleBuyNow = async (req, res) => {
-  const { productId, quantity, addressId, paymentMethod } = req.body;
+  const { productId, quantity, addressId, paymentMethod, couponCode } =
+    req.body;
   const userId = req.user.id;
 
   const t = await sequelize.transaction();
@@ -48,7 +52,66 @@ const handleBuyNow = async (req, res) => {
       return res.status(400).json({ message: "Not enough stock available" });
     }
 
-    const totalPrice = product.productPrice * quantity;
+    let discountAmount = 0;
+    let appliedCouponId = null;
+
+    if (couponCode) {
+      const coupon = await Coupon.findOne({ where: { code: couponCode } });
+      if (!coupon) {
+        await t.rollback();
+        return res.status(400).json({ message: "Invalid coupon code" });
+      }
+
+      if (
+        !coupon.isActive ||
+        new Date() < coupon.validFrom ||
+        new Date() > coupon.validTill
+      ) {
+        await t.rollback();
+        return res
+          .status(400)
+          .json({ message: "Coupon is not valid right now" });
+      }
+
+      const userCoupon = await UserCoupon.findOne({
+        where: { userId, couponId: coupon.id, used: false },
+      });
+
+      if (!userCoupon) {
+        await t.rollback();
+        return res.status(400).json({ message: "You can't use this coupon" });
+      }
+
+      const productTotal = product.productPrice * quantity;
+
+      if (coupon.discountPercentage) {
+        discountAmount = (coupon.discountPercentage / 100) * productTotal;
+      } else if (coupon.discountAmount) {
+        discountAmount = coupon.discountAmount;
+      }
+
+      if (discountAmount > productTotal) discountAmount = productTotal;
+
+      appliedCouponId = coupon.id;
+
+      userCoupon.used = true;
+      await userCoupon.save({ transaction: t });
+
+      coupon.usageCount += 1;
+      await coupon.save({ transaction: t });
+
+      await createUserNotification({
+        userId,
+        title: "Coupon Applied",
+        message: `Your coupon ${couponCode} was applied and saved ₹${discountAmount.toFixed(
+          2
+        )} on this order.`,
+        type: "coupon",
+        coverImage: null,
+      });
+    }
+
+    const totalPrice = product.productPrice * quantity - discountAmount;
     const customOrderId = generateFormattedOrderId();
 
     const order = await Order.create(
@@ -99,14 +162,20 @@ const handleBuyNow = async (req, res) => {
       }
     );
 
-    res
-      .status(201)
-      .json({
-        message: "Order placed successfully",
-        orderId: customOrderId,
-        order,
-        orderItem,
-      });
+    await createUserNotification({
+      userId,
+      title: "Order Placed Successfully",
+      message: `Your order ${customOrderId} for "${product.productName}" has been placed.`,
+      type: "order",
+      coverImage: product.coverImageUrl || null,
+    });
+
+    res.status(201).json({
+      message: "Order placed successfully",
+      orderId: customOrderId,
+      order,
+      orderItem,
+    });
   } catch (error) {
     await t.rollback();
     res.status(500).json({ message: error.message || "Internal Server Error" });
@@ -115,7 +184,7 @@ const handleBuyNow = async (req, res) => {
 
 const handlePlaceOrderFromCart = async (req, res) => {
   const userId = req.user.id;
-  const { paymentMethod, addressId } = req.body;
+  const { paymentMethod, addressId, couponCode } = req.body;
 
   const allowedMethods = [
     "CashOnDelivery",
@@ -161,6 +230,55 @@ const handlePlaceOrderFromCart = async (req, res) => {
       0
     );
 
+    let coupon = null;
+    let discountAmount = 0;
+
+    if (couponCode) {
+      coupon = await Coupon.findOne({
+        where: { code: couponCode, isActive: true },
+        transaction: t,
+      });
+      const userCoupon = await UserCoupon.findOne({
+        where: { couponId: coupon?.id, userId, used: false },
+        transaction: t,
+      });
+
+      if (!coupon || !userCoupon) {
+        await t.rollback();
+        return res
+          .status(400)
+          .json({ message: "Invalid or already used coupon" });
+      }
+
+      const now = new Date();
+      if (now < coupon.validFrom || now > coupon.validTill) {
+        await t.rollback();
+        return res
+          .status(400)
+          .json({ message: "Coupon expired or not yet valid" });
+      }
+
+      if (coupon.discountAmount) {
+        discountAmount = coupon.discountAmount;
+      } else if (coupon.discountPercentage) {
+        discountAmount = (coupon.discountPercentage / 100) * totalAmount;
+      }
+
+      totalAmount -= discountAmount;
+      await coupon.increment("usageCount", { by: 1, transaction: t });
+      await userCoupon.update({ used: true }, { transaction: t });
+
+      await createUserNotification({
+        userId,
+        title: "Coupon Applied",
+        message: `You saved ₹${discountAmount.toFixed(
+          2
+        )} with coupon "${couponCode}"`,
+        type: "coupon",
+        coverImage: null,
+      });
+    }
+
     if (paymentMethod !== "CashOnDelivery") {
       const paymentSuccess = true;
       if (!paymentSuccess) {
@@ -180,7 +298,7 @@ const handlePlaceOrderFromCart = async (req, res) => {
         orderId: customOrderId,
         paymentMethod,
         paymentStatus:
-          paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
+        paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
         orderDate: new Date(),
       },
       { transaction: t }
@@ -236,6 +354,14 @@ const handlePlaceOrderFromCart = async (req, res) => {
 
     await t.commit();
     await updateRevenueAndOrders(totalPrice);
+
+    await createUserNotification({
+      userId,
+      title: "Order Placed from Cart",
+      message: `Your order ${customOrderId} with ${cartItems.length} item(s) has been placed.`,
+      type: "order",
+      coverImage: cartItems[0]?.Product?.coverImageUrl || null,
+    });
 
     return res.status(201).json({
       message: "Order placed successfully from cart",
@@ -357,13 +483,11 @@ const handleGetSingleOrderDetails = async (req, res) => {
 
     res.status(200).json({ success: true, order });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error fetching order details",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Error fetching order details",
+      error: error.message,
+    });
   }
 };
 

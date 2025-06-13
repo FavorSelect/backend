@@ -18,6 +18,37 @@ const SellerFeedback = require('../feedbackModel/sellerFeedback')
 const AccountDeletionRequest = require('../accountDeleteRequestModel/accountDeletionRequest');
 const EmailPreference = require('../advertisementModel/promotionToUser/emailPreference');
 const SearchHistory = require('../../models/searchHistory/userSearchHistory');
+const Notification = require('../notifications/userNotification');
+const UserCoupon = require("../couponModel/userCouponModel");
+const Coupon = require("../couponModel/couponModel");
+
+User.hasMany(UserCoupon, {
+  foreignKey: "userId",
+  as: "coupons", 
+});
+UserCoupon.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+Coupon.hasMany(UserCoupon, {
+  foreignKey: "couponId",
+  as: "userCoupons", 
+});
+UserCoupon.belongsTo(Coupon, {
+  foreignKey: "couponId",
+  as: "coupon",
+});
+
+Notification.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user', 
+});
+
+User.hasMany(Notification, {
+  foreignKey: 'userId',
+  as: 'notifications', 
+});
 
 
 SearchHistory.belongsTo(User, { foreignKey: 'userId' });

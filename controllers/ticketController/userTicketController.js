@@ -1,7 +1,10 @@
 const UserTicket = require("../../models/ticketModel/userTicketModel");
 const User = require("../../models/authModel/userModel");
-const { sendUserTicketCreationEmail, sendUserTicketReplyEmail } = require("../../emailService/supportTicketEmail/userSupportEmail");
-
+const {
+  sendUserTicketCreationEmail,
+  sendUserTicketReplyEmail,
+} = require("../../emailService/supportTicketEmail/userSupportEmail");
+const { createUserNotification } = require("../notifications/userNotification");
 
 const generateTicketNumber = async () => {
   let exists = true;
@@ -20,7 +23,7 @@ const createUserTicket = async (req, res) => {
   try {
     const { subject, description } = req.body;
     const userId = req.user.id;
-   const image = req.file;
+    const image = req.file;
     const imageUrl = image?.location || null;
     const ticketNumber = await generateTicketNumber();
 
@@ -28,7 +31,7 @@ const createUserTicket = async (req, res) => {
       userId,
       subject,
       description,
-      image:imageUrl,
+      image: imageUrl,
       ticketNumber,
     });
 
@@ -53,7 +56,7 @@ const createUserTicket = async (req, res) => {
 };
 
 const getMyTicketsUser = async (req, res) => {
-   const userId = req.user.id;
+  const userId = req.user.id;
   try {
     const tickets = await UserTicket.findAll({
       where: { userId },
@@ -98,7 +101,7 @@ const getTicketsByTicketId = async (req, res) => {
       ],
       include: {
         model: User,
-        attributes: ["id", "firstName", "lastName", "email","phone"],
+        attributes: ["id", "firstName", "lastName", "email", "phone"],
       },
     });
 
@@ -112,7 +115,6 @@ const getTicketsByTicketId = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch ticket" });
   }
 };
-
 
 const getAllTicketsUser = async (req, res) => {
   try {
@@ -147,21 +149,25 @@ const replyToTicketUser = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const { adminReply, status } = req.body;
-
     const ticket = await UserTicket.findByPk(ticketId, {
       include: {
         model: User,
-        attributes: ["firstName", "lastName", "email"],
+        attributes: ["id", "firstName", "lastName", "email"],
       },
     });
 
-    if (!ticket) return res.status(404).json({ error: "Ticket not found" });
+    if (!ticket) {
+      return res.status(404).json({ error: "Ticket not found" });
+    }
 
+    const originalStatus = ticket.status;
+    const originalReply = ticket.adminReply;
     ticket.adminReply = adminReply || ticket.adminReply;
     ticket.status = status || ticket.status;
-    await ticket.save();
 
+    await ticket.save();
     const user = ticket.User;
+
     if (user?.email) {
       await sendUserTicketReplyEmail(
         user.email,
@@ -172,9 +178,29 @@ const replyToTicketUser = async (req, res) => {
         ticket.status
       );
     }
+    if (user) {
+      let messageParts = [];
+      if (adminReply && adminReply !== originalReply) {
+        messageParts.push("Admin replied to your support ticket.");
+      }
+      if (status && status !== originalStatus) {
+        messageParts.push(`Status updated to: ${ticket.status}.`);
+      }
+      const notificationMessage = messageParts.join(" ");
+      if (notificationMessage) {
+        await createUserNotification({
+          userId: user.id,
+          title: "Support Ticket Update",
+          message: `${notificationMessage} (Ticket: ${ticket.ticketNumber})`,
+          type: "support",
+          coverImage: null,
+        });
+      }
+    }
 
     res.status(200).json({ message: "Reply added successfully", ticket });
   } catch (error) {
+    console.error("Error replying to ticket:", error);
     res.status(500).json({ error: "Failed to reply to ticket" });
   }
 };
@@ -184,5 +210,5 @@ module.exports = {
   getAllTicketsUser,
   getMyTicketsUser,
   createUserTicket,
-  getTicketsByTicketId
+  getTicketsByTicketId,
 };

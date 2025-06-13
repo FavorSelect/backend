@@ -8,6 +8,7 @@ const CartItem = require("../../models/cartModel/cartItemModel");
 const Address = require("../../models/orderModel/orderAddressModel");
 const Payment = require("../../models/paymentModel/paymentModel");
 const Seller = require("../../models/authModel/sellerModel");
+const { createUserNotification } = require("../notifications/userNotification");
 
 const handleAdminGetAllOrders = async (req, res) => {
   try {
@@ -337,6 +338,20 @@ const handleUpdateOrderStatus = async (req, res) => {
 
     order.orderStatus = orderStatus;
     await order.save();
+
+    if (orderStatus === "Delivered") {
+      const user = await User.findByPk(order.userId);
+      if (user) {
+        await createUserNotification({
+          userId: user.id,
+          title: "Order Delivered",
+          message: `Your order ${order.uniqueOrderId} has been delivered. Thank you for shopping with us!`,
+          type: "order",
+          coverImage: null, 
+        });
+      }
+    }
+
     res.status(200).json({ message: "Order status updated", order });
   } catch (error) {
     console.error("Error updating order status:", error);

@@ -99,7 +99,7 @@ const handleAddProduct = async (req, res) => {
 
       availableStockQuantity: availableStockQuantity || 0,
       productWeight: productWeight || null,
-      status: "pending",
+      status: req.user.role === "admin" ? "approved" : "pending",
 
       coverImageUrl: req.file.location,
       galleryImageUrls: galleryImageUrls || null,

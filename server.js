@@ -45,7 +45,10 @@ const imageSearchRoute = require("./routes/imageSearch/imageSearchRoute");
 const recommendationRoute = require('./routes/recommendationRoute/recommendation');
 const adminStatsRoute = require('./routes/statistic/adminDashboard');
 const recentAdminStats = require('./routes/statistic/recent');
-const graphStatsRoute = require('./routes/statistic/graphStats')
+const graphStatsRoute = require('./routes/statistic/graphStats');
+const adminNotificationsRoute = require('./routes/adminRoute/notifications/userNotification');
+const generalNotificationsRoute = require('./routes/notifications/userNotification');
+const couponManagementRoute = require('./routes/adminRoute/couponRoute/userCoupon')
 
 
 const app = express();
@@ -94,7 +97,7 @@ app.use(
   sellerFeedbackRoute,
   emailPreference
 );
-app.use("/api/general", categoryRoute, productRoute,imageSearchRoute);
+app.use("/api/general", categoryRoute, productRoute,imageSearchRoute,generalNotificationsRoute);
 app.use("/api/recommendation", checkForAuthenticationCookie("token"), recommendationRoute);
 app.use("/api/common-seller-admin", orderManageRoute);
 app.use(
@@ -111,7 +114,9 @@ app.use(
   handleReviewPermission,
   adminStatsRoute,
   recentAdminStats,
-  graphStatsRoute
+  graphStatsRoute,
+  adminNotificationsRoute,
+  couponManagementRoute
 );
 app.use(
   "/api/seller/dashboard",
