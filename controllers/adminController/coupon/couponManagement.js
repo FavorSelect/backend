@@ -110,6 +110,5 @@ const getAllCouponsWithUserDetails = async (req, res) => {
 
 module.exports = {
     handleCreateCoupon,
-    handleApplyCoupon,
     getAllCouponsWithUserDetails
 }
