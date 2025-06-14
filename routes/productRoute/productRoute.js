@@ -6,6 +6,7 @@ const {
   getProductsByCategory,
   getProductsByBrand,
   getRecentProducts,
+  getProductsByCategoryMultiple,
 } = require("../../controllers/productController/productController");
 const {
   handleTrackProductClick,
@@ -13,6 +14,11 @@ const {
 } = require("../../controllers/searchHistoryController/userSearch");
 const optionalAuthentication = require("../../authMiddleware/optionalMiddleware");
 const router = express.Router();
+
+router.get("/products/category/:categoryName", getProductsByCategory);
+router.get("/products/by-categories",   getProductsByCategoryMultiple);
+router.get("/products/brand/:brandName", getProductsByBrand);
+router.get("/products/recent/latest", getRecentProducts);
 
 
 //http://localhost:8000/api/general/products
@@ -31,8 +37,5 @@ router.get(
   handleTrackSearch,
   searchProducts
 );
-router.get("/products/category/:categoryName", getProductsByCategory);
-router.get("/products/brand/:brandName", getProductsByBrand);
-router.get("/products/recent/latest", getRecentProducts);
 
 module.exports = router;

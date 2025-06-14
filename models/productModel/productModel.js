@@ -56,7 +56,7 @@ const Product = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Category, // Reference to the Category model
+        model: Category, 
         key: "id",
       },
     },
@@ -109,7 +109,7 @@ const Product = sequelize.define(
     },
 
     inventoryStatus: {
-      type: DataTypes.ENUM("InStock", "OutOfStock", "BackOrder"),
+      type: DataTypes.ENUM("InStock","onSale", "OutOfStock", "BackOrder"),
       defaultValue: "InStock",
     },
 

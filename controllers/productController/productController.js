@@ -255,7 +255,7 @@ const handleDeleteProduct = async (req, res) => {
     });
   }
 };
-// const getAllProducts = async (req, res) => {
+
 //   try {
 //     const products = await Product.findAll({ where: { status: 'approved' } });
 //     res.status(200).json({
@@ -336,22 +336,87 @@ const handleDeleteProduct = async (req, res) => {
 //   }
 // };
 
+
 const getAllProducts = async (req, res) => {
   try {
+    const {
+      categories,
+      brands,
+      maxPrice,
+      inventoryStatus,
+      colors,
+      sortBy,
+    } = req.query;
+
+    const categoryFilter = categories ? categories.split(",").map((c) => c.trim()) : null;
+    const brandFilter = brands ? brands.split(",").map((b) => b.trim()) : null;
+    const inventoryFilter = inventoryStatus ? inventoryStatus.split(",").map((s) => s.trim()) : null;
+    const colorFilter = colors ? colors.split(",").map((c) => c.trim()) : null;
+
+   
+    let orderClause = [["createdAt", "DESC"]]; 
+    switch (sortBy) {
+      case "popular":
+        orderClause = [["totalSoldCount", "DESC"]];
+        break;
+      case "rating":
+        orderClause = [["averageCustomerRating", "DESC"]];
+        break;
+      case "priceLowToHigh":
+        orderClause = [["productPrice", "ASC"]];
+        break;
+      case "priceHighToLow":
+        orderClause = [["productPrice", "DESC"]];
+        break;
+      case "latest":
+        orderClause = [["createdAt", "DESC"]];
+        break;
+    }
+
+    const whereClause = {
+      status: "approved",
+      ...(brandFilter && {
+        productBrand: { [Op.in]: brandFilter },
+      }),
+      ...(maxPrice && {
+        productPrice: { [Op.lte]: parseFloat(maxPrice) },
+      }),
+      ...(inventoryFilter && {
+        inventoryStatus: { [Op.in]: inventoryFilter },
+      }),
+      ...(colorFilter && {
+        productColors: {
+          [Op.or]: colorFilter.map((color) => ({
+            [Op.like]: `%${color}%`,
+          })),
+        },
+      }),
+    };
+
+    const includeClause = [
+      {
+        model: Category,
+        as: "category",
+        attributes: ["categoryName"],
+        ...(categoryFilter && {
+          where: {
+            categoryName: { [Op.in]: categoryFilter },
+          },
+          required: true,
+        }),
+      },
+      {
+        model: Seller,
+        as: "seller",
+        attributes: ["id", "sellerName", "email", "shopName"],
+        required: false,
+      },
+    ];
+
     const products = await Product.findAll({
-      where: { status: "approved" },
-      include: [
-        {
-          model: Category,
-          as: "category",
-          attributes: ["categoryName"],
-        },
-        {
-          model: Seller,
-          as: "seller",
-          attributes: ["id", "sellerName", "email", "shopName"],
-        },
-      ],
+      where: whereClause,
+      include: includeClause,
+      order: orderClause,
     });
 
     res.status(200).json({
@@ -362,11 +427,12 @@ const getAllProducts = async (req, res) => {
     console.error("Get All Products Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error while fetching all products",
+      message: "Server error while fetching products",
       error: error.message,
     });
   }
 };
+
 
 // const getAllProducts = async (req, res) => {
 //   try {
@@ -618,6 +684,61 @@ const getProductsByBrand = async (req, res) => {
   }
 };
 
+const getProductsByCategoryMultiple = async (req, res) => {
+  const { categories } = req.query;
+  const { categoryName } = req.params;
+
+  const categoryArray = categories
+    ? categories.split(",").map((c) => c.trim())
+    : categoryName
+    ? [categoryName]
+    : [];
+
+  console.log("Filtering categories:", categoryArray);
+
+  try {
+    const products = await Product.findAll({
+      where: { status: "approved" },
+      include: [
+        {
+          model: Category,
+          as: "category",
+          where:
+            categoryArray.length > 0
+              ? { categoryName: { [Op.in]: categoryArray } }
+              : undefined,
+          attributes: ["categoryName"],
+        },
+        {
+          model: Seller,
+          as: "seller",
+          attributes: ["id", "sellerName", "email", "shopName"],
+        },
+      ],
+    });
+
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.error("Get Products by Category Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching products by category",
+      error: error.message,
+    });
+  }
+};
+
+
 const getRecentProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
@@ -662,4 +783,5 @@ module.exports = {
   getProductsByCategory,
   getProductsByBrand,
   getRecentProducts,
+  getProductsByCategoryMultiple
 };

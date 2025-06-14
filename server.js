@@ -56,7 +56,7 @@ const optionalAuthentication = require("./authMiddleware/optionalMiddleware");
 const app = express();
 const PORT = process.env.PORT || 8001;
 
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3000"];
+const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3001"];
 
 app.use(
   cors({

@@ -1,5 +1,4 @@
 const redis = require('../../redisCaching/redisConfig');
-
 // Redis cache middleware for specific routes
 const cache = (ttl = 300) => {
   return async (req, res, next) => {

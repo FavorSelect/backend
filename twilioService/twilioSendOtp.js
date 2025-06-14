@@ -1,5 +1,4 @@
 const client = require('../config/twilioConfig/twilioConfig');
-
 const sendOTP = async (phone, otp) => {
   try {
     const formattedPhone = phone.startsWith('+') ? phone : `+91${phone}`;

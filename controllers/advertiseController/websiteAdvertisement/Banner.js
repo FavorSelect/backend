@@ -158,7 +158,7 @@ const getHomepageBanners = async (req, res) => {
   try {
     const banners = await HomepageBanner.findAll({
       order: [["createdAt", "DESC"]],
-      limit: 5,
+      limit: 3,
     });
 
     return res.status(200).json({
@@ -179,7 +179,7 @@ const getWeeklyPromotionBanners = async (req, res) => {
   try {
     const banners = await WeeklyPromotion.findAll({
       order: [["createdAt", "DESC"]],
-      limit: 5,
+      limit: 4,
     });
 
     return res.status(200).json({
@@ -201,7 +201,7 @@ const getThePopularBanners = async (req, res) => {
   try {
     const banners = await ThePopular.findAll({
       order: [["createdAt", "DESC"]],
-      limit: 5,
+      limit: 1,
     });
 
     return res.status(200).json({
@@ -222,7 +222,7 @@ const getBrandPosterBanners = async (req, res) => {
   try {
     const banners = await BrandPoster.findAll({
       order: [["createdAt", "DESC"]],
-      limit: 5,
+      limit: 1,
     });
 
     return res.status(200).json({
@@ -244,7 +244,7 @@ const getProductPosterAdsBanners = async (req, res) => {
   try {
     const banners = await ProductPosterAds.findAll({
       order: [["createdAt", "DESC"]],
-      limit: 5,
+      limit: 4,
     });
 
     return res.status(200).json({
