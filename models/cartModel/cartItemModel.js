@@ -3,7 +3,7 @@ const { sequelize } = require('../../mysqlConnection/dbConnection');
 const  Cart  = require('../../models/cartModel/cartModel'); 
 const  Product  = require('../../models/productModel/productModel'); 
 
-const CartItem = sequelize.define('CartItem', {
+const  CartItem = sequelize.define('CartItem', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
