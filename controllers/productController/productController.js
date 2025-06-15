@@ -126,6 +126,13 @@ const handleAddProduct = async (req, res) => {
       id: product.id.toString(),
       document: {
         ...product.toJSON(),
+        suggest: {
+          input: [
+            product.productName,
+            product.productBrand,
+            ...(product.productTags ? product.productTags.split(",") : []),
+          ],
+        },
       },
     });
 
@@ -775,6 +782,48 @@ const getRecentProducts = async (req, res) => {
   }
 };
 
+const handleGetQuerySuggestions = async (req, res) => {
+  const query = req.query.q;
+
+  if (!query || query.length < 2) {
+    return res.status(200).json({ success: true, suggestions: [] });
+  }
+
+  try {
+    const result = await elasticClient.search({
+      index: "products",
+      suggest: {
+        product_suggest: {
+          prefix: query,
+          completion: {
+            field: "suggest",
+            fuzzy: {
+              fuzziness: 1,
+            },
+            size: 5, 
+          },
+        },
+      },
+    });
+
+    const suggestions =
+      result.suggest.product_suggest[0].options.map((opt) => opt.text);
+
+    res.status(200).json({
+      success: true,
+      suggestions,
+    });
+  } catch (err) {
+    console.error("Elasticsearch suggestion error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Search failed",
+      error: err.message,
+    });
+  }
+};
+
+
 module.exports = {
   handleAddProduct,
   handleUpdateProduct,
@@ -786,4 +835,5 @@ module.exports = {
   getProductsByBrand,
   getRecentProducts,
   getProductsByCategoryMultiple,
+  handleGetQuerySuggestions,
 };

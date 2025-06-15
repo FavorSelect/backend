@@ -7,6 +7,7 @@ const {
   getProductsByBrand,
   getRecentProducts,
   getProductsByCategoryMultiple,
+  handleGetQuerySuggestions,
 } = require("../../controllers/productController/productController");
 const {
   handleTrackProductClick,
@@ -14,12 +15,11 @@ const {
 } = require("../../controllers/searchHistoryController/userSearch");
 const optionalAuthentication = require("../../authMiddleware/optionalMiddleware");
 const router = express.Router();
-
+router.get("/search/suggestions",handleGetQuerySuggestions);
 router.get("/products/category/:categoryName", getProductsByCategory);
 router.get("/products/by-categories",   getProductsByCategoryMultiple);
 router.get("/products/brand/:brandName", getProductsByBrand);
 router.get("/products/recent/latest", getRecentProducts);
-
 
 //http://localhost:8000/api/general/products
 router.get("/products", getAllProducts);
