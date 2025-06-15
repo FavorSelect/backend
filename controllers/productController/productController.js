@@ -121,20 +121,21 @@ const handleAddProduct = async (req, res) => {
       rekognitionLabels,
     });
 
-    await elasticClient.index({
-      index: "products",
-      id: product.id.toString(),
-      document: {
-        ...product.toJSON(),
-        suggest: {
-          input: [
-            product.productName,
-            product.productBrand,
-            ...(product.productTags ? product.productTags.split(",") : []),
-          ],
-        },
-      },
-    });
+   await elasticClient.index({
+  index: "products",
+  id: product.id.toString(),
+  body: {
+    ...product.toJSON(),
+    suggest: {
+      input: [
+        product.productName,
+        product.productBrand,
+        ...(product.productTags ? product.productTags.split(",") : []),
+      ],
+    },
+  },
+});
+
 
     res.status(201).json({
       success: true,
@@ -561,26 +562,30 @@ const getProductById = async (req, res) => {
 const searchProducts = async (req, res) => {
   const { query } = req.query;
 
-  if (!query) {
+  if (!query || query.trim().length < 2) {
     return res.status(400).json({
       success: false,
-      message: "Missing search query",
+      message: "Missing or too short search query",
     });
   }
 
   try {
-    const { hits } = await elasticClient.search({
+    const esResult = await elasticClient.search({
       index: "products",
-      query: {
-        multi_match: {
-          query,
-          fields: ["productName", "productBrand"],
-          fuzziness: "AUTO",
-        },
-      },
+      body: {
+        size: 20,
+        query: {
+          multi_match: {
+            query,
+            fields: ["productName^3", "productBrand^2", "productTags"],
+            type: "best_fields",
+            fuzziness: "AUTO"
+          }
+        }
+      }
     });
 
-    const productIds = hits.hits.map((hit) => hit._source.id);
+    const productIds = esResult.body.hits.hits.map((hit) => hit._source.id);
 
     if (productIds.length === 0) {
       return res.status(200).json({
@@ -589,7 +594,6 @@ const searchProducts = async (req, res) => {
       });
     }
 
-    // Fetch only matched products from DB with associations
     const products = await Product.findAll({
       where: {
         id: productIds,
@@ -613,6 +617,7 @@ const searchProducts = async (req, res) => {
       success: true,
       products,
     });
+
   } catch (error) {
     console.error("Elasticsearch Search Error:", error);
     res.status(500).json({
@@ -792,29 +797,51 @@ const handleGetQuerySuggestions = async (req, res) => {
   try {
     const result = await elasticClient.search({
       index: "products",
-      suggest: {
-        product_suggest: {
-          prefix: query,
-          completion: {
-            field: "suggest",
-            fuzzy: {
-              fuzziness: 1,
-            },
-            size: 5, 
+      body: {
+        size: 10, 
+        query: {
+          bool: {
+            should: [
+              {
+                match_phrase_prefix: {
+                  productName: query,
+                },
+              },
+              {
+                match_phrase_prefix: {
+                  productBrand: query,
+                },
+              },
+              {
+                match_phrase_prefix: {
+                  productTags: query,
+                },
+              },
+            ],
           },
         },
+        _source: ["productName", "productBrand", "productTags"],
       },
     });
 
-    const suggestions =
-      result.suggest.product_suggest[0].options.map((opt) => opt.text);
+    const suggestionsSet = new Set();
 
-    res.status(200).json({
-      success: true,
-      suggestions,
+    result.body.hits.hits.forEach((hit) => {
+      const { productName, productBrand, productTags } = hit._source;
+
+      if (productName) suggestionsSet.add(productName);
+      if (productBrand) suggestionsSet.add(productBrand);
+      if (productTags) {
+        const tags = productTags.split(",");
+        tags.forEach((tag) => suggestionsSet.add(tag.trim()));
+      }
     });
+
+    const suggestions = Array.from(suggestionsSet).slice(0, 8); 
+
+    res.status(200).json({ success: true, suggestions });
   } catch (err) {
-    console.error("Elasticsearch suggestion error:", err);
+    console.error("OpenSearch suggestion error:", err);
     res.status(500).json({
       success: false,
       message: "Search failed",
@@ -822,7 +849,6 @@ const handleGetQuerySuggestions = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   handleAddProduct,
