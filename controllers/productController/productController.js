@@ -78,6 +78,14 @@ const handleAddProduct = async (req, res) => {
 
     const productTags = rekognitionLabels.join(", ");
 
+    const category = await Category.findByPk(productCategoryId);
+
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await category.increment("categoryProductCount");
+
     const product = await Product.create({
       productName,
       productDescription,
@@ -336,25 +344,21 @@ const handleDeleteProduct = async (req, res) => {
 //   }
 // };
 
-
 const getAllProducts = async (req, res) => {
   try {
-    const {
-      categories,
-      brands,
-      maxPrice,
-      inventoryStatus,
-      colors,
-      sortBy,
-    } = req.query;
+    const { categories, brands, maxPrice, inventoryStatus, colors, sortBy } =
+      req.query;
 
-    const categoryFilter = categories ? categories.split(",").map((c) => c.trim()) : null;
+    const categoryFilter = categories
+      ? categories.split(",").map((c) => c.trim())
+      : null;
     const brandFilter = brands ? brands.split(",").map((b) => b.trim()) : null;
-    const inventoryFilter = inventoryStatus ? inventoryStatus.split(",").map((s) => s.trim()) : null;
+    const inventoryFilter = inventoryStatus
+      ? inventoryStatus.split(",").map((s) => s.trim())
+      : null;
     const colorFilter = colors ? colors.split(",").map((c) => c.trim()) : null;
 
-   
-    let orderClause = [["createdAt", "DESC"]]; 
+    let orderClause = [["createdAt", "DESC"]];
     switch (sortBy) {
       case "popular":
         orderClause = [["totalSoldCount", "DESC"]];
@@ -432,7 +436,6 @@ const getAllProducts = async (req, res) => {
     });
   }
 };
-
 
 // const getAllProducts = async (req, res) => {
 //   try {
@@ -516,7 +519,7 @@ const getProductById = async (req, res) => {
       include: [
         {
           model: Category,
-          as:"category",
+          as: "category",
           attributes: ["categoryName"],
         },
         {
@@ -588,7 +591,7 @@ const searchProducts = async (req, res) => {
       include: [
         {
           model: Category,
-          as:"category",
+          as: "category",
           attributes: ["categoryName"],
         },
         {
@@ -738,7 +741,6 @@ const getProductsByCategoryMultiple = async (req, res) => {
   }
 };
 
-
 const getRecentProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
@@ -783,5 +785,5 @@ module.exports = {
   getProductsByCategory,
   getProductsByBrand,
   getRecentProducts,
-  getProductsByCategoryMultiple
+  getProductsByCategoryMultiple,
 };

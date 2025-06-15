@@ -113,7 +113,7 @@ Order.hasOne(Payment, { foreignKey: "orderId", onDelete: "CASCADE" });
 Payment.belongsTo(Order, { foreignKey: "orderId", onDelete: "CASCADE" });
 
 // Product ↔ Category
-Category.hasMany(Product, { foreignKey: "productCategoryId", onDelete: "CASCADE" });
+Category.hasMany(Product, { foreignKey: "productCategoryId",as: "products", onDelete: "CASCADE" });
 Product.belongsTo(Category, { foreignKey: "productCategoryId",as:"category", onDelete: "CASCADE" });
 
 User.hasMany(Review, { foreignKey: "userId", onDelete: "CASCADE", as: "reviews" });

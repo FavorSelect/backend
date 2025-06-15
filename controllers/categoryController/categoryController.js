@@ -1,5 +1,7 @@
 const { Op } = require("sequelize");
 const Category = require("../../models/categoryModel/categoryModel");
+const Product = require("../../models/productModel/productModel");
+const { sequelize } = require("../../mysqlConnection/dbConnection");
 
 const handleAddCategory = async (req, res) => {
   try {
@@ -163,6 +165,64 @@ const handleGetAllCategories = async (req, res) => {
   }
 };
 
+const handleGetAllCategoriesWithProductCount = async (req, res) => {
+  try {
+    const parentCategories = await Category.findAll({
+      where: { parentCategoryId: null },
+      include: [
+        {
+          model: Category,
+          as: "subcategories",
+          include: [
+            {
+              model: Product,
+              as: "products",
+              attributes: [], 
+            },
+          ],
+        },
+        {
+          model: Product,
+          as: "products",
+          attributes: [],
+        },
+      ],
+    });
+
+    const categoriesWithCount = await Promise.all(
+      parentCategories.map(async (parent) => {
+        const parentProductCount = await Product.count({
+          where: { productCategoryId: parent.id },
+        });
+
+        const subcategoriesWithCount = await Promise.all(
+          parent.subcategories.map(async (sub) => {
+            const subProductCount = await Product.count({
+              where: { productCategoryId: sub.id },
+            });
+
+            return {
+              ...sub.toJSON(),
+              productCount: subProductCount,
+            };
+          })
+        );
+
+        return {
+          ...parent.toJSON(),
+          productCount: parentProductCount,
+          subcategories: subcategoriesWithCount,
+        };
+      })
+    );
+
+    res.status(200).json({ categories: categoriesWithCount });
+  } catch (error) {
+    console.error("Error in category list:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 // GET /api/categories/:id/with-subcategories
 const getSingleCategoryWithSubcategories = async (req, res) => {
   try {
@@ -186,6 +246,38 @@ const getSingleCategoryWithSubcategories = async (req, res) => {
   }
 };
 
+const getAllCategoriesWithProductCounts = async (req, res) => {
+  try {
+    const mainCategories = await Category.findAll({
+      where: { parentCategoryId: null },
+      attributes: [
+        "id",
+        "categoryName",
+        "categoryProductCount",
+        "createdAt",
+        "updatedAt",
+      ],
+      include: [
+        {
+          model: Category,
+          as: "subcategories",
+          attributes: [
+            "id",
+            "categoryName",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json({ categories: mainCategories });
+  } catch (error) {
+    console.error("Error fetching categories with product counts:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
 
 module.exports = {
   handleGetAllCategories,
@@ -194,5 +286,7 @@ module.exports = {
   handleAddCategory,
   getSingleCategoryWithSubcategories,
    handleDeleteAllSubcategories,
-   handleDeleteSelectedSubcategories
+   handleDeleteSelectedSubcategories,
+    handleGetAllCategoriesWithProductCount,
+    getAllCategoriesWithProductCounts
 };
