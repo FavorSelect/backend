@@ -2,10 +2,13 @@ const Product = require("../../models/productModel/productModel");
 const elasticClient = require("../../config/elasticSearchConfig/elasticSearchClient");
 const Category = require("../../models/categoryModel/categoryModel");
 const Seller = require("../../models/authModel/sellerModel");
-const { Op } = require("sequelize");
+const { Op,fn, col } = require("sequelize");
 const {
   extractLabelsFromImageS3,
 } = require("../../awsRekognition/awsRekognition");
+const Review = require("../../models/reviewModel/reviewModel");
+const User = require("../../models/authModel/userModel");
+const ReviewLike = require("../../models/reviewLikeModel/reviewLikeModel");
 
 const handleAddProduct = async (req, res) => {
   try {
@@ -520,9 +523,11 @@ const getAllProducts = async (req, res) => {
 //   }
 // };
 
+
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
+
     const product = await Product.findByPk(productId, {
       include: [
         {
@@ -534,6 +539,28 @@ const getProductById = async (req, res) => {
           model: Seller,
           as: "seller",
           attributes: ["id", "sellerName", "email", "shopName"],
+        },
+        {
+          model: Review,
+          as: "reviews",
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "firstName", "lastName", "email"],
+            },
+            {
+              model: ReviewLike,
+              as: "likes",
+              attributes: [], 
+            }
+          ],
+          attributes: {
+            include: [
+              [fn("COUNT", col("reviews.likes.id")), "likeCount"]
+            ]
+          },
+          group: ['Review.id', 'user.id'], 
         },
       ],
     });
@@ -850,6 +877,82 @@ const handleGetQuerySuggestions = async (req, res) => {
   }
 };
 
+
+
+const getSimilarProducts = async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    const currentProduct = await Product.findByPk(productId);
+
+    if (!currentProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    const { productTags, productBrand, productCategoryId } = currentProduct;
+
+    const tagList = productTags
+      ? productTags.split(",").map(tag => tag.trim().toLowerCase())
+      : [];
+
+    const similarProducts = await Product.findAll({
+      where: {
+        id: { [Op.ne]: productId }, 
+        status: "approved",
+        [Op.or]: [
+          {
+            productTags: {
+              [Op.or]: tagList.map(tag => ({
+                [Op.like]: `%${tag}%`,
+              })),
+            },
+          },
+          {
+            productBrand: productBrand ? { [Op.like]: `%${productBrand}%` } : undefined,
+          },
+          {
+            productCategoryId,
+          },
+        ],
+      },
+      limit: 20,
+      order: [["createdAt", "DESC"]],
+      attributes: [
+        "id",
+        "productName",
+        "productTags",
+        "productBrand",
+        "productPrice",
+        "coverImageUrl",
+        "averageCustomerRating",
+        "totalCustomerReviews"
+      ],
+      include: [
+        {
+          model: Category,
+          as: "category",
+          attributes: ["categoryName"],
+        }
+      ]
+    });
+
+    return res.status(200).json({
+      success: true,
+      similarProducts,
+    });
+
+  } catch (error) {
+    console.error("Get Similar Products Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching similar products",
+      error: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   handleAddProduct,
   handleUpdateProduct,
@@ -862,4 +965,5 @@ module.exports = {
   getRecentProducts,
   getProductsByCategoryMultiple,
   handleGetQuerySuggestions,
+  getSimilarProducts
 };

@@ -8,6 +8,7 @@ const {
   getRecentProducts,
   getProductsByCategoryMultiple,
   handleGetQuerySuggestions,
+  getSimilarProducts,
 } = require("../../controllers/productController/productController");
 const {
   handleTrackProductClick,
@@ -37,5 +38,8 @@ router.get(
   handleTrackSearch,
   searchProducts
 );
+
+router.get("/products/similar/:productId", getSimilarProducts);
+
 
 module.exports = router;

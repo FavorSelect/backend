@@ -7,22 +7,22 @@ const toggleLikeOnReview = async (req, res) => {
   const { reviewId } = req.params;
 
   try {
-    // Check if the review exists
     const review = await Review.findByPk(reviewId);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });
     }
-
-    // Check if user already liked the review
     const existingLike = await ReviewLike.findOne({ where: { userId, reviewId } });
 
     if (existingLike) {
-      // Unlike
       await existingLike.destroy();
+      await Review.decrement('reviewLike', { by: 1, where: { id: reviewId } });
+
       return res.status(200).json({ message: 'Review unliked' });
     } else {
-      // Like
       await ReviewLike.create({ userId, reviewId });
+
+      await Review.increment('reviewLike', { by: 1, where: { id: reviewId } });
+
       return res.status(201).json({ message: 'Review liked' });
     }
   } catch (error) {

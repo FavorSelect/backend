@@ -127,6 +127,11 @@ const Product = sequelize.define(
       type: DataTypes.STRING,
     },
 
+galleryImageUrls: {
+  type: DataTypes.JSON,
+  allowNull: true,
+},
+
     // Ratings & Reviews
     averageCustomerRating: {
       type: DataTypes.FLOAT,

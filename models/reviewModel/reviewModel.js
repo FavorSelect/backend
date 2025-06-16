@@ -50,10 +50,11 @@ const Review = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true, // Optional
     },
-
-
-
-
+  reviewLike: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
 
     reviewDate: {
       type: DataTypes.DATE,
