@@ -57,21 +57,37 @@ const getWishlist = async (req, res) => {
 
 const removeFromWishlist = async (req, res) => {
   const userId = req.user.id;
-  const { wishlistId } = req.params;
+  const { wishlistIds } = req.body;
+
+  if (!Array.isArray(wishlistIds) || wishlistIds.length === 0) {
+    return res.status(400).json({ success: false, message: "Provide at least one wishlistId to remove." });
+  }
 
   try {
-    const wishlistItem = await Wishlist.findOne({ where: { id: wishlistId, userId } });
+    const deletedCount = await Wishlist.destroy({
+      where: {
+        id: wishlistIds,
+        userId,
+      },
+    });
 
-    if (!wishlistItem) {
-      return res.status(404).json({ success: false, message: "Wishlist item not found" });
+    if (deletedCount === 0) {
+      return res.status(404).json({ success: false, message: "No matching wishlist items found to delete." });
     }
 
-    await wishlistItem.destroy();
-    res.status(200).json({ success: true, message: "Wishlist item removed" });
+    res.status(200).json({
+      success: true,
+      message: `Successfully removed ${deletedCount} wishlist item(s).`,
+    });
   } catch (error) {
     console.error("Remove Wishlist Error:", error);
-    res.status(500).json({ success: false, message: "Server error while removing wishlist item", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error while removing wishlist item(s)",
+      error: error.message,
+    });
   }
 };
+
 
 module.exports = { addToWishlist, getWishlist, removeFromWishlist };

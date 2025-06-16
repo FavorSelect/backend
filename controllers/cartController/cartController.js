@@ -208,7 +208,6 @@ const updateCartItemQuantity = async (req, res) => {
   }
 };
 
-// 4. Remove Selected Items
 const handleRemoveSelectedCartItems = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -217,15 +216,12 @@ const handleRemoveSelectedCartItems = async (req, res) => {
     if (!Array.isArray(itemIds) || itemIds.length === 0) {
       return res.status(400).json({ message: "No items selected for deletion" });
     }
-
-    // First, get the user's cart to ensure ownership
     const userCart = await Cart.findOne({ where: { userId } });
 
     if (!userCart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    // Delete only items that belong to the user's cart
     const deletedCount = await CartItem.destroy({
       where: {
         id: itemIds,
@@ -244,7 +240,6 @@ const handleRemoveSelectedCartItems = async (req, res) => {
   }
 };
 
-// 5. Remove All Cart Items
 const handleRemoveAllCartItems = async (req, res) => {
   try {
     const userId = req.user.id;

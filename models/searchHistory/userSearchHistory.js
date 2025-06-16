@@ -6,26 +6,29 @@ const SearchHistory = sequelize.define(
   {
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       unique: true,
       references: {
         model: "users",
         key: "id",
       },
     },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: { model: "products", key: "id" },
-    },
-  searchText: {
-  type: DataTypes.JSON,
-  allowNull: true,
-  defaultValue: [],
-},
 
+    productIdList: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+
+    searchTextList: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = SearchHistory;

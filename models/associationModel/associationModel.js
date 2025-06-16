@@ -68,7 +68,6 @@ User.hasMany(Notification, {
 
 
 SearchHistory.belongsTo(User, { foreignKey: 'userId' });
-SearchHistory.belongsTo(Product, { foreignKey: 'productId' });
 
 // Cart ↔ CartItem
 Cart.hasMany(CartItem, { foreignKey: "cartId", onDelete: "CASCADE" });
