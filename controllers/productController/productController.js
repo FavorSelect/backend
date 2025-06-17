@@ -2,7 +2,7 @@ const Product = require("../../models/productModel/productModel");
 const elasticClient = require("../../config/elasticSearchConfig/elasticSearchClient");
 const Category = require("../../models/categoryModel/categoryModel");
 const Seller = require("../../models/authModel/sellerModel");
-const { Op,fn, col } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 const {
   extractLabelsFromImageS3,
 } = require("../../awsRekognition/awsRekognition");
@@ -124,21 +124,20 @@ const handleAddProduct = async (req, res) => {
       rekognitionLabels,
     });
 
-   await elasticClient.index({
-  index: "products",
-  id: product.id.toString(),
-  body: {
-    ...product.toJSON(),
-    suggest: {
-      input: [
-        product.productName,
-        product.productBrand,
-        ...(product.productTags ? product.productTags.split(",") : []),
-      ],
-    },
-  },
-});
-
+    await elasticClient.index({
+      index: "products",
+      id: product.id.toString(),
+      body: {
+        ...product.toJSON(),
+        suggest: {
+          input: [
+            product.productName,
+            product.productBrand,
+            ...(product.productTags ? product.productTags.split(",") : []),
+          ],
+        },
+      },
+    });
 
     res.status(201).json({
       success: true,
@@ -154,78 +153,74 @@ const handleAddProduct = async (req, res) => {
     });
   }
 };
-
 const handleUpdateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
     const product = await Product.findByPk(productId);
+
     if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found.",
       });
     }
-    const {
-      productName,
-      productDescription,
-      productBrand,
-      productCategory,
-      stockKeepingUnit,
-      productModelNumber,
-      productBestSaleTag,
-      productDiscountPercentage,
-      productPrice,
-      productDiscountPrice,
-      saleDayleft,
-      availableStockQuantity,
-      productWeight,
-      galleryImageUrls,
-      productVideoUrl,
-      productWarrantyInfo,
-      productReturnPolicy,
-      productSizes,
-      productColors,
-      productDimensions,
-      productMaterial,
-    } = req.body;
 
-    const updateFields = {
-      productName,
-      productDescription,
-      productBrand,
-      productCategory,
-      stockKeepingUnit: stockKeepingUnit || null,
-      productModelNumber: productModelNumber || null,
-      productBestSaleTag: productBestSaleTag || null,
-      productDiscountPercentage: productDiscountPercentage || null,
-      productPrice,
-      productDiscountPrice: productDiscountPrice || null,
-      saleDayleft: saleDayleft || null,
-      availableStockQuantity: availableStockQuantity || 0,
-      productWeight: productWeight || null,
-      galleryImageUrls: galleryImageUrls || null,
-      productVideoUrl: productVideoUrl || null,
-      productWarrantyInfo: productWarrantyInfo || null,
-      productReturnPolicy: productReturnPolicy || null,
+    const updateFields = {};
 
-      productMaterial: productMaterial || null,
-      productDimensions: productDimensions || null,
-      productColors: productColors || null,
-      productSizes: productSizes || null,
-    };
+    const fields = [
+      "productName",
+      "productDescription",
+      "productBrand",
+      "productCategoryId",
+      "stockKeepingUnit",
+      "productModelNumber",
+      "productBestSaleTag",
+      "productDiscountPercentage",
+      "productPrice",
+      "productDiscountPrice",
+      "saleDayleft",
+      "availableStockQuantity",
+      "productWeight",
+      "productSizes",
+      "productColors",
+      "productDimensions",
+      "productMaterial",
+      "productWarrantyInfo",
+      "productReturnPolicy",
+    ];
 
-    // Check if image uploaded
+    fields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updateFields[field] = req.body[field];
+      }
+    });
+
     if (req.file && req.file.location) {
       updateFields.coverImageUrl = req.file.location;
+
+      const imageKey = decodeURIComponent(
+        new URL(req.file.location).pathname.slice(1)
+      );
+      const rekognitionLabels = await extractLabelsFromImageS3(
+        process.env.AWS_BUCKET_NAME,
+        imageKey
+      );
+
+      updateFields.rekognitionLabels = rekognitionLabels;
+      updateFields.productTags = rekognitionLabels.join(", ");
+    }
+
+    const galleryImages = req.files?.galleryImageUrls || [];
+    if (galleryImages.length > 0) {
+      updateFields.galleryImageUrls = galleryImages.map((img) => img.location);
+    }
+
+    const productVideo = req.files?.productVideoUrl?.[0];
+    if (productVideo?.location) {
+      updateFields.productVideoUrl = productVideo.location;
     }
 
     await product.update(updateFields);
-
-    await elasticClient.update({
-      index: "products",
-      id: product.id.toString(),
-      doc: product.toJSON(),
-    });
 
     res.status(200).json({
       success: true,
@@ -357,8 +352,15 @@ const handleDeleteProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const { categories, brands, maxPrice, inventoryStatus, colors, sortBy } =
-      req.query;
+    const {
+      categories,
+      brands,
+      minPrice,
+      maxPrice,
+      inventoryStatus,
+      colors,
+      sortBy,
+    } = req.query;
 
     const categoryFilter = categories
       ? categories.split(",").map((c) => c.trim())
@@ -393,9 +395,13 @@ const getAllProducts = async (req, res) => {
       ...(brandFilter && {
         productBrand: { [Op.in]: brandFilter },
       }),
-      ...(maxPrice && {
-        productPrice: { [Op.lte]: parseFloat(maxPrice) },
+      ...((minPrice || maxPrice) && {
+        productPrice: {
+          ...(minPrice && { [Op.gte]: parseFloat(minPrice) }),
+          ...(maxPrice && { [Op.lte]: parseFloat(maxPrice) }),
+        },
       }),
+
       ...(inventoryFilter && {
         inventoryStatus: { [Op.in]: inventoryFilter },
       }),
@@ -523,7 +529,6 @@ const getAllProducts = async (req, res) => {
 //   }
 // };
 
-
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -552,15 +557,13 @@ const getProductById = async (req, res) => {
             {
               model: ReviewLike,
               as: "likes",
-              attributes: [], 
-            }
+              attributes: [],
+            },
           ],
           attributes: {
-            include: [
-              [fn("COUNT", col("reviews.likes.id")), "likeCount"]
-            ]
+            include: [[fn("COUNT", col("reviews.likes.id")), "likeCount"]],
           },
-          group: ['Review.id', 'user.id'], 
+          group: ["Review.id", "user.id"],
         },
       ],
     });
@@ -589,7 +592,7 @@ const getProductById = async (req, res) => {
 const searchProducts = async (req, res) => {
   const { query } = req.query;
 
-  if (!query || query.trim().length < 2) {
+  if (!query || query.trim().length < 1) {
     return res.status(400).json({
       success: false,
       message: "Missing or too short search query",
@@ -605,11 +608,10 @@ const searchProducts = async (req, res) => {
           multi_match: {
             query,
             fields: ["productName^3", "productBrand^2", "productTags"],
-            type: "best_fields",
-            fuzziness: "AUTO"
-          }
-        }
-      }
+            type: "phrase_prefix",
+          },
+        },
+      },
     });
 
     const productIds = esResult.body.hits.hits.map((hit) => hit._source.id);
@@ -644,7 +646,6 @@ const searchProducts = async (req, res) => {
       success: true,
       products,
     });
-
   } catch (error) {
     console.error("Elasticsearch Search Error:", error);
     res.status(500).json({
@@ -825,7 +826,7 @@ const handleGetQuerySuggestions = async (req, res) => {
     const result = await elasticClient.search({
       index: "products",
       body: {
-        size: 10, 
+        size: 10,
         query: {
           bool: {
             should: [
@@ -864,7 +865,7 @@ const handleGetQuerySuggestions = async (req, res) => {
       }
     });
 
-    const suggestions = Array.from(suggestionsSet).slice(0, 8); 
+    const suggestions = Array.from(suggestionsSet).slice(0, 8);
 
     res.status(200).json({ success: true, suggestions });
   } catch (err) {
@@ -877,8 +878,6 @@ const handleGetQuerySuggestions = async (req, res) => {
   }
 };
 
-
-
 const getSimilarProducts = async (req, res) => {
   const { productId } = req.params;
 
@@ -886,29 +885,33 @@ const getSimilarProducts = async (req, res) => {
     const currentProduct = await Product.findByPk(productId);
 
     if (!currentProduct) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
 
     const { productTags, productBrand, productCategoryId } = currentProduct;
 
     const tagList = productTags
-      ? productTags.split(",").map(tag => tag.trim().toLowerCase())
+      ? productTags.split(",").map((tag) => tag.trim().toLowerCase())
       : [];
 
     const similarProducts = await Product.findAll({
       where: {
-        id: { [Op.ne]: productId }, 
+        id: { [Op.ne]: productId },
         status: "approved",
         [Op.or]: [
           {
             productTags: {
-              [Op.or]: tagList.map(tag => ({
+              [Op.or]: tagList.map((tag) => ({
                 [Op.like]: `%${tag}%`,
               })),
             },
           },
           {
-            productBrand: productBrand ? { [Op.like]: `%${productBrand}%` } : undefined,
+            productBrand: productBrand
+              ? { [Op.like]: `%${productBrand}%` }
+              : undefined,
           },
           {
             productCategoryId,
@@ -925,22 +928,21 @@ const getSimilarProducts = async (req, res) => {
         "productPrice",
         "coverImageUrl",
         "averageCustomerRating",
-        "totalCustomerReviews"
+        "totalCustomerReviews",
       ],
       include: [
         {
           model: Category,
           as: "category",
           attributes: ["categoryName"],
-        }
-      ]
+        },
+      ],
     });
 
     return res.status(200).json({
       success: true,
       similarProducts,
     });
-
   } catch (error) {
     console.error("Get Similar Products Error:", error);
     return res.status(500).json({
@@ -950,8 +952,6 @@ const getSimilarProducts = async (req, res) => {
     });
   }
 };
-
-
 
 module.exports = {
   handleAddProduct,
@@ -965,5 +965,5 @@ module.exports = {
   getRecentProducts,
   getProductsByCategoryMultiple,
   handleGetQuerySuggestions,
-  getSimilarProducts
+  getSimilarProducts,
 };
