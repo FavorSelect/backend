@@ -538,7 +538,14 @@ const getProductById = async (req, res) => {
         {
           model: Category,
           as: "category",
-          attributes: ["categoryName"],
+          attributes: ["id", "categoryName", "parentCategoryId"],
+          include: [
+            {
+              model: Category,
+              as: "parentCategory", 
+              attributes: ["id", "categoryName"],
+            },
+          ],
         },
         {
           model: Seller,
@@ -588,6 +595,7 @@ const getProductById = async (req, res) => {
     });
   }
 };
+
 
 const searchProducts = async (req, res) => {
   const { query } = req.query;

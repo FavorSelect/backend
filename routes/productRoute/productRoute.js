@@ -18,6 +18,7 @@ const optionalAuthentication = require("../../authMiddleware/optionalMiddleware"
 const router = express.Router();
 router.get("/search/suggestions",handleGetQuerySuggestions);
 router.get("/products/category/:categoryName", getProductsByCategory);
+router.get("/products/category/:productId", getProductById);
 router.get("/products/by-categories",   getProductsByCategoryMultiple);
 router.get("/products/brand/:brandName", getProductsByBrand);
 router.get("/products/recent/latest", getRecentProducts);

@@ -98,7 +98,7 @@ app.use(
   reviewLikeRoute,
   sellerFeedbackRoute,
   emailPreference,
-   userCouponRoute
+  userCouponRoute
 );
 app.use("/api/general", categoryRoute, productRoute,imageSearchRoute,generalNotificationsRoute);
 app.use("/api/recommendation",  optionalAuthentication("token"), recommendationRoute);

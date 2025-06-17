@@ -52,6 +52,7 @@ const handleBuyNow = async (req, res) => {
       return res.status(400).json({ message: "Not enough stock available" });
     }
 
+
     const userCoupon = await UserCoupon.findOne({
       where: {
         userId,
@@ -67,11 +68,12 @@ const handleBuyNow = async (req, res) => {
       transaction: t,
     });
 
+
     let discountAmount = 0;
     let appliedCouponId = null;
 
-    if (userCoupon && userCoupon.Coupon) {
-      const coupon = userCoupon.Coupon;
+    if (userCoupon && userCoupon.coupon) {
+      const coupon = userCoupon.coupon;
       const productTotal = product.productPrice * quantity;
 
       if (coupon.discountPercentage) {
@@ -204,10 +206,10 @@ const handlePlaceOrderFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    //  Include associated Product data
+
     const cartItems = await CartItem.findAll({
       where: { cartId: cart.id },
-      include: [{ model: Product }], // Important
+      include: [{ model: Product }], 
       transaction: t,
     });
 
@@ -234,8 +236,8 @@ const handlePlaceOrderFromCart = async (req, res) => {
       transaction: t,
     });
 
-    if (userCoupon && userCoupon.Coupon) {
-      const coupon = userCoupon.Coupon;
+    if (userCoupon && userCoupon.coupon) {
+      const coupon = userCoupon.coupon;
 
       if (coupon.discountPercentage) {
         discountAmount = (coupon.discountPercentage / 100) * totalAmount;

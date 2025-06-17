@@ -1,3 +1,4 @@
+const AppliedCoupon = require("../../models/couponModel/appliedCoupon");
 const Coupon = require("../../models/couponModel/couponModel");
 const UserCoupon = require("../../models/couponModel/userCouponModel");
 const Product = require("../../models/productModel/productModel");
