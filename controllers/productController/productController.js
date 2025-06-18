@@ -2,7 +2,7 @@ const Product = require("../../models/productModel/productModel");
 const elasticClient = require("../../config/elasticSearchConfig/elasticSearchClient");
 const Category = require("../../models/categoryModel/categoryModel");
 const Seller = require("../../models/authModel/sellerModel");
-const { Op, fn, col } = require("sequelize");
+const { Op, fn, col, literal } = require("sequelize");
 const {
   extractLabelsFromImageS3,
 } = require("../../awsRekognition/awsRekognition");
@@ -528,7 +528,6 @@ const getAllProducts = async (req, res) => {
 //     });
 //   }
 // };
-
 const getProductById = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -542,7 +541,7 @@ const getProductById = async (req, res) => {
           include: [
             {
               model: Category,
-              as: "parentCategory", 
+              as: "parentCategory",
               attributes: ["id", "categoryName"],
             },
           ],
@@ -555,22 +554,34 @@ const getProductById = async (req, res) => {
         {
           model: Review,
           as: "reviews",
+          attributes: [
+            "id",
+            "userId",
+            "productId",
+            "rating",
+            "reviewText",
+            "reviewPhoto",
+            "reviewLike",
+            "reviewDate",
+            "createdAt",
+            "updatedAt",
+            [
+              // Subquery to count review likes per review
+              literal(`(
+                SELECT COUNT(*) 
+                FROM reviewlikes AS rl 
+                WHERE rl.reviewId = reviews.id
+              )`),
+              "likeCount",
+            ],
+          ],
           include: [
             {
               model: User,
               as: "user",
               attributes: ["id", "firstName", "lastName", "email"],
             },
-            {
-              model: ReviewLike,
-              as: "likes",
-              attributes: [],
-            },
           ],
-          attributes: {
-            include: [[fn("COUNT", col("reviews.likes.id")), "likeCount"]],
-          },
-          group: ["Review.id", "user.id"],
         },
       ],
     });

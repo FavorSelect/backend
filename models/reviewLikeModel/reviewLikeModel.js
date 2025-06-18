@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../../mysqlConnection/dbConnection');
-const User = require('../authModel/userModel'); // adjust path as needed
-const Review = require('../reviewModel/reviewModel');       // adjust path as needed
+const User = require('../authModel/userModel');
+const Review = require('../reviewModel/reviewModel');
 
 const ReviewLike = sequelize.define('ReviewLike', {
   userId: {
@@ -25,11 +25,12 @@ const ReviewLike = sequelize.define('ReviewLike', {
     onUpdate: 'CASCADE',
   },
 }, {
+  tableName: 'reviewlikes',
   timestamps: true,
   indexes: [
     {
       unique: true,
-      fields: ['userId', 'reviewId'], // prevent duplicate likes
+      fields: ['userId', 'reviewId'], 
     }
   ]
 });
