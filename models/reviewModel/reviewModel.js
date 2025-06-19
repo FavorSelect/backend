@@ -50,7 +50,7 @@ const Review = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true, // Optional
     },
-  reviewLike: {
+    reviewLike: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,

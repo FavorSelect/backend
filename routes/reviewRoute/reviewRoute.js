@@ -14,37 +14,38 @@ const hasPurchasedProduct = require("../../ReviewMiddleware/hasPurchasedProduct"
 const canReviewProduct = require("../../ReviewMiddleware/canReviewProduct");
 const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
+//check for production
+
+//  hasPurchasedProduct,
+ // canReviewProduct,
+
 router.post(
   "/review/add",
   upload.single("reviewPhoto"),
-  hasPurchasedProduct,
-  canReviewProduct,
   handleAddReview
 );
 
-router.get("/my-reviews", handleGetUserReviewsWithProducts);
-// Get all reviews for a product
-router.get("/review/:productId", handleGetProductReviews);
-// Get review count for a product
-router.get("/review/:productId/review-count", getReviewCountForProduct);
-// Update review by user
 router.put(
-  "/review/update/:reviewId",
-  hasPurchasedProduct,
-  canReviewProduct,
+  "/review/:reviewId",
+   upload.single("reviewPhoto"),
   handleUpdateReview
 );
-// Delete review by user
-router.delete(
-  "/review/:productId/delete",
-  hasPurchasedProduct,
-  canReviewProduct,
-  handleDeleteReviewByUser
-);
-// Admin delete review by reviewId
+
 router.delete(
   "/review/:reviewId",
-  authorizeRoles(["superadmin"]),
-  handleDeleteUserReviewByAdmin
+  handleDeleteReviewByUser
 );
+
+
+// router.delete(
+//   "/review/:reviewId",
+//   authorizeRoles(["superadmin"]),
+//   handleDeleteUserReviewByAdmin
+// );
+
+router.get("/my-reviews", handleGetUserReviewsWithProducts);
+router.get("/review/:productId", handleGetProductReviews);
+router.get("/review/:productId/review-count", getReviewCountForProduct);
+
+
 module.exports = router;

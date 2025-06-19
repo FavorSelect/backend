@@ -565,15 +565,15 @@ const getProductById = async (req, res) => {
             "reviewDate",
             "createdAt",
             "updatedAt",
-            [
-              // Subquery to count review likes per review
-              literal(`(
-                SELECT COUNT(*) 
-                FROM reviewlikes AS rl 
-                WHERE rl.reviewId = reviews.id
-              )`),
-              "likeCount",
-            ],
+            // [
+            //   // Subquery to count review likes per review
+            //   literal(`(
+            //     SELECT COUNT(*) 
+            //     FROM reviewlikes AS rl 
+            //     WHERE rl.reviewId = reviews.id
+            //   )`),
+            //   "likeCount",
+            // ],
           ],
           include: [
             {
