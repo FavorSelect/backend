@@ -36,6 +36,7 @@
     "oauth-1.0a": "^2.2.6",
     "querystring": "^0.2.1",
     "sequelize": "^6.37.7",
+    "stripe": "^18.2.1",
     "twilio": "^5.5.2"
   },
   "devDependencies": {

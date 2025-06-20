@@ -52,7 +52,6 @@ const handleBuyNow = async (req, res) => {
       return res.status(400).json({ message: "Not enough stock available" });
     }
 
-
     const userCoupon = await UserCoupon.findOne({
       where: {
         userId,
@@ -67,7 +66,6 @@ const handleBuyNow = async (req, res) => {
       ],
       transaction: t,
     });
-
 
     let discountAmount = 0;
     let appliedCouponId = null;
@@ -184,6 +182,7 @@ const handlePlaceOrderFromCart = async (req, res) => {
     "CreditCard",
     "DebitCard",
     "PayPal",
+    "Stripe",
   ];
   if (!allowedMethods.includes(paymentMethod)) {
     return res.status(400).json({ message: "Invalid payment method" });
@@ -206,10 +205,9 @@ const handlePlaceOrderFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-
     const cartItems = await CartItem.findAll({
       where: { cartId: cart.id },
-      include: [{ model: Product }], 
+      include: [{ model: Product }],
       transaction: t,
     });
 
@@ -232,7 +230,12 @@ const handlePlaceOrderFromCart = async (req, res) => {
         used: false,
         applied: true,
       },
-      include: Coupon,
+      include: [
+        {
+          model: Coupon,
+          as: "coupon",
+        },
+      ],
       transaction: t,
     });
 
@@ -281,12 +284,12 @@ const handlePlaceOrderFromCart = async (req, res) => {
 
     const order = await Order.create(
       {
+        uniqueOrderId: customOrderId,
         userId,
         cartId: cart.id,
         totalAmount: finalAmount,
         appliedCouponId,
         addressId,
-        orderId: customOrderId,
         paymentMethod,
         paymentStatus:
           paymentMethod === "CashOnDelivery" ? "Pending" : "Completed",
@@ -336,15 +339,14 @@ const handlePlaceOrderFromCart = async (req, res) => {
     await sendOrderEmail(
       req.user.email,
       req.user.firstName,
-      order.orderId,
+      order.uniqueOrderId,
       emailOrderItems
     );
 
     // Empty the cart
     await CartItem.destroy({ where: { cartId: cart.id }, transaction: t });
 
-    await t.commit();
-    await updateRevenueAndOrders(totalPrice);
+    await updateRevenueAndOrders(finalAmount);
 
     await createUserNotification({
       userId,
@@ -354,12 +356,14 @@ const handlePlaceOrderFromCart = async (req, res) => {
       coverImage: cartItems[0]?.Product?.coverImageUrl || null,
     });
 
+    await t.commit();
+
     return res.status(201).json({
       message: "Order placed successfully from cart",
-      orderId: customOrderId,
+      uniqueOrderId: customOrderId,
+      order,
     });
   } catch (error) {
-    await t.rollback();
     console.error("Transaction failed:", error);
     res.status(500).json({ message: error.message || "Something went wrong" });
   }

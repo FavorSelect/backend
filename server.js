@@ -51,6 +51,7 @@ const generalNotificationsRoute = require('./routes/notifications/userNotificati
 const couponManagementRoute = require('./routes/adminRoute/couponRoute/userCoupon');
 const userCouponRoute = require('./routes/couponRoute/userCouponRoute');
 const optionalAuthentication = require("./authMiddleware/optionalMiddleware");
+const stripeCheckoutRoute = require('./routes/orderRoute/stripeRoute')
 
 
 const app = express();
@@ -98,7 +99,8 @@ app.use(
   reviewLikeRoute,
   sellerFeedbackRoute,
   emailPreference,
-  userCouponRoute
+  userCouponRoute,
+  stripeCheckoutRoute
 );
 app.use("/api/general", categoryRoute, productRoute,imageSearchRoute,generalNotificationsRoute);
 app.use("/api/recommendation",  optionalAuthentication("token"), recommendationRoute);
