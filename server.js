@@ -51,7 +51,9 @@ const generalNotificationsRoute = require('./routes/notifications/userNotificati
 const couponManagementRoute = require('./routes/adminRoute/couponRoute/userCoupon');
 const userCouponRoute = require('./routes/couponRoute/userCouponRoute');
 const optionalAuthentication = require("./authMiddleware/optionalMiddleware");
-const stripeCheckoutRoute = require('./routes/orderRoute/stripeRoute')
+const stripeCheckoutRoute = require('./routes/orderRoute/stripeRoute');
+const estimateDeliveryRoute = require('./routes/deliveryRoute/estimateDelivery');
+const warehouseAddRoute = require('./routes/deliveryRoute/adminWarehouseAdd')
 
 
 const app = express();
@@ -100,7 +102,8 @@ app.use(
   sellerFeedbackRoute,
   emailPreference,
   userCouponRoute,
-  stripeCheckoutRoute
+  stripeCheckoutRoute,
+  estimateDeliveryRoute
 );
 app.use("/api/general", categoryRoute, productRoute,imageSearchRoute,generalNotificationsRoute);
 app.use("/api/recommendation",  optionalAuthentication("token"), recommendationRoute);
@@ -121,7 +124,8 @@ app.use(
   recentAdminStats,
   graphStatsRoute,
   adminNotificationsRoute,
-  couponManagementRoute
+  couponManagementRoute,
+   warehouseAddRoute
 );
 app.use(
   "/api/seller/dashboard",
