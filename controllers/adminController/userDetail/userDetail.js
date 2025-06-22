@@ -39,6 +39,7 @@ const handleGetAllUsers = async (req, res) => {
         "firstName",
         "lastName",
         "email",
+        "canReview",
         "authProvider",
         "status",
         "isVerified",

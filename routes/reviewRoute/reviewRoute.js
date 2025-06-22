@@ -16,11 +16,12 @@ const upload = require("../../awsS3Connection/awsUploadMiddleware");
 
 //check for production
 
-//  hasPurchasedProduct,
- // canReviewProduct,
+
 
 router.post(
   "/review/add",
+  hasPurchasedProduct,
+ canReviewProduct,
   upload.single("reviewPhoto"),
   handleAddReview
 );
