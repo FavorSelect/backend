@@ -59,7 +59,7 @@ const warehouseAddRoute = require('./routes/deliveryRoute/adminWarehouseAdd')
 const app = express();
 const PORT = process.env.PORT || 8001;
 
-const allowedOrigins = [process.env.FRONTEND_URL, "http://localhost:3001"];
+const allowedOrigins = [process.env.FRONTEND_URL_MAIN, process.env.FRONTEND_URL_ADMIN];
 
 app.use(
   cors({
