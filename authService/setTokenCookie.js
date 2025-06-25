@@ -8,7 +8,7 @@ const setTokenCookie = (res, token) => {
       secure: true ,
       sameSite: "none",
       path: "/",
-      maxAge: 60 * 60 * 24, 
+      maxAge: 60 * 60 * 24 * 365, 
     })
   );
 };

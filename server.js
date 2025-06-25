@@ -146,6 +146,7 @@ app.use(
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
 initDB(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
