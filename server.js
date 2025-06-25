@@ -64,7 +64,6 @@ const allowedOrigins = [process.env.FRONTEND_URL_MAIN, process.env.FRONTEND_URL_
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -135,6 +134,8 @@ app.use(
   sellerMembershipRoute,
   sellerTicketRoute
 );
+
+//for ads
 app.use("/api/advertisement",BannerRoute, logoRoute);
 app.use(
   "/api/support",
@@ -143,6 +144,8 @@ app.use(
   accountDeleteRequestRoute
 );
 
+
+//for checking
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
