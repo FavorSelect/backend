@@ -35,8 +35,8 @@ const createStripeCheckoutSession = async (req, res) => {
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
-      success_url: `${process.env.FRONTEND_URL}/order-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/order-cancel`,
+      success_url: `${process.env.FRONTEND_URL_MAIN}/order-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL_MAIN}/order-cancel`,
       metadata: {
         userId: userId.toString(),
         productId: productId.toString(),
@@ -125,8 +125,8 @@ const createStripeCartCheckoutSession = async (req, res) => {
       payment_method_types: ["card"],
       mode: "payment",
       line_items,
-      success_url: `${process.env.FRONTEND_URL}/cart-order-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart-order-cancel`,
+      success_url: `${process.env.FRONTEND_URL_MAIN}/cart-order-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL_MAIN}/cart-order-cancel`,
       metadata: {
         userId: userId.toString(),
         addressId: addressId.toString(),
