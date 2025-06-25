@@ -135,7 +135,7 @@ app.use(
   sellerTicketRoute
 );
 
-//for ads
+
 app.use("/api/advertisement",BannerRoute, logoRoute);
 app.use(
   "/api/support",
@@ -145,7 +145,6 @@ app.use(
 );
 
 
-//for checking
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
