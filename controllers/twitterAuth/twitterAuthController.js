@@ -13,6 +13,7 @@ const TWITTER_API_KEY = process.env.TWITTER_CLIENT_ID;
 const TWITTER_API_SECRET_KEY = process.env.TWITTER_CLIENT_SECRET;
 const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
+const FRONTEND_URL_MAIN = process.env.FRONTEND_URL_MAIN;
 
 if (
   !TWITTER_API_KEY ||
@@ -170,7 +171,7 @@ const twitterCallback = async (req, res) => {
     const encrypted = encrypt(userData);
 
     res.redirect(
-      `http://localhost:3000/?data=${encodeURIComponent(encrypted)}`
+      `${FRONTEND_URL_MAIN}/?data=${encodeURIComponent(encrypted)}`
     );
   } catch (err) {
     console.error(

@@ -8,6 +8,7 @@ require("dotenv").config();
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
+const FRONTEND_URL_MAIN = process.env.FRONTEND_URL_MAIN;
 const JWT_SECRET = process.env.JWT_SECRET;
 const qs = require("querystring");
 
@@ -100,7 +101,7 @@ const googleCallback = async (req, res) => {
     const encrypted = encrypt(userData);
 
     res.redirect(
-      `http://localhost:3000/?data=${encodeURIComponent(encrypted)}`
+      `${FRONTEND_URL_MAIN}/?data=${encodeURIComponent(encrypted)}`
     );
   } catch (error) {
     console.error(error);

@@ -8,6 +8,7 @@ require('dotenv').config();
 const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_APP_ID;
 const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_APP_SECRET;
 const FACEBOOK_REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI;
+const FRONTEND_URL_MAIN = process.env.FRONTEND_URL_MAIN;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const redirectToFacebook = (req, res) => {
@@ -95,7 +96,7 @@ const facebookCallback = async (req, res) => {
   });
 
   const encrypted = encrypt(userData);
-     res.redirect(`http://localhost:3000/?data=${encodeURIComponent(encrypted)}`);
+     res.redirect(`${FRONTEND_URL_MAIN}/?data=${encodeURIComponent(encrypted)}`);
 
 
   } catch (error) {
