@@ -5,7 +5,7 @@ const setTokenCookie = (res, token) => {
     "Set-Cookie",
     serialize("token", token, {
       httpOnly: true,
-      secure: true ,
+      secure: true,
       sameSite: "none",
       path: "/",
       maxAge: 60 * 60 * 24 * 365, 

@@ -349,7 +349,7 @@ const handleFindMyAccountPasswordURL = async (req, res) => {
     const resetToken = JWT.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    const resetLink = `${process.env.FRONTEND_URL}/set-password/${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL_MAIN}/set-password/${resetToken}`;
     await sendForgetPasswordURL(user.email, resetLink);
 
     return res
