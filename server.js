@@ -7,7 +7,6 @@ const cors = require("cors");
 const checkForAuthenticationCookie = require("./authMiddleware/authMiddleware");
 const { authorizeRoles } = require("./authMiddleware/roleMiddleware");
 
-//route
 const userAuthRoute = require("./routes/authRoute/userAuthRoute");
 const userProfileRoute = require("./routes/profileRoute/userProfileRoute");
 const handleProductRoute = require("./routes/sellerRoute/product/handleProductRoute");
@@ -56,7 +55,6 @@ const estimateDeliveryRoute = require('./routes/deliveryRoute/estimateDelivery')
 const warehouseAddRoute = require('./routes/deliveryRoute/adminWarehouseAdd')
 
 
-//testing ci/cd pipeline
 
 const app = express();
 const PORT = process.env.PORT || 8001;
