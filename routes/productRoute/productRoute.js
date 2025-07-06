@@ -15,6 +15,7 @@ const {
   handleTrackSearch,
 } = require("../../controllers/searchHistoryController/userSearch");
 const optionalAuthentication = require("../../authMiddleware/optionalMiddleware");
+const { handleGetProductReviews } = require("../../controllers/reviewController/reviewController");
 const router = express.Router();
 router.get("/search/suggestions",handleGetQuerySuggestions);
 router.get("/products/category/:categoryName", getProductsByCategory);
@@ -32,6 +33,7 @@ router.get(
   handleTrackProductClick,
   getProductById
 );
+router.get("/products/review/:productId", handleGetProductReviews);
 //http://localhost:8000/api/general/products/search/query?query=green
 router.get(
   "/products/search/query",

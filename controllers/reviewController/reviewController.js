@@ -152,7 +152,7 @@ const handleGetProductReviews = async (req, res) => {
           include: [
             {
               model: User,
-              as: "user", // user who liked the review
+              as: "user",
               attributes: ["id", "firstName", "email"],
             }
           ]

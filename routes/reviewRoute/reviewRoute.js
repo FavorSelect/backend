@@ -6,7 +6,6 @@ const {
   handleDeleteReviewByUser,
   handleUpdateReview,
   getReviewCountForProduct,
-  handleGetProductReviews,
   handleAddReview,
   handleGetUserReviewsWithProducts,
 } = require("../../controllers/reviewController/reviewController");
@@ -45,7 +44,6 @@ router.delete(
 // );
 
 router.get("/my-reviews", handleGetUserReviewsWithProducts);
-router.get("/review/:productId", handleGetProductReviews);
 router.get("/review/:productId/review-count", getReviewCountForProduct);
 
 

@@ -551,38 +551,29 @@ const getProductById = async (req, res) => {
           as: "seller",
           attributes: ["id", "sellerName", "email", "shopName"],
         },
-        {
-          model: Review,
-          as: "reviews",
-          attributes: [
-            "id",
-            "userId",
-            "productId",
-            "rating",
-            "reviewText",
-            "reviewPhoto",
-            "reviewLike",
-            "reviewDate",
-            "createdAt",
-            "updatedAt",
-            // [
-            //   // Subquery to count review likes per review
-            //   literal(`(
-            //     SELECT COUNT(*) 
-            //     FROM reviewlikes AS rl 
-            //     WHERE rl.reviewId = reviews.id
-            //   )`),
-            //   "likeCount",
-            // ],
-          ],
-          include: [
-            {
-              model: User,
-              as: "user",
-              attributes: ["id", "firstName", "lastName", "email"],
-            },
-          ],
-        },
+        // {
+        //   model: Review,
+        //   as: "reviews",
+        //   attributes: [
+        //     "id",
+        //     "userId",
+        //     "productId",
+        //     "rating",
+        //     "reviewText",
+        //     "reviewPhoto",
+        //     "reviewLike",
+        //     "reviewDate",
+        //     "createdAt",
+        //     "updatedAt",
+        //   ],
+        //   include: [
+        //     {
+        //       model: User,
+        //       as: "user",
+        //       attributes: ["id", "firstName", "lastName", "email"],
+        //     },
+        //   ],
+        // },
       ],
     });
 
