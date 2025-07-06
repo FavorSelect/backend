@@ -24,6 +24,15 @@ function createToken(user) {
   }
 }
 
+const createMiddlewareToken = (user) => {
+  return JWT.sign(
+    { id: user.id }, 
+    process.env.JWT_SECRET,
+    { expiresIn: "365d" }
+  );
+};
+
+
 function validateToken(token) {
   try {
     const payload = JWT.verify(token, process.env.JWT_SECRET);
@@ -37,4 +46,5 @@ function validateToken(token) {
 module.exports = {
   createToken,
   validateToken,
+  createMiddlewareToken
 };

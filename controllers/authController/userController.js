@@ -11,7 +11,7 @@ const {
   sendRecoveryEmail,
   sendTwoFactorOtp,
 } = require("../../emailService/userAuthEmail/userAuthEmail");
-const { createToken } = require("../../authService/authService");
+const { createToken, createMiddlewareToken } = require("../../authService/authService");
 const { updateCustomers } = require("../statistics/adminStats");
 const { createUserNotification } = require("../notifications/userNotification");
 const UserCoupon = require("../../models/couponModel/userCouponModel");
@@ -268,8 +268,10 @@ const handleSignin = async (req, res) => {
     }
 
     // If no 2FA, log user in
-    const token = createToken(user);
-    setTokenCookie(res, token);
+     const token = createToken(user);
+    const middlewareToken = createMiddlewareToken(user);
+
+    setTokenCookie(res, token, middlewareToken);
 
     return res.status(200).json({
       success: true,
