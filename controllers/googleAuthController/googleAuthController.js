@@ -88,10 +88,17 @@ const googleCallback = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.firstName },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "365d" }
     );
 
-    setTokenCookie(res, token);
+     const middlewareToken = jwt.sign(
+      { id: user.id },
+      JWT_SECRET,
+      { expiresIn: "365d" }
+    );
+
+    setTokenCookie(res, token, middlewareToken);
+
 
     const userData = JSON.stringify({
       name: user.firstName + " " + user.lastName,

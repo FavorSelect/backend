@@ -156,12 +156,17 @@ const twitterCallback = async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, name: `${user.firstName} ${user.lastName}` },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "365d" }
+    );
+ const middlewareToken = jwt.sign(
+      { id: user.id },
+      JWT_SECRET,
+      { expiresIn: "365d" }
     );
 
     delete tokenStore[oauth_token];
 
-    setTokenCookie(res, token);
+    setTokenCookie(res, token,middlewareToken);
 
     const userData = JSON.stringify({
       name: user.firstName + " " + user.lastName,
