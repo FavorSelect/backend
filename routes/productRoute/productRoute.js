@@ -9,21 +9,30 @@ const {
   getProductsByCategoryMultiple,
   handleGetQuerySuggestions,
   getSimilarProducts,
+  handleAddProduct, //
 } = require("../../controllers/productController/productController");
 const {
   handleTrackProductClick,
   handleTrackSearch,
 } = require("../../controllers/searchHistoryController/userSearch");
 const optionalAuthentication = require("../../authMiddleware/optionalMiddleware");
+const authenticateToken = require("../../authMiddleware/authMiddleware"); //
+const upload = require("../../middleware/uploadMiddleware"); // ← Bu import'u ekle
 const { handleGetProductReviews } = require("../../controllers/reviewController/reviewController");
+
 const router = express.Router();
 
-router.post("/products", authenticateToken, upload.single('file'), handleAddProduct);
+router.post("/products", 
+  authenticateToken, 
+  upload.single('file'), 
+  handleAddProduct
+);
 
-router.get("/search/suggestions",handleGetQuerySuggestions);
+
+router.get("/search/suggestions", handleGetQuerySuggestions);
 router.get("/products/category/:categoryName", getProductsByCategory);
 router.get("/products/category/:productId", getProductById);
-router.get("/products/by-categories",   getProductsByCategoryMultiple);
+router.get("/products/by-categories", getProductsByCategoryMultiple);
 router.get("/products/brand/:brandName", getProductsByBrand);
 router.get("/products/recent/latest", getRecentProducts);
 
@@ -37,7 +46,6 @@ router.get(
   getProductById
 );
 router.get("/products/review/:productId", handleGetProductReviews);
-//http://localhost:8000/api/general/products/search/query?query=green
 router.get(
   "/products/search/query",
   optionalAuthentication("token"),
@@ -46,6 +54,5 @@ router.get(
 );
 
 router.get("/products/similar/:productId", getSimilarProducts);
-
 
 module.exports = router;
