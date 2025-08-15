@@ -18,7 +18,7 @@ const optionalAuthentication = require("../../authMiddleware/optionalMiddleware"
 const { handleGetProductReviews } = require("../../controllers/reviewController/reviewController");
 const router = express.Router();
 
-router.post("/products")
+router.post("/products"
 ,
   authenticateToken,
 
