@@ -18,13 +18,7 @@ const optionalAuthentication = require("../../authMiddleware/optionalMiddleware"
 const { handleGetProductReviews } = require("../../controllers/reviewController/reviewController");
 const router = express.Router();
 
-router.post("/products"
-,
-  authenticateToken,
-
-upload.single('file'),
-  handleAddProduct
-);
+router.post("/products", authenticateToken, upload.single('file'), handleAddProduct);
 
 router.get("/search/suggestions",handleGetQuerySuggestions);
 router.get("/products/category/:categoryName", getProductsByCategory);
