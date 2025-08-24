@@ -10,6 +10,7 @@ const upload = require("../../../awsS3Connection/awsUploadMiddleware");
 const {
   handleAddProduct,
   handleUpdateProduct,
+  handleDeleteProduct,
 } = require("../../../controllers/productController/productController");
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.put(
   ]),
   handleUpdateProduct
 );
+router.delete("/delete-product/:productId",  handleDeleteProduct);
 
 module.exports = router;
